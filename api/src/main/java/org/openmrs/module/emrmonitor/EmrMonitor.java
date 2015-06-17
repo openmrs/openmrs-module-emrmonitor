@@ -23,6 +23,8 @@ import org.openmrs.BaseOpenmrsMetadata;
 public class EmrMonitor extends BaseOpenmrsObject implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+    public enum EmrMonitorStatus {PENDING, COMPLETED, CANCELLED};
 	
 	private Integer id;
 	
