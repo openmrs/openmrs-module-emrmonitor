@@ -10,8 +10,8 @@
 
 	<artifactId>emrmonitor-api</artifactId>
 	<packaging>jar</packaging>
-	<name>OpenMRS server monitoring tool Module API</name>
-	<description>API project for OpenMRSservermonitoringtool</description>
+	<name>OpenMRS EmrMonitor Module API</name>
+	<description>API project for EmrMonitor</description>
 
 	<dependencies>
 	

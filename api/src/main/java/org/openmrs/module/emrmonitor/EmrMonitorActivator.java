@@ -21,7 +21,7 @@ import org.openmrs.module.ModuleActivator;
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
  */
-public class OpenMRSservermonitoringtoolActivator implements ModuleActivator {
+public class EmrMonitorActivator implements ModuleActivator {
 	
 	protected Log log = LogFactory.getLog(getClass());
 		
@@ -29,42 +29,42 @@ public class OpenMRSservermonitoringtoolActivator implements ModuleActivator {
 	 * @see ModuleActivator#willRefreshContext()
 	 */
 	public void willRefreshContext() {
-		log.info("Refreshing OpenMRS server monitoring tool Module");
+		log.info("Refreshing OpenMRS EmrMonitor Module");
 	}
 	
 	/**
 	 * @see ModuleActivator#contextRefreshed()
 	 */
 	public void contextRefreshed() {
-		log.info("OpenMRS server monitoring tool Module refreshed");
+		log.info("OpenMRS EmrMonitor Module refreshed");
 	}
 	
 	/**
 	 * @see ModuleActivator#willStart()
 	 */
 	public void willStart() {
-		log.info("Starting OpenMRS server monitoring tool Module");
+		log.info("Starting OpenMRS EmrMonitor Module");
 	}
 	
 	/**
 	 * @see ModuleActivator#started()
 	 */
 	public void started() {
-		log.info("OpenMRS server monitoring tool Module started");
+		log.info("OpenMRS EmrMonitor Module started");
 	}
 	
 	/**
 	 * @see ModuleActivator#willStop()
 	 */
 	public void willStop() {
-		log.info("Stopping OpenMRS server monitoring tool Module");
+		log.info("Stopping OpenMRS EmrMonitor Module");
 	}
 	
 	/**
 	 * @see ModuleActivator#stopped()
 	 */
 	public void stopped() {
-		log.info("OpenMRS server monitoring tool Module stopped");
+		log.info("OpenMRS EmrMonitor Module stopped");
 	}
 		
 }

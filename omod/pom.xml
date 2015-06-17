@@ -10,8 +10,8 @@
 
 	<artifactId>emrmonitor-omod</artifactId>
 	<packaging>jar</packaging>
-	<name>OpenMRS server monitoring tool Module OMOD</name>
-	<description>OMOD project for OpenMRSservermonitoringtool</description>
+	<name>OpenMRS EmrMonitor Module OMOD</name>
+	<description>OMOD project for EmrMonitor</description>
 
 	<dependencies>
 
@@ -30,12 +30,6 @@
 			<artifactId>${project.parent.artifactId}-api</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-		
-				
-		<!-- End OpenMRS modules -->
-		
-
-		<!-- Begin OpenMRS core -->
 
 		<dependency>
 			<groupId>org.openmrs.api</groupId>
@@ -72,7 +66,31 @@
 		
 		<!-- End OpenMRS core -->
 
-	</dependencies>
+        <!-- Begin OpenMRS core -->
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>webservices.rest-omod</artifactId>
+            <version>${webservicesRestVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>webservices.rest-omod-common</artifactId>
+            <version>${webservicesRestVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>webservices.rest-omod-common</artifactId>
+            <version>${webservicesRestVersion}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <!-- End OpenMRS modules -->
+
+    </dependencies>
 
 	<build>
 		<finalName>${project.parent.artifactId}-${project.parent.version}</finalName>

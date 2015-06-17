@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * The main controller.
  */
 @Controller
-public class  OpenMRSservermonitoringtoolManageController {
+public class EmrMonitorManageController {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	

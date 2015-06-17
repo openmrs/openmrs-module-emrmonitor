@@ -6,7 +6,7 @@
 	<artifactId>emrmonitor</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>OpenMRS server monitoring tool Module</name>
+	<name>OpenMRS EmrMonitor Module</name>
 	<description>A tool for monitoring a network of OpenMRS servers</description>
 	<url>https://wiki.openmrs.org/display/docs/OpenMRS+server+monitoring+tool+Module+Module</url>
 	
@@ -33,7 +33,8 @@
 	</modules>
 	
 	<properties>
-		<openMRSVersion>1.9.7</openMRSVersion>
+		<openMRSVersion>1.9.2</openMRSVersion>
+        <webservicesRestVersion>2.6</webservicesRestVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -94,8 +95,22 @@
 				<type>pom</type>
 				<scope>test</scope>
 			</dependency>
-						
 			<!-- End OpenMRS core -->
+
+            <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>webservices.rest-omod</artifactId>
+                <version>${webservicesRestVersion}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>webservices.rest-omod-common</artifactId>
+                <version>${webservicesRestVersion}</version>
+                <classifier>tests</classifier>
+                <scope>test</scope>
+            </dependency>
 
 		</dependencies>
 	</dependencyManagement>
