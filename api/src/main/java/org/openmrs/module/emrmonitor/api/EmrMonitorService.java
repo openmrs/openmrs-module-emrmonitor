@@ -33,4 +33,7 @@ public interface EmrMonitorService extends OpenmrsService {
 	 * Add service methods here
 	 * 
 	 */
+    public EmrMonitor saveSystemInformation(EmrMonitor emrMonitor);
+
+    public EmrMonitor getSystemInformation(String systemId);
 }

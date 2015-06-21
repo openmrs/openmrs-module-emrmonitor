@@ -11,11 +11,14 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.emrmonitor;
+package org.openmrs.module.emrmonitor.api;
 
 import java.io.Serializable;
+import java.util.Map;
+
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.api.context.Context;
 
 /**
  * It is a model class. It should extend either {@link BaseOpenmrsObject} or {@link BaseOpenmrsMetadata}.
@@ -24,9 +27,9 @@ public class EmrMonitor extends BaseOpenmrsObject implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-    public enum EmrMonitorStatus {PENDING, COMPLETED, CANCELLED};
-	
-	private Integer id;
+    private Map<String, Map<String, String>> systemInformation = null;
+
+    private Integer id;
 	
 	@Override
 	public Integer getId() {
@@ -37,5 +40,14 @@ public class EmrMonitor extends BaseOpenmrsObject implements Serializable {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	
+
+
+    public Map<String, Map<String, String>> getSystemInformation() {
+        Map<String, Map<String, String>> systemInformation = Context.getAdministrationService().getSystemInformation();
+        return systemInformation;
+    }
+
+    public void setSystemInformation(Map<String, Map<String, String>> systemInformation) {
+        this.systemInformation = systemInformation;
+    }
 }
