@@ -54,7 +54,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
         File systemStatusInfoFile = new File(String.format("%s/%s", EmrMonitorProperties.getEmrMonitorDirectory().getAbsolutePath(), emrMonitor.getUuid()));
         try {
             FileWriter file = new FileWriter(systemStatusInfoFile.getAbsolutePath());
-            file.write(new ObjectMapper().writeValueAsString(emrMonitor.getSystemInformation()));
+            file.write(new ObjectMapper().writeValueAsString(emrMonitor));
             file.flush();
             file.close();
         } catch (IOException e) {

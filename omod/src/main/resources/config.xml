@@ -33,6 +33,7 @@
 	<mappingFiles>
 				
 		EmrMonitor.hbm.xml
+        EmrMonitorServer.hbm.xml
 				
 	</mappingFiles>
 

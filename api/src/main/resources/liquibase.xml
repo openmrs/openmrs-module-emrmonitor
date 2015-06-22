@@ -8,5 +8,45 @@
         See http://www.liquibase.org/manual/home#available_database_refactorings
         for a list of supported elements and attributes
     -->
-    
+    <changeSet id="201506221653-1" author="cioan">
+        <comment>Adds emrmonitor_server table</comment>
+        <createTable tableName="emrmonitor_server">
+
+            <column name="server_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="server_name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="server_type" type="varchar(45)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="server_url" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="server_user_name" type="varchar(45)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="server_user_password" type="varchar(45)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="date_changed" type="datetime" />
+
+        </createTable>
+
+    </changeSet>
 </databaseChangeLog>
