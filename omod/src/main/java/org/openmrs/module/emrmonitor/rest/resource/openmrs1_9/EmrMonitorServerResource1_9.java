@@ -12,10 +12,11 @@ import org.openmrs.module.webservices.rest.web.annotation.Resource;
 import org.openmrs.module.webservices.rest.web.representation.Representation;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
+import org.openmrs.module.webservices.rest.web.response.ResourceDoesNotSupportOperationException;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
 @Resource(name = RestConstants.VERSION_1 + EmrMonitorRestController.EMRMONITOR_REST_NAMESPACE
-        + "/emrmonitorserver", supportedClass = EmrMonitorServer.class, supportedOpenmrsVersions = {"1.9.*", "1.10.*", "1.11.*", "1.12.*"})
+        + "/server", supportedClass = EmrMonitorServer.class, supportedOpenmrsVersions = {"1.9.*", "1.10.*", "1.11.*", "1.12.*"})
 public class EmrMonitorServerResource1_9 extends DelegatingCrudResource<EmrMonitorServer> {
 
     /**
@@ -74,7 +75,41 @@ public class EmrMonitorServerResource1_9 extends DelegatingCrudResource<EmrMonit
      */
     @Override
     public EmrMonitorServer save(EmrMonitorServer delegate) {
-        return null;
+        return Context.getService(EmrMonitorService.class).saveEmrMonitorServer(delegate);
+    }
+
+    /**
+     * Gets a description of resource's properties which can be set on creation.
+     *
+     * @return the description
+     * @throws org.openmrs.module.webservices.rest.web.response.ResponseException
+     */
+    @Override
+    public DelegatingResourceDescription getCreatableProperties() throws ResourceDoesNotSupportOperationException {
+        DelegatingResourceDescription description = new DelegatingResourceDescription();
+        description.addProperty("serverName");
+        description.addProperty("serverType");
+        description.addProperty("serverUrl");
+        description.addProperty("serverUserName");
+        description.addProperty("serverUserPassword");
+        description.addProperty("uuid");
+        description.addProperty("systemInformation");
+
+        return description;
+    }
+
+    /**
+     * Gets a description of resource's properties which can be edited.
+     * <p/>
+     * By default delegates to {@link #getCreatableProperties()} and removes sub-resources returned
+     * by {@link #getPropertiesToExposeAsSubResources()}.
+     *
+     * @return the description
+     * @throws org.openmrs.module.webservices.rest.web.response.ResponseException
+     */
+    @Override
+    public DelegatingResourceDescription getUpdatableProperties() throws ResourceDoesNotSupportOperationException {
+        return getCreatableProperties();
     }
 
     /**

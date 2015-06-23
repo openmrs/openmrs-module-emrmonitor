@@ -70,6 +70,7 @@ public class EmrMonitorActivator implements ModuleActivator {
                 localServer.setUuid(UUID.randomUUID().toString());
             }
             localServer.setDateChanged(new Date());
+            localServer.setSystemInformation(Context.getAdministrationService().getSystemInformation());
             localServer = Context.getService(EmrMonitorService.class).saveEmrMonitorServer(localServer);
             if (localServer == null) {
                 log.error("failed to generate new local server system information");

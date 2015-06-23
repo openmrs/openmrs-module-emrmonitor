@@ -30,6 +30,7 @@ import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -98,11 +99,16 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
 
     @Override
     public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server) {
-        server =  dao.saveEmrMonitorServer(server);
-        server.setSystemInformation(Context.getAdministrationService().getSystemInformation());
-        server = saveSystemInformation(server);
+        if (server != null ){
+            Date dateCreated = new Date();
+            if (server.getDateCreated() == null ) {
+                server.setDateCreated(dateCreated);
+            }
+            server.setDateChanged(dateCreated);
+            server = dao.saveEmrMonitorServer(server);
+            server = saveSystemInformation(server);
+        }
         return server;
-
     }
 
     @Override
