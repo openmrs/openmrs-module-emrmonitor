@@ -60,6 +60,21 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
     }
 
     @Override
+    public EmrMonitorServer getEmrMonitorServerByUuid(String serverUuid) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class);
+        criteria.add(Restrictions.eq("uuid", serverUuid));
+        try {
+            List<EmrMonitorServer> list = list = (List<EmrMonitorServer>) criteria.list();
+            if (list != null && list.size() > 0 ) {
+                return (EmrMonitorServer) list.get(0);
+            }
+        } catch (Exception e) {
+            log.error("Failed to retrieve emr monitor server record", e);
+        }
+        return null;
+    }
+
+    @Override
     public EmrMonitorServer getEmrMonitorServerByType(EmrMonitorServerType serverType) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class);
         criteria.add(Restrictions.eq("serverType", serverType));

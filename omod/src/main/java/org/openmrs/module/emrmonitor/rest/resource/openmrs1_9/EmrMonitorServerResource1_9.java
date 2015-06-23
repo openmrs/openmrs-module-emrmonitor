@@ -38,7 +38,7 @@ public class EmrMonitorServerResource1_9 extends DelegatingCrudResource<EmrMonit
      */
     @Override
     public EmrMonitorServer getByUniqueId(String uniqueId) {
-        return null;
+        return Context.getService(EmrMonitorService.class).getEmrMonitorServerByUuid(uniqueId);
     }
 
     /**
@@ -63,7 +63,7 @@ public class EmrMonitorServerResource1_9 extends DelegatingCrudResource<EmrMonit
      */
     @Override
     public EmrMonitorServer newDelegate() {
-        return null;
+        return new EmrMonitorServer();
     }
 
     /**
@@ -99,6 +99,18 @@ public class EmrMonitorServerResource1_9 extends DelegatingCrudResource<EmrMonit
      */
     @Override
     public DelegatingResourceDescription getRepresentationDescription(Representation rep) {
-        return null;
+
+        DelegatingResourceDescription description = new DelegatingResourceDescription();
+        description.addProperty("serverName");
+        description.addProperty("serverType");
+        description.addProperty("serverUrl");
+        description.addProperty("serverUserName");
+        description.addProperty("uuid");
+        description.addProperty("systemInformation");
+        description.addProperty("dateCreated");
+        description.addProperty("dateChanged");
+        // description.addProperty("display", findMethod("getDisplayString"));
+        description.addSelfLink();
+        return description;
     }
 }

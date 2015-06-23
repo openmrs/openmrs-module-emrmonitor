@@ -43,6 +43,8 @@ public interface EmrMonitorService extends OpenmrsService {
 
     public EmrMonitorServer getSystemInformation(String serverUuid);
 
+    public EmrMonitorServer getEmrMonitorServerByUuid(String serverUuid);
+
     public List<EmrMonitorServer> getEmrMonitorServers();
 
     public EmrMonitorServer getEmrMonitorServerByType(EmrMonitorServerType serverType);

@@ -29,8 +29,6 @@ public class EmrMonitorServer {
 
     private Map<String, Map<String, String>> systemInformation = null;
 
-    public EmrMonitorServer() {}
-
     public Integer getServerId() {
         return serverId;
     }

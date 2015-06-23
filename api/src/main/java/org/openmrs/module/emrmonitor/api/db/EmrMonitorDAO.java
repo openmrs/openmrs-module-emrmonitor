@@ -29,4 +29,6 @@ public interface EmrMonitorDAO {
     EmrMonitorServer getEmrMonitorServerByType(EmrMonitorServerType serverType);
 
     EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
+
+    EmrMonitorServer getEmrMonitorServerByUuid(String serverUuid);
 }

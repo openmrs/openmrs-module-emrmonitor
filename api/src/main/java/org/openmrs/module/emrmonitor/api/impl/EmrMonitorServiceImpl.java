@@ -111,6 +111,11 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     }
 
     @Override
+    public EmrMonitorServer getEmrMonitorServerByUuid(String serverUuid) {
+        return (EmrMonitorServer) dao.getEmrMonitorServerByUuid(serverUuid);
+    }
+
+    @Override
     public EmrMonitorServer getSystemInformation(String serverUuid) {
         EmrMonitorServer emrMonitorServer = null;
         if (StringUtils.isNotBlank(serverUuid)) {
