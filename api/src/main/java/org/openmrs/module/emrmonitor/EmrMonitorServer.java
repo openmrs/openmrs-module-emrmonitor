@@ -1,7 +1,11 @@
 package org.openmrs.module.emrmonitor;
 
 
+import org.openmrs.api.context.Context;
+import org.openmrs.module.emrmonitor.api.EmrMonitorService;
+
 import java.util.Date;
+import java.util.Map;
 
 public class EmrMonitorServer {
 
@@ -22,6 +26,8 @@ public class EmrMonitorServer {
     private Date dateCreated;
 
     private Date dateChanged;
+
+    private Map<String, Map<String, String>> systemInformation = null;
 
     public EmrMonitorServer() {}
 
@@ -95,5 +101,19 @@ public class EmrMonitorServer {
 
     public void setDateChanged(Date dateChanged) {
         this.dateChanged = dateChanged;
+    }
+
+    public Map<String, Map<String, String>> getSystemInformation() {
+        if (systemInformation == null ) {
+            EmrMonitorServer server = Context.getService(EmrMonitorService.class).getSystemInformation(this.getUuid());
+            if (server != null && (server.getServerId().compareTo(this.serverId) == 0) ) {
+                systemInformation = server.getSystemInformation();
+            }
+        }
+        return systemInformation;
+    }
+
+    public void setSystemInformation(Map<String, Map<String, String>> systemInformation) {
+        this.systemInformation = systemInformation;
     }
 }

@@ -44,6 +44,7 @@ public class EmrMonitor extends BaseOpenmrsObject implements Serializable {
 
     public Map<String, Map<String, String>> getSystemInformation() {
         Map<String, Map<String, String>> systemInformation = Context.getAdministrationService().getSystemInformation();
+
         return systemInformation;
     }
 

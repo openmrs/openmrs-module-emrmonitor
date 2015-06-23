@@ -13,14 +13,20 @@
  */
 package org.openmrs.module.emrmonitor.api.db;
 
+import org.openmrs.module.emrmonitor.EmrMonitorServer;
+import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
+
+import java.util.List;
 
 /**
  *  Database methods for {@link EmrMonitorService}.
  */
 public interface EmrMonitorDAO {
-	
-	/*
-	 * Add DAO methods here
-	 */
+
+    List<EmrMonitorServer> getEmrMonitorServers();
+
+    EmrMonitorServer getEmrMonitorServerByType(EmrMonitorServerType serverType);
+
+    EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
 }

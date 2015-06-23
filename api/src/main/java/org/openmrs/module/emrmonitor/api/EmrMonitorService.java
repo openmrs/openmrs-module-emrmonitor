@@ -14,7 +14,11 @@
 package org.openmrs.module.emrmonitor.api;
 
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.module.emrmonitor.EmrMonitorServer;
+import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * This service exposes module's core functionality. It is a Spring managed bean which is configured in moduleApplicationContext.xml.
@@ -35,5 +39,13 @@ public interface EmrMonitorService extends OpenmrsService {
 	 */
     public EmrMonitor saveSystemInformation(EmrMonitor emrMonitor);
 
-    public EmrMonitor getSystemInformation(String systemId);
+    public EmrMonitorServer saveSystemInformation(EmrMonitorServer emrMonitorServer);
+
+    public EmrMonitorServer getSystemInformation(String serverUuid);
+
+    public List<EmrMonitorServer> getEmrMonitorServers();
+
+    public EmrMonitorServer getEmrMonitorServerByType(EmrMonitorServerType serverType);
+
+    public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
 }

@@ -15,8 +15,15 @@ package org.openmrs.module.emrmonitor.api.db.hibernate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.emrmonitor.EmrMonitorServer;
+import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
+
+import java.util.List;
 
 /**
  * It is a default implementation of  {@link EmrMonitorDAO}.
@@ -38,5 +45,42 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
      */
     public SessionFactory getSessionFactory() {
 	    return sessionFactory;
+    }
+
+    @Override
+    public List<EmrMonitorServer> getEmrMonitorServers() {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class);
+        List<EmrMonitorServer> list = null;
+        try {
+            list = (List<EmrMonitorServer>) criteria.list();
+        } catch (Exception e) {
+            log.error("Failed to retrieve emr monitor servers", e);
+        }
+        return list;
+    }
+
+    @Override
+    public EmrMonitorServer getEmrMonitorServerByType(EmrMonitorServerType serverType) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class);
+        criteria.add(Restrictions.eq("serverType", serverType));
+        try {
+            List<EmrMonitorServer> list = list = (List<EmrMonitorServer>) criteria.list();
+            if (list != null && list.size() > 0 ) {
+                return (EmrMonitorServer) list.get(0);
+            }
+        } catch (Exception e) {
+            log.error("Failed to retrieve emr monitor servers", e);
+        }
+        return null;
+    }
+
+    @Override
+    public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server) {
+        try{
+            sessionFactory.getCurrentSession().saveOrUpdate(server);
+        } catch (Exception e) {
+            log.error("Error saving EmrMonitor Server", e);
+        }
+        return server;
     }
 }

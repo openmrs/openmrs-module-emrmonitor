@@ -14,9 +14,16 @@
 package org.openmrs.module.emrmonitor;
 
 
-import org.apache.commons.logging.Log; 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleActivator;
+import org.openmrs.module.emrmonitor.api.EmrMonitorService;
+
+import java.net.InetAddress;
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
@@ -50,7 +57,29 @@ public class EmrMonitorActivator implements ModuleActivator {
 	 * @see ModuleActivator#started()
 	 */
 	public void started() {
+
+        try {
+            // refresh Local Server EmrMonitorServer record
+            EmrMonitorServer localServer = Context.getService(EmrMonitorService.class).getEmrMonitorServerByType(EmrMonitorServerType.LOCAL);
+            if (localServer == null) {
+                //create new Local Server record
+                localServer = new EmrMonitorServer();
+                localServer.setServerName(InetAddress.getLocalHost().getHostName());
+                localServer.setServerType(EmrMonitorServerType.LOCAL);
+                localServer.setDateCreated(new Date());
+                localServer.setUuid(UUID.randomUUID().toString());
+            }
+            localServer.setDateChanged(new Date());
+            localServer = Context.getService(EmrMonitorService.class).saveEmrMonitorServer(localServer);
+            if (localServer == null) {
+                log.error("failed to generate new local server system information");
+            }
+        } catch (Exception e) {
+            log.error("error generating local server system information");
+        }
+
 		log.info("OpenMRS EmrMonitor Module started");
+
 	}
 	
 	/**
