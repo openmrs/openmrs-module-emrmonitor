@@ -19,6 +19,7 @@ import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * This service exposes module's core functionality. It is a Spring managed bean which is configured in moduleApplicationContext.xml.
@@ -49,4 +50,6 @@ public interface EmrMonitorService extends OpenmrsService {
     public EmrMonitorServer getEmrMonitorServerByType(EmrMonitorServerType serverType);
 
     public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
+
+    public Map<String, Map<String, String>> getExtraSystemInfo();
 }

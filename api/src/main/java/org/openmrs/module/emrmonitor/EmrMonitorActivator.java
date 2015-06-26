@@ -23,6 +23,7 @@ import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -70,7 +71,13 @@ public class EmrMonitorActivator implements ModuleActivator {
                 localServer.setUuid(UUID.randomUUID().toString());
             }
             localServer.setDateChanged(new Date());
-            localServer.setSystemInformation(Context.getAdministrationService().getSystemInformation());
+            Map<String, Map<String, String>> systemInformation = Context.getAdministrationService().getSystemInformation();
+            Map<String, Map<String, String>> extraSystemInfo = Context.getService(EmrMonitorService.class).getExtraSystemInfo();
+            if (extraSystemInfo != null && extraSystemInfo.size() > 0) {
+                systemInformation.putAll(extraSystemInfo);
+            }
+            localServer.setSystemInformation(systemInformation);
+
             localServer = Context.getService(EmrMonitorService.class).saveEmrMonitorServer(localServer);
             if (localServer == null) {
                 log.error("failed to generate new local server system information");

@@ -29,6 +29,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * It is a default implementation of {@link EmrMonitorService}.
@@ -92,6 +93,11 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
             server = saveSystemInformation(server);
         }
         return server;
+    }
+
+    @Override
+    public Map<String, Map<String, String>> getExtraSystemInfo() {
+        return null;
     }
 
     @Override
