@@ -15,14 +15,11 @@ package org.openmrs.module.emrmonitor.api.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.hibernate.SessionFactory;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
-import org.openmrs.module.emrmonitor.api.EmrMonitor;
 import org.openmrs.module.emrmonitor.api.EmrMonitorProperties;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
@@ -54,20 +51,6 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
      */
     public EmrMonitorDAO getDao() {
 	    return dao;
-    }
-
-    @Override
-    public EmrMonitor saveSystemInformation(EmrMonitor emrMonitor) {
-        File systemStatusInfoFile = new File(String.format("%s/%s", EmrMonitorProperties.getEmrMonitorDirectory().getAbsolutePath(), emrMonitor.getUuid()));
-        try {
-            FileWriter file = new FileWriter(systemStatusInfoFile.getAbsolutePath());
-            file.write(new ObjectMapper().writeValueAsString(emrMonitor));
-            file.flush();
-            file.close();
-        } catch (IOException e) {
-            log.error("failed to open file for for writing", e);
-        }
-        return emrMonitor;
     }
 
     @Override

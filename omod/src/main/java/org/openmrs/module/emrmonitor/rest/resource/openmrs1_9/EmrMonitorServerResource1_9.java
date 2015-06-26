@@ -2,7 +2,6 @@ package org.openmrs.module.emrmonitor.rest.resource.openmrs1_9;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
-import org.openmrs.module.emrmonitor.api.EmrMonitor;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.openmrs.module.emrmonitor.rest.controller.EmrMonitorRestController;
 import org.openmrs.module.webservices.rest.SimpleObject;
