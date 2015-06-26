@@ -16,6 +16,8 @@ package org.openmrs.module.emrmonitor.api.db.hibernate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.context.Context;
@@ -23,7 +25,9 @@ import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * It is a default implementation of  {@link EmrMonitorDAO}.
@@ -98,4 +102,38 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
         }
         return server;
     }
+
+	@Override
+	public Map<String,Integer> getOpenmrsData() {
+		Map openmrsData	=new HashMap<String, Integer>();
+		Session session=sessionFactory.getCurrentSession();
+		
+		String sql="SELECT patient_id FROM orders where voided=0";
+	    SQLQuery query=session.createSQLQuery(sql);
+	    int numOrders=query.list().size();
+	    openmrsData.put("orders", numOrders);
+	    
+	    String sql2="select patient_id from patient where voided=0";
+	    SQLQuery query2=session.createSQLQuery(sql2);	    
+	    int numPatients=query2.list().size();	    
+	    openmrsData.put("patients", numPatients);
+	    
+	    String sql3="select patient_id from encounter where voided=0";
+	    SQLQuery query3=session.createSQLQuery(sql3);	    
+	    int numEncounters=query3.list().size();	    
+	    openmrsData.put("encounters", numEncounters);
+	    
+	    String sql4="select person_id from obs where voided=0";
+	    SQLQuery query4=session.createSQLQuery(sql4);	    
+	    int numObs=query4.list().size();	    
+	    openmrsData.put("observations", numObs);
+		
+	    String sql5="select record_id from sync_record where state!='COMMITTED' and uuid=original_uuid";
+	    SQLQuery query5=session.createSQLQuery(sql5);	    
+	    int numPendingRecords=query5.list().size();	    
+	    openmrsData.put("pendingRecords", numPendingRecords);	    
+		
+		return openmrsData;	
+		
+	}
 }

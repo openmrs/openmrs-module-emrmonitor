@@ -22,6 +22,7 @@ import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.EmrMonitorProperties;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
+import org.openmrs.module.emrmonitor.api.ExtraSystemInformation;
 import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
 
 import java.io.File;
@@ -97,7 +98,9 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
 
     @Override
     public Map<String, Map<String, String>> getExtraSystemInfo() {
-        return null;
+    	
+    	ExtraSystemInformation extinfo=new ExtraSystemInformation();
+    	return extinfo.getExtraSystemInformation();
     }
 
     @Override
@@ -126,4 +129,10 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
         }
         return emrMonitorServer;
     }
+
+	@Override
+	public Map<String,Integer> getOpenmrsData() {
+		// TODO Auto-generated method stub
+		return dao.getOpenmrsData();
+	}
 }

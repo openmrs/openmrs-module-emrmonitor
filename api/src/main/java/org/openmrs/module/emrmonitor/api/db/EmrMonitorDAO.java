@@ -18,6 +18,7 @@ import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *  Database methods for {@link EmrMonitorService}.
@@ -31,4 +32,6 @@ public interface EmrMonitorDAO {
     EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
 
     EmrMonitorServer getEmrMonitorServerByUuid(String serverUuid);
+    
+    Map<String,Integer> getOpenmrsData();
 }
