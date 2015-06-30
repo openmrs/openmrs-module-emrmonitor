@@ -70,7 +70,7 @@ public class EmrMonitorActivator implements ModuleActivator {
                 localServer.setDateCreated(new Date());
                 localServer.setUuid(UUID.randomUUID().toString());
             }
-            localServer.setDateChanged(new Date());
+
             Map<String, Map<String, String>> systemInformation = Context.getAdministrationService().getSystemInformation();
             Map<String, Map<String, String>> extraSystemInfo = Context.getService(EmrMonitorService.class).getExtraSystemInfo();
             if (extraSystemInfo != null && extraSystemInfo.size() > 0) {

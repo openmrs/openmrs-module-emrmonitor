@@ -42,6 +42,19 @@ public class EmrMonitorServerResource1_9 extends DelegatingCrudResource<EmrMonit
     }
 
     /**
+     * @param uuid
+     * @param propertiesToUpdate
+     * @param context
+     * @see org.openmrs.module.webservices.rest.web.resource.api.Updatable#update(String,
+     * org.openmrs.module.webservices.rest.SimpleObject)
+     */
+    @Override
+    public Object update(String uuid, SimpleObject propertiesToUpdate, RequestContext context) throws ResponseException {
+        // if CHILD server exists and
+        return super.update(uuid, propertiesToUpdate, context);
+    }
+
+    /**
      * Void or retire delegate, whichever action is appropriate for the resource type. Subclasses
      * need to override this method, which is called internally by
      * {@link #delete(String, String, org.openmrs.module.webservices.rest.web.RequestContext)}.
