@@ -33,5 +33,5 @@ public interface EmrMonitorDAO {
 
     EmrMonitorServer getEmrMonitorServerByUuid(String serverUuid);
     
-    Map<String,Integer> getOpenmrsData();
+    Map<String, String> getOpenmrsData();
 }

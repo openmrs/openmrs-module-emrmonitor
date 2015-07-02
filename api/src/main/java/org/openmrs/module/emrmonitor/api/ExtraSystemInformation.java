@@ -1,21 +1,16 @@
 package org.openmrs.module.emrmonitor.api;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Criteria;
-import org.hibernate.SQLQuery;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.openmrs.Order;
-import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
+import org.springframework.context.annotation.Bean;
 
 public class ExtraSystemInformation {
 
@@ -97,20 +92,33 @@ public class ExtraSystemInformation {
 	public void setUsedPhyisycalMemory(String usedPhyisycalMemory) {
 		this.usedPhyisycalMemory = usedPhyisycalMemory;
 	}
-	
+public String getVersion(String command) {
+	String s=null;
+	Process p;
+	try {
+	    p = Runtime.getRuntime().exec(command);
+	    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	    p.waitFor();
+	    s = br.readLine();
+	    p.destroy();
+	    return s;    
+	} catch (Exception e) {			
+	}		
+	return "";
+}
 	public Map<String, Map<String, String>> getExtraSystemInformation(){
 		
 		Map<String, Map<String, String>> extraSystemInformation = new HashMap<String, Map<String,String>>();
 		
-		extraSystemInformation.put("SystemInfo.title.physicalMemoryInformation", new LinkedHashMap<String, String>() {
+		extraSystemInformation.put("SystemInfo.title.hardDriverInformation", new LinkedHashMap<String, String>() {
         	
         private static final long serialVersionUID = 1L;
 			
 			{
-				put("SystemInfo.physicalMemory.totalMemory", getTotalPhyisycalMemory());
-				put("SystemInfo.physicalMemory.freeMemory", getFreePhyisycalMemory());
-				put("SystemInfo.physicalMemory.availableMemory", getAvailablePhyisycalMemory());
-				put("SystemInfo.physicalMemory.usedMemory", getUsedPhyisycalMemory());				
+				put("SystemInfo.hardDriverInformation.totalMemory", getTotalPhyisycalMemory());
+				put("SystemInfo.hardDriverInformation.freeMemory", getFreePhyisycalMemory());
+				put("SystemInfo.hardDriverInformation.availableMemory", getAvailablePhyisycalMemory());
+				put("SystemInfo.hardDriverInformation.usedMemory", getUsedPhyisycalMemory());				
 			}
 		});
         
@@ -134,10 +142,23 @@ public class ExtraSystemInformation {
 
             private static final long serialVersionUID = 1L;
 
-            {
-                
+            {                
              	put("SystemInfo.emrSyncDataInformation.pendingRecords", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("pendingRecords"));
              	      
+            }
+        });
+		
+		extraSystemInformation.put("SystemInfo.title.softwareVersionInformation", new LinkedHashMap<String, String>() {
+
+            private static final long serialVersionUID = 1L;
+
+            {                
+            	put("SystemInfo.softwareVersionInformation.ubuntu", ""+getVersion("lsb_release --release").split(":")[1].trim());
+            	put("SystemInfo.softwareVersionInformation.mysql", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("mysqlVersion").split("-")[0]);
+             	put("SystemInfo.softwareVersionInformation.tomcat", ""+getVersion("java -cp /usr/share/tomcat6/lib/catalina.jar org.apache.catalina.util.ServerInfo").split(":")[1].trim());
+             	put("SystemInfo.softwareVersionInformation.Firefox", ""+getVersion("firefox -version"));
+             	put("SystemInfo.softwareVersionInformation.Chrome", ""+getVersion("google-chrome -version"));
+             	
             }
         });
 		

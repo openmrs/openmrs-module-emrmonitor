@@ -104,35 +104,41 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
     }
 
 	@Override
-	public Map<String,Integer> getOpenmrsData() {
+	public Map<String, String> getOpenmrsData() {
 		Map openmrsData	=new HashMap<String, Integer>();
 		Session session=sessionFactory.getCurrentSession();
 		
 		String sql="SELECT patient_id FROM orders where voided=0";
 	    SQLQuery query=session.createSQLQuery(sql);
 	    int numOrders=query.list().size();
-	    openmrsData.put("orders", numOrders);
+	    openmrsData.put("orders", ""+numOrders);
 	    
 	    String sql2="select patient_id from patient where voided=0";
 	    SQLQuery query2=session.createSQLQuery(sql2);	    
 	    int numPatients=query2.list().size();	    
-	    openmrsData.put("patients", numPatients);
+	    openmrsData.put("patients", ""+numPatients);
 	    
 	    String sql3="select patient_id from encounter where voided=0";
 	    SQLQuery query3=session.createSQLQuery(sql3);	    
 	    int numEncounters=query3.list().size();	    
-	    openmrsData.put("encounters", numEncounters);
+	    openmrsData.put("encounters", ""+numEncounters);
 	    
 	    String sql4="select person_id from obs where voided=0";
 	    SQLQuery query4=session.createSQLQuery(sql4);	    
 	    int numObs=query4.list().size();	    
-	    openmrsData.put("observations", numObs);
+	    openmrsData.put("observations", ""+numObs);
 		
 	    String sql5="select record_id from sync_record where state!='COMMITTED' and uuid=original_uuid";
 	    SQLQuery query5=session.createSQLQuery(sql5);	    
 	    int numPendingRecords=query5.list().size();	    
-	    openmrsData.put("pendingRecords", numPendingRecords);	    
+	    openmrsData.put("pendingRecords", ""+numPendingRecords);	    
 		
+	    String sql6="SELECT VERSION()";
+	    SQLQuery query6=session.createSQLQuery(sql6);	    
+	    String mysqlVersion=query6.list().get(0).toString();	    
+	    openmrsData.put("mysqlVersion", ""+mysqlVersion);
+	   
+	    
 		return openmrsData;	
 		
 	}

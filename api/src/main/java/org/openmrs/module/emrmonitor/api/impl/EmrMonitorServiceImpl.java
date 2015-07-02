@@ -131,7 +131,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     }
 
 	@Override
-	public Map<String,Integer> getOpenmrsData() {
+	public Map<String, String> getOpenmrsData() {
 		// TODO Auto-generated method stub
 		return dao.getOpenmrsData();
 	}

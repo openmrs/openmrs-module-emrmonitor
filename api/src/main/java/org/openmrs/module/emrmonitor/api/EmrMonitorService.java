@@ -53,5 +53,5 @@ public interface EmrMonitorService extends OpenmrsService {
 
     public Map<String, Map<String, String>> getExtraSystemInfo();
 
-	public Map<String, Integer> getOpenmrsData();
+	public Map<String, String> getOpenmrsData();
 }
