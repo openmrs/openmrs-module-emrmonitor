@@ -1,5 +1,3 @@
-*.class
-
 *.iml
 *.ipr
 *.iws
@@ -19,8 +17,6 @@ omod/rubygems
 *.war
 *.ear
 
-.settings/*
-
 # Rubygems build dir
 omod/rubygems
 
@@ -33,5 +29,3 @@ omod/src/main/webapp/resources/resources.styles/login.css
 omod/src/main/webapp/resources/resources.styles/customVariables.css
 omod/src/main/webapp/resources/resources.styles/emrmonitor.css
 omod/src/main/webapp/resources/resources.styles/manageApps.css
-
-/.settings
