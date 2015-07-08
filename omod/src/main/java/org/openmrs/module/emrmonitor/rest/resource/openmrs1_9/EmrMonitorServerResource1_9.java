@@ -87,6 +87,9 @@ public class EmrMonitorServerResource1_9 extends DelegatingCrudResource<EmrMonit
      */
     @Override
     public EmrMonitorServer save(EmrMonitorServer delegate) {
+        if (delegate.getSystemInformation() != null) {
+            return Context.getService(EmrMonitorService.class).saveEmrMonitorServer(delegate, delegate.getSystemInformation());
+        }
         return Context.getService(EmrMonitorService.class).saveEmrMonitorServer(delegate);
     }
 

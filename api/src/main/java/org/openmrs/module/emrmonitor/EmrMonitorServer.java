@@ -102,12 +102,6 @@ public class EmrMonitorServer {
     }
 
     public Map<String, Map<String, String>> getSystemInformation() {
-        if (systemInformation == null ) {
-            EmrMonitorServer server = Context.getService(EmrMonitorService.class).getSystemInformation(this.getUuid());
-            if (server != null && (server.getServerId().compareTo(this.serverId) == 0) ) {
-                systemInformation = server.getSystemInformation();
-            }
-        }
         return systemInformation;
     }
 

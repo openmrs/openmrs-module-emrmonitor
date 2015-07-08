@@ -28,6 +28,7 @@ import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,19 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
 
     @Override
     public List<EmrMonitorServer> getEmrMonitorServers() {
-        return dao.getEmrMonitorServers();
+        List<EmrMonitorServer> servers = dao.getEmrMonitorServers();
+        if (servers != null && servers.size() > 0) {
+            List<EmrMonitorServer> emrServers = new ArrayList<EmrMonitorServer>();
+            for (EmrMonitorServer server : servers){
+                EmrMonitorServer emrMonitorServer = getSystemInformation(server.getUuid());
+                if ( emrMonitorServer != null ) {
+                    server.setSystemInformation(emrMonitorServer.getSystemInformation());
+                    emrServers.add(server);
+                }
+            }
+            return emrServers;
+        }
+        return servers;
     }
 
     @Override
@@ -91,9 +104,21 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
             }
             server.setDateChanged(dateCreated);
             server = dao.saveEmrMonitorServer(server);
-            server = saveSystemInformation(server);
         }
         return server;
+    }
+
+    @Override
+    public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server, Map<String, Map<String, String>> systemInformation) {
+        EmrMonitorServer emrMonitorServer = null;
+        if (server != null ) {
+            emrMonitorServer = saveEmrMonitorServer(server);
+            if (systemInformation != null) {
+                emrMonitorServer.setSystemInformation(systemInformation);
+                emrMonitorServer = saveSystemInformation(emrMonitorServer);
+            }
+        }
+        return emrMonitorServer;
     }
 
     @Override
@@ -135,4 +160,5 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
 		// TODO Auto-generated method stub
 		return dao.getOpenmrsData();
 	}
+
 }

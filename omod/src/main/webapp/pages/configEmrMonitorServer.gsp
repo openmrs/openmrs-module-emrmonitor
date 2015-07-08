@@ -14,7 +14,7 @@
 <h3>EMR Servers</h3>
 <div id="config-emrmonitor-server-app" class="container" ng-controller="ConfigEmrMonitorServerCtrl">
 
-    <div ng-show="serversFound">
+    <div ng-show="showServers">
 
         <div class="alert alert-info">
             <p>Sort Type: {{ sortType }}</p>
@@ -49,6 +49,11 @@
                     </a>
                 </td>
                 <td>
+                    <a href="#" ng-click="sortType = 'userName'; sortReverse = !sortReverse">
+                        UserName
+                    </a>
+                </td>
+                <td>
                     <a href="#" ng-click="sortType = 'uuid'; sortReverse = !sortReverse">
                     uuid
                     </a>
@@ -62,13 +67,48 @@
             </thead>
             <tr ng-repeat="server in serversFound | orderBy:sortType:sortReverse | filter:searchServer">
                 <td>{{ server.serverId }}</td>
-                <td><a ng-click="selectPatient(patient)"> {{ server.serverName }} </a></td>
+                <td><a ng-click="selectServer(server)"> {{ server.serverName }} </a></td>
+                <td>{{ server.serverUserName }}</td>
                 <td>{{ server.uuid }}</td>
                 <td>{{ server.serverType }}</td>
             </tr>
             </tbody>
 
         </table>
+    </div>
+
+    <div ng-show="showSelectedServer">
+
+        <h3>Edit server info:</h3>
+
+        <form>
+            <p>
+                <label>name</label>
+                <input ng-model="serverName"/>
+            </p>
+
+            <p>
+                <label>url</label>
+                <input ng-model="serverUrl"/>
+            </p>
+            <p>
+                <label>username</label>
+                <input ng-model="serverUserName"/>
+            </p>
+            <p>
+                <label>password</label>
+                <input ng-model="serverUserPassword"/>
+            </p>
+
+
+            <div class="error" ng-show="errorMessage">{{ errorMessage }}</div>
+
+
+            <button class="button cancel" ng-click="cancelUpdate()">Cancel</button>
+            <button class="button confirm right" ng-click="updateServerInfo()">Save</button>
+        </form>
+
+
     </div>
 
 </div>

@@ -78,7 +78,7 @@ public class EmrMonitorActivator implements ModuleActivator {
             }
             localServer.setSystemInformation(systemInformation);
 
-            localServer = Context.getService(EmrMonitorService.class).saveEmrMonitorServer(localServer);
+            localServer = Context.getService(EmrMonitorService.class).saveEmrMonitorServer(localServer, systemInformation);
             if (localServer == null) {
                 log.error("failed to generate new local server system information");
             }

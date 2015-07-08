@@ -68,7 +68,7 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class);
         criteria.add(Restrictions.eq("uuid", serverUuid));
         try {
-            List<EmrMonitorServer> list = list = (List<EmrMonitorServer>) criteria.list();
+            List<EmrMonitorServer> list =  (List<EmrMonitorServer>) criteria.list();
             if (list != null && list.size() > 0 ) {
                 return (EmrMonitorServer) list.get(0);
             }
@@ -83,7 +83,7 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class);
         criteria.add(Restrictions.eq("serverType", serverType));
         try {
-            List<EmrMonitorServer> list = list = (List<EmrMonitorServer>) criteria.list();
+            List<EmrMonitorServer> list = (List<EmrMonitorServer>) criteria.list();
             if (list != null && list.size() > 0 ) {
                 return (EmrMonitorServer) list.get(0);
             }
