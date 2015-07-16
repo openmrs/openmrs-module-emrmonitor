@@ -10,6 +10,8 @@ import java.io.File;
 public class EmrMonitorProperties  {
     public static final String EMR_MONITOR_DIRECTORY = "emrMonitor";
 
+    public static final Integer REMOTE_SERVER_TIMEOUT = 10000;
+
     protected static final Log log = LogFactory.getLog(EmrMonitorProperties.class);
 
     public static File getEmrMonitorDirectory(){

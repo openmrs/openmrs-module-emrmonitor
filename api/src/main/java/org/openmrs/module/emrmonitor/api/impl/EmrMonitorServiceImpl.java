@@ -13,7 +13,10 @@
  */
 package org.openmrs.module.emrmonitor.api.impl;
 
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.apache.commons.logging.Log;
@@ -24,7 +27,10 @@ import org.openmrs.module.emrmonitor.api.EmrMonitorProperties;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.openmrs.module.emrmonitor.api.ExtraSystemInformation;
 import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
+import com.sun.jersey.api.client.Client;
 
+import javax.annotation.PostConstruct;
+import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -42,11 +48,18 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
 
 	private EmrMonitorDAO dao;
 
+    private Client restClient = null;
+
     /**
      * @param dao the dao to set
      */
     public void setDao(EmrMonitorDAO dao) {
 	    this.dao = dao;
+    }
+
+    @PostConstruct
+    public void init() {
+        restClient = Client.create();
     }
     
     /**
@@ -122,6 +135,20 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     }
 
     @Override
+    public EmrMonitorServer testConnection(EmrMonitorServer server)  throws IOException {
+        EmrMonitorServer remoteServer = null;
+        if (server != null) {
+            WebResource resource = setUpWebResource(server, EmrMonitorProperties.REMOTE_SERVER_TIMEOUT);
+            String json = resource.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
+            JsonNode results = new ObjectMapper().readValue(json, JsonNode.class).get("servers");
+            if (results !=null && results.size() > 0) {
+                remoteServer= server;
+            }
+        }
+        return remoteServer;
+    }
+
+    @Override
     public Map<String, Map<String, String>> getExtraSystemInfo() {
     	
     	ExtraSystemInformation extinfo=new ExtraSystemInformation();
@@ -161,4 +188,20 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
 		return dao.getOpenmrsData();
 	}
 
+
+    private WebResource setUpWebResource(EmrMonitorServer remoteServerConfiguration, Integer timeout) {
+        if (remoteServerConfiguration == null) {
+            throw new IllegalArgumentException("Unknown remote server");
+        }
+        if (!remoteServerConfiguration.getServerUrl().startsWith("https://")) {
+            log.warn("non-HTTPS connection to " + remoteServerConfiguration.getServerName());
+        }
+
+        WebResource resource = restClient.resource(remoteServerConfiguration.getServerUrl()).path("ws/rest/v1/emrmonitor/server").queryParam("v", "default");
+        if(timeout!=null){
+            restClient.setReadTimeout(timeout);
+        }
+        resource.addFilter(new HTTPBasicAuthFilter(remoteServerConfiguration.getServerUserName(), remoteServerConfiguration.getServerUserPassword()));
+        return resource;
+    }
 }

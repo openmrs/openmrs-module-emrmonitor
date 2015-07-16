@@ -11,17 +11,19 @@
 
 %>
 
+${ ui.includeFragment("emrmonitor", "menu") }
+
 <h3>EMR Servers</h3>
 <div id="config-emrmonitor-server-app" class="container" ng-controller="ConfigEmrMonitorServerCtrl">
 
     <div ng-show="showServers">
-
+<!--
         <div class="alert alert-info">
             <p>Sort Type: {{ sortType }}</p>
             <p>Sort Reverse: {{ sortReverse }}</p>
             <p>Search Query: {{ searchServer }}</p>
         </div>
-
+-->
         <form>
             <div class="form-group">
                 <div class="input-group">
@@ -48,11 +50,7 @@
                     Name
                     </a>
                 </td>
-                <td>
-                    <a href="#" ng-click="sortType = 'userName'; sortReverse = !sortReverse">
-                        UserName
-                    </a>
-                </td>
+                <td>UserName</td>
                 <td>
                     <a href="#" ng-click="sortType = 'uuid'; sortReverse = !sortReverse">
                     uuid
@@ -103,7 +101,6 @@
 
             <div class="error" ng-show="errorMessage">{{ errorMessage }}</div>
 
-
             <button class="button cancel" ng-click="cancelUpdate()">Cancel</button>
             <button class="button confirm right" ng-click="updateServerInfo()">Save</button>
         </form>
@@ -112,8 +109,6 @@
     </div>
 
 </div>
-
-
 
 <script type="text/javascript">
     angular.bootstrap('#config-emrmonitor-server-app', [ 'configEmrMonitorServer' ]);

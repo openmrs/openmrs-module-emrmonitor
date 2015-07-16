@@ -18,6 +18,7 @@ import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -57,4 +58,5 @@ public interface EmrMonitorService extends OpenmrsService {
 
     public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server, Map<String, Map<String,String>> systemInformation);
 
+    public EmrMonitorServer testConnection(EmrMonitorServer server) throws IOException;
 }
