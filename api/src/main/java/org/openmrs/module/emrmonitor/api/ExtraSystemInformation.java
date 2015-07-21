@@ -2,16 +2,19 @@ package org.openmrs.module.emrmonitor.api;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
+import org.hibernate.loader.custom.Return;
 import org.openmrs.api.context.Context;
-import org.springframework.context.annotation.Bean;
-
 public class ExtraSystemInformation {
 
 	private static final long serialVersionUID = 1L;
@@ -106,6 +109,51 @@ public String getVersion(String command) {
 	}		
 	return "";
 }
+
+
+public String checkConnection() {
+	
+	String[] addresses=Context.getAdministrationService().getGlobalProperty("emrmonitor.productionServer.ips").split("|");
+    for(String addr:addresses){
+    	InetAddress inet;
+    	try {
+    		inet = InetAddress.getByName(addr);
+			if(inet.isReachable(5000))
+				return "Connected";
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    		
+    }		
+		return "Not Connected";
+}
+
+public double getCPULoadAverage() {
+
+    OperatingSystemMXBean osBean=(OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+	return osBean.getSystemLoadAverage();
+}
+public String getCPUInfo(String startsWith) {
+
+	String s;
+	Process p;
+	try {
+	    p = Runtime.getRuntime().exec("lscpu");
+	    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	    //s = br.readLine();
+	    while ((s=br.readLine())!=null) {
+	    	if(s.startsWith(startsWith))
+	    		return s.split(":")[1].trim();
+	        System.out.println(s);
+		}
+	        
+	} catch (Exception e) {}
+	return "";
+	}
+
+
+
 	public Map<String, Map<String, String>> getExtraSystemInformation(){
 		
 		Map<String, Map<String, String>> extraSystemInformation = new HashMap<String, Map<String,String>>();
@@ -144,6 +192,7 @@ public String getVersion(String command) {
 
             {                
              	put("SystemInfo.emrSyncDataInformation.pendingRecords", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("pendingRecords"));
+             	put("SystemInfo.emrSyncDataInformation.failedRecord", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedRecord"));
              	      
             }
         });
@@ -155,12 +204,38 @@ public String getVersion(String command) {
             {                
             	put("SystemInfo.softwareVersionInformation.ubuntu", ""+getVersion("lsb_release --release").split(":")[1].trim());
             	put("SystemInfo.softwareVersionInformation.mysql", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("mysqlVersion").split("-")[0]);
-             	put("SystemInfo.softwareVersionInformation.tomcat", ""+getVersion("java -cp /usr/share/tomcat6/lib/catalina.jar org.apache.catalina.util.ServerInfo").split(":")[1].trim());
+             	put("SystemInfo.softwareVersionInformation.tomcat", ""+getVersion("java -cp "+Context.getAdministrationService().getGlobalProperty("emrmonitor.tomcatPath")+"/lib/catalina.jar org.apache.catalina.util.ServerInfo").split(":")[1].trim());
              	put("SystemInfo.softwareVersionInformation.Firefox", ""+getVersion("firefox -version"));
              	put("SystemInfo.softwareVersionInformation.Chrome", ""+getVersion("google-chrome -version"));
              	
             }
         });
+		
+		extraSystemInformation.put("SystemInfo.title.connectionInformation", new LinkedHashMap<String, String>() {
+
+            private static final long serialVersionUID = 1L;
+            
+            
+            {                
+            	put("SystemInfo.connectionInformation.connectedToTheServer", ""+checkConnection());
+            	
+            }
+        });		
+		extraSystemInformation.put("SystemInfo.title.cpuInformation", new LinkedHashMap<String, String>() {
+
+            private static final long serialVersionUID = 1L;
+            
+            
+            {                
+            	put("SystemInfo.connectionInformation.cpuLoadAverage", ""+getCPULoadAverage());
+            	put("SystemInfo.connectionInformation.architecture", ""+getCPUInfo("Architecture:"));
+            	put("SystemInfo.connectionInformation.cpuopmodes", ""+getCPUInfo("CPU op-mode(s):"));
+            	put("SystemInfo.connectionInformation.numberOfCPU", ""+getCPUInfo("CPU(s):"));
+            	put("SystemInfo.connectionInformation.cpusize", ""+getCPUInfo("CPU MHz"));
+            	
+            }
+        });		
+				
 		
 		return extraSystemInformation;		
 	}

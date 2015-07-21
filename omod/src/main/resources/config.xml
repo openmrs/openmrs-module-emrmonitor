@@ -56,6 +56,15 @@
 		<file>messages_es.properties</file>
 	</messages>
 	<!-- /Internationalization -->
-
+	<globalProperty>
+		<property>emrmonitor.productionServer.ips</property>
+		<defaultValue>197.243.32.204|10.138.0.10</defaultValue>
+		<description>IP addresses of production server to connection. IPs should be separated by | </description>
+	</globalProperty>
+	<globalProperty>
+		<property>emrmonitor.tomcatPath</property>
+		<defaultValue>/usr/share/tomcat6</defaultValue>
+		<description>Path of tomcat installation</description>
+	</globalProperty>
 </module>
 

@@ -137,7 +137,11 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
 	    SQLQuery query6=session.createSQLQuery(sql6);	    
 	    String mysqlVersion=query6.list().get(0).toString();	    
 	    openmrsData.put("mysqlVersion", ""+mysqlVersion);
-	   
+	    
+	    String sql7="select record_id from sync_record where state='FAILED' and uuid=original_uuid";
+	    SQLQuery query7=session.createSQLQuery(sql7);	    
+	    int numFailedRecords=query7.list().size();	    
+	    openmrsData.put("failedRecord", ""+numFailedRecords);		   
 	    
 		return openmrsData;	
 		
