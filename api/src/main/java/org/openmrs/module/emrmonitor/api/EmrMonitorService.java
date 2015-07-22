@@ -59,4 +59,6 @@ public interface EmrMonitorService extends OpenmrsService {
     public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server, Map<String, Map<String,String>> systemInformation);
 
     public EmrMonitorServer testConnection(EmrMonitorServer server) throws IOException;
+
+    public EmrMonitorServer registerServer(EmrMonitorServer server) throws IOException ;
 }

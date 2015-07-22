@@ -44,7 +44,7 @@ ${ ui.includeFragment("emrmonitor", "menu") }
             </p>
 
             <button class="button cancel" ng-click="cancelUpdate()">Cancel</button>
-            <button class="button confirm right" ng-click="updateServerInfo()">Save</button>
+            <button class="button confirm right" ng-click="registerServer()">Register</button>
         </form>
 
     </div>

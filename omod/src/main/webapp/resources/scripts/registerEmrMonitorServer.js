@@ -31,8 +31,35 @@ angular.module('registerEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' 
                         $scope.successMessage = "Successfully connected to remote server!";
                     })
                     .error(function(error) {
-                        console.log("Failed to update server info: " + error);
-                        $scope.errorMessage = "Failed to update server info: " + error;
+                        console.log("Failed to connect to remote server: " + error);
+                        $scope.errorMessage = "Failed to connect to remote server: " + error;
+                    });
+
+            }
+
+            $scope.registerServer = function() {
+                console.log("register server" );
+
+                $scope.successMessage = null;
+                $scope.errorMessage = null;
+
+                var server = {
+                    serverName: $scope.parentServerName,
+                    serverType: "PARENT",
+                    serverUrl: $scope.parentServerUrl,
+                    serverUserName: $scope.parentUserName,
+                    serverUserPassword: $scope.parentUserPassword
+                };
+
+                $http.post("/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/connect/" ,
+                    server)
+                    .success(function() {
+                        console.log("Successfully connected to remote server!");
+                        $scope.successMessage = "Successfully connected to remote server!";
+                    })
+                    .error(function(error) {
+                        console.log("Failed to connect to remote server: " + error);
+                        $scope.errorMessage = "Failed to connect to remote server: " + error;
                     });
 
             }

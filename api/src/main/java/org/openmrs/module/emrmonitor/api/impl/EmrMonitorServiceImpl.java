@@ -13,21 +13,22 @@
  */
 package org.openmrs.module.emrmonitor.api.impl;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.impl.BaseOpenmrsService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.EmrMonitorProperties;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.openmrs.module.emrmonitor.api.ExtraSystemInformation;
 import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
-import com.sun.jersey.api.client.Client;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.MediaType;
@@ -146,6 +147,31 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
             }
         }
         return remoteServer;
+    }
+
+    @Override
+    public EmrMonitorServer registerServer(EmrMonitorServer server) throws IOException {
+        EmrMonitorServer parentServer = null;
+        if (server != null) {
+            ObjectMapper mapper = new ObjectMapper();
+
+            EmrMonitorServer localServer = getEmrMonitorServerByType(EmrMonitorServerType.LOCAL);
+            if (localServer != null) {
+                localServer.setServerType(EmrMonitorServerType.CHILD);
+            }
+            String localServerJson = mapper.writeValueAsString(localServer);
+
+            WebResource resource = restClient.resource(server.getServerUrl()).path("ws/rest/v1/emrmonitor/server");
+            restClient.setReadTimeout(EmrMonitorProperties.REMOTE_SERVER_TIMEOUT);
+            resource.addFilter(new HTTPBasicAuthFilter(server.getServerUserName(), server.getServerUserPassword()));
+            ClientResponse response = resource.accept(MediaType.APPLICATION_JSON_TYPE).post(ClientResponse.class, localServerJson);
+
+            if (response !=null) {
+                EmrMonitorServer emrMonitorServer = new ObjectMapper().readValue(response.toString(), EmrMonitorServer.class);
+            }
+
+        }
+        return server;
     }
 
     @Override
