@@ -161,11 +161,11 @@ public String checkConnection() {
 		return "Not Connected";
 }
 
-/*public double getCPULoadAverage() {
+public double getCPULoadAverage() {
 
     OperatingSystemMXBean osBean=(OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 	return osBean.getSystemLoadAverage();
-}*/
+}
 public String getCPUInfo(String startsWith) {
 
 	String s;
@@ -603,7 +603,7 @@ public String getCPUInfo(String startsWith) {
             	
             }
         });		
-		/*extraSystemInformation.put("SystemInfo.title.cpuInformation", new LinkedHashMap<String, String>() {
+		extraSystemInformation.put("SystemInfo.title.cpuInformation", new LinkedHashMap<String, String>() {
 
             private static final long serialVersionUID = 1L;
             {                
@@ -613,7 +613,7 @@ public String getCPUInfo(String startsWith) {
             	put("SystemInfo.connectionInformation.numberOfCPU", ""+getCPUInfo("CPU(s):"));
             	put("SystemInfo.connectionInformation.cpusize", ""+getCPUInfo("CPU MHz"));
              }
-        });	*/	
+        });		
 		
           extraSystemInformation.put("SystemInfo.title.uptimeMemoryInformation", new LinkedHashMap<String, String>() {
         	
