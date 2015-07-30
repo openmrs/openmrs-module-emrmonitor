@@ -579,7 +579,7 @@ public String getCPUInfo(String startsWith) {
             }
         });
 		
-		/*extraSystemInformation.put("SystemInfo.title.softwareVersionInformation", new LinkedHashMap<String, String>() {
+		extraSystemInformation.put("SystemInfo.title.softwareVersionInformation", new LinkedHashMap<String, String>() {
 
             private static final long serialVersionUID = 1L;
 
@@ -591,7 +591,7 @@ public String getCPUInfo(String startsWith) {
              	put("SystemInfo.softwareVersionInformation.Chrome", ""+getVersion("google-chrome -version"));
              	
             }
-        });*/
+        });
 		
 		extraSystemInformation.put("SystemInfo.title.connectionInformation", new LinkedHashMap<String, String>() {
 
@@ -618,7 +618,6 @@ public String getCPUInfo(String startsWith) {
           extraSystemInformation.put("SystemInfo.title.uptimeMemoryInformation", new LinkedHashMap<String, String>() {
         	
 	        private static final long serialVersionUID = 1L;
-				
 				{
 					put("SystemInfo.uptimeInformation.ThisWeekUptimePercentage", getWeeklyUpTimeActivity());
 					put("SystemInfo.uptimeInformation.LastWeekUptimePercentage", getLastWeekUpTimeActivity());
