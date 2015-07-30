@@ -575,6 +575,7 @@ public String getCPUInfo(String startsWith) {
             {                
              	put("SystemInfo.emrSyncDataInformation.pendingRecords", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("pendingRecords"));
              	put("SystemInfo.emrSyncDataInformation.failedRecord", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedRecord"));
+             	put("SystemInfo.emrSyncDataInformation.failedObject", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedObject"));
              	      
             }
         });
@@ -607,11 +608,11 @@ public String getCPUInfo(String startsWith) {
 
             private static final long serialVersionUID = 1L;
             {                
-            	put("SystemInfo.connectionInformation.cpuLoadAverage", ""+getCPULoadAverage());
-            	put("SystemInfo.connectionInformation.architecture", ""+getCPUInfo("Architecture:"));
-            	put("SystemInfo.connectionInformation.cpuopmodes", ""+getCPUInfo("CPU op-mode(s):"));
-            	put("SystemInfo.connectionInformation.numberOfCPU", ""+getCPUInfo("CPU(s):"));
-            	put("SystemInfo.connectionInformation.cpusize", ""+getCPUInfo("CPU MHz"));
+            	put("SystemInfo.cpuInformation.cpuLoadAverage", ""+getCPULoadAverage());
+            	put("SystemInfo.cpuInformation.architecture", ""+getCPUInfo("Architecture:"));
+            	put("SystemInfo.cpuInformation.cpuopmodes", ""+getCPUInfo("CPU op-mode(s):"));
+            	put("SystemInfo.cpuInformation.numberOfCPU", ""+getCPUInfo("CPU(s):"));
+            	put("SystemInfo.cpuInformation.cpusize", ""+getCPUInfo("CPU MHz"));
              }
         });		
 		
