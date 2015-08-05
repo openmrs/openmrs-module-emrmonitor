@@ -30,8 +30,6 @@ public class EmrMonitorConnectResource1_9 extends DelegatingCrudResource<EmrMoni
     @Override
     public DelegatingResourceDescription getCreatableProperties() throws ResourceDoesNotSupportOperationException {
         DelegatingResourceDescription description = new DelegatingResourceDescription();
-        description.addProperty("serverName");
-        description.addProperty("serverType");
         description.addProperty("serverUrl");
         description.addProperty("serverUserName");
         description.addProperty("serverUserPassword");
@@ -48,7 +46,7 @@ public class EmrMonitorConnectResource1_9 extends DelegatingCrudResource<EmrMoni
      */
     @Override
     public EmrMonitorServer getByUniqueId(String uniqueId) {
-        return Context.getService(EmrMonitorService.class).getEmrMonitorServerByUuid(uniqueId);
+        return null;
     }
 
     /**

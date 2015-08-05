@@ -17,8 +17,6 @@ angular.module('registerEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' 
                 $scope.errorMessage = null;
 
                 var server = {
-                    serverName: $scope.parentServerName,
-                    serverType: "PARENT",
                     serverUrl: $scope.parentServerUrl,
                     serverUserName: $scope.parentUserName,
                     serverUserPassword: $scope.parentUserPassword
