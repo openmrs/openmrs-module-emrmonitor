@@ -35,10 +35,7 @@
 	
 	<!-- Maps hibernate file's, if present -->
 	<mappingFiles>
-				
-		EmrMonitor.hbm.xml
         EmrMonitorServer.hbm.xml
-				
 	</mappingFiles>
 
 	<!-- Internationalization -->
@@ -46,14 +43,6 @@
 	<messages>
 		<lang>en</lang>
 		<file>messages.properties</file>
-	</messages>
-	<messages>
-		<lang>fr</lang>
-		<file>messages_fr.properties</file>
-	</messages>
-	<messages>
-		<lang>es</lang>
-		<file>messages_es.properties</file>
 	</messages>
 	<!-- /Internationalization -->
 	<globalProperty>
