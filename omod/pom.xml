@@ -14,8 +14,8 @@
 	<description>OMOD project for EmrMonitor</description>
 
     <properties>
-        <gem.home>${basedir}/rubygems</gem.home>
-        <gem.path>${basedir}/rubygems</gem.path>
+        <gem.home>${basedir}/.rubygems</gem.home>
+        <gem.path>${basedir}/.rubygems</gem.path>
     </properties>
 
 	<dependencies>
@@ -121,6 +121,22 @@
             <scope>provided</scope>
         </dependency>
         <!-- End OpenMRS modules -->
+
+        <dependency>
+            <groupId>rubygems</groupId>
+            <artifactId>compass</artifactId>
+            <version>0.11.7</version>
+            <type>gem</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>rubygems</groupId>
+            <artifactId>sass</artifactId>
+            <version>3.2.5</version>
+            <type>gem</type>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 
