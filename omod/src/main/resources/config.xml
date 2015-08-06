@@ -32,7 +32,12 @@
 		<point>org.openmrs.admin.list</point>
 		<class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.AdminList</class>
 	</extension>
-	
+
+    <extension>
+        <point>org.openmrs.admin.maintenance.localHeader</point>
+        <class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.EmrMonitorLinksExt</class>
+    </extension>
+
 	<!-- Maps hibernate file's, if present -->
 	<mappingFiles>
         EmrMonitorServer.hbm.xml
@@ -45,6 +50,12 @@
 		<file>messages.properties</file>
 	</messages>
 	<!-- /Internationalization -->
+
+    <privilege>
+        <name>Manage EmrMonitor</name>
+        <description>Able to manage and configure EmrMonitor servers</description>
+    </privilege>
+
 	<globalProperty>
 		<property>emrmonitor.productionServer.ips</property>
 		<defaultValue>197.243.32.204|10.138.0.10</defaultValue>
