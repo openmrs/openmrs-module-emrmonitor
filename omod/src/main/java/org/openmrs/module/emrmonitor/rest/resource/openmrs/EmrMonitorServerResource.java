@@ -1,10 +1,10 @@
-package org.openmrs.module.emrmonitor.rest.resource.openmrs1_9;
-
+package org.openmrs.module.emrmonitor.rest.resource.openmrs;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.openmrs.module.emrmonitor.rest.controller.EmrMonitorRestController;
+import org.openmrs.module.webservices.rest.SimpleObject;
 import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.openmrs.module.webservices.rest.web.RestConstants;
 import org.openmrs.module.webservices.rest.web.annotation.Resource;
@@ -14,26 +14,18 @@ import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceD
 import org.openmrs.module.webservices.rest.web.response.ResourceDoesNotSupportOperationException;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
-import java.io.IOException;
-
 @Resource(name = RestConstants.VERSION_1 + EmrMonitorRestController.EMRMONITOR_REST_NAMESPACE
-        + "/connect", supportedClass = EmrMonitorServer.class, supportedOpenmrsVersions = {"1.9.*", "1.10.*", "1.11.*", "1.12.*"})
-public class EmrMonitorConnectResource1_9 extends DelegatingCrudResource<EmrMonitorServer> {
-
+        + "/server", supportedClass = EmrMonitorServer.class, supportedOpenmrsVersions = {"1.9.*", "1.10.*", "1.11.*", "1.12.*"})
+public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorServer> {
 
     /**
-     * Gets a description of resource's properties which can be set on creation.
-     *
-     * @return the description
-     * @throws org.openmrs.module.webservices.rest.web.response.ResponseException
+     * @param context
+     * @see org.openmrs.module.webservices.rest.web.resource.api.Listable#getAll(org.openmrs.module.webservices.rest.web.RequestContext)
      */
     @Override
-    public DelegatingResourceDescription getCreatableProperties() throws ResourceDoesNotSupportOperationException {
-        DelegatingResourceDescription description = new DelegatingResourceDescription();
-        description.addProperty("serverUrl");
-        description.addProperty("serverUserName");
-        description.addProperty("serverUserPassword");
-        return description;
+    public SimpleObject getAll(RequestContext context) throws ResponseException {
+        SimpleObject simpleObject = new SimpleObject().add("servers", Context.getService(EmrMonitorService.class).getEmrMonitorServers());
+        return simpleObject;
     }
 
     /**
@@ -46,7 +38,20 @@ public class EmrMonitorConnectResource1_9 extends DelegatingCrudResource<EmrMoni
      */
     @Override
     public EmrMonitorServer getByUniqueId(String uniqueId) {
-        return null;
+        return Context.getService(EmrMonitorService.class).getEmrMonitorServerByUuid(uniqueId);
+    }
+
+    /**
+     * @param uuid
+     * @param propertiesToUpdate
+     * @param context
+     * @see org.openmrs.module.webservices.rest.web.resource.api.Updatable#update(String,
+     * org.openmrs.module.webservices.rest.SimpleObject)
+     */
+    @Override
+    public Object update(String uuid, SimpleObject propertiesToUpdate, RequestContext context) throws ResponseException {
+        // if CHILD server exists and
+        return super.update(uuid, propertiesToUpdate, context);
     }
 
     /**
@@ -82,13 +87,44 @@ public class EmrMonitorConnectResource1_9 extends DelegatingCrudResource<EmrMoni
      */
     @Override
     public EmrMonitorServer save(EmrMonitorServer delegate) {
-        EmrMonitorServer remoteServer = null;
-        try {
-            remoteServer = Context.getService(EmrMonitorService.class).testConnection(delegate);
-        } catch (IOException e) {
-            log.error("error connecting to remote server", e);
+        if (delegate.getSystemInformation() != null) {
+            return Context.getService(EmrMonitorService.class).saveEmrMonitorServer(delegate, delegate.getSystemInformation());
         }
-        return null;
+        return Context.getService(EmrMonitorService.class).saveEmrMonitorServer(delegate);
+    }
+
+    /**
+     * Gets a description of resource's properties which can be set on creation.
+     *
+     * @return the description
+     * @throws org.openmrs.module.webservices.rest.web.response.ResponseException
+     */
+    @Override
+    public DelegatingResourceDescription getCreatableProperties() throws ResourceDoesNotSupportOperationException {
+        DelegatingResourceDescription description = new DelegatingResourceDescription();
+        description.addProperty("serverName");
+        description.addProperty("serverType");
+        description.addProperty("serverUrl");
+        description.addProperty("serverUserName");
+        description.addProperty("serverUserPassword");
+        description.addProperty("uuid");
+        description.addProperty("systemInformation");
+
+        return description;
+    }
+
+    /**
+     * Gets a description of resource's properties which can be edited.
+     * <p/>
+     * By default delegates to {@link #getCreatableProperties()} and removes sub-resources returned
+     * by {@link #getPropertiesToExposeAsSubResources()}.
+     *
+     * @return the description
+     * @throws org.openmrs.module.webservices.rest.web.response.ResponseException
+     */
+    @Override
+    public DelegatingResourceDescription getUpdatableProperties() throws ResourceDoesNotSupportOperationException {
+        return getCreatableProperties();
     }
 
     /**
@@ -113,6 +149,7 @@ public class EmrMonitorConnectResource1_9 extends DelegatingCrudResource<EmrMoni
      */
     @Override
     public DelegatingResourceDescription getRepresentationDescription(Representation rep) {
+
         DelegatingResourceDescription description = new DelegatingResourceDescription();
         description.addProperty("serverName");
         description.addProperty("serverType");
