@@ -128,7 +128,7 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
 	    int numObs=query4.list().size();	    
 	    openmrsData.put("observations", ""+numObs);
 		
-	    String sql5="select record_id from sync_record where state!='COMMITTED' and uuid=original_uuid";
+	    String sql5="select record_id from sync_record where state!='COMMITTED' and state!='NOT_SUPPOSED_TO_SYNC' and uuid=original_uuid";
 	    SQLQuery query5=session.createSQLQuery(sql5);	    
 	    int numPendingRecords=query5.list().size();	    
 	    openmrsData.put("pendingRecords", ""+numPendingRecords);	    
@@ -138,7 +138,7 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
 	    String mysqlVersion=query6.list().get(0).toString();	    
 	    openmrsData.put("mysqlVersion", ""+mysqlVersion);
 	    
-	    String sql7="select record_id from sync_record where state='FAILED' and uuid=original_uuid";
+	    String sql7="select record_id from sync_record where state in ('FAILED','FAILED_AND_STOPPED') and uuid=original_uuid";
 	    SQLQuery query7=session.createSQLQuery(sql7);	    
 	    int numFailedRecords=query7.list().size();
 	    if(numFailedRecords>0)
@@ -152,6 +152,13 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
 	    String objectFailedFull=query8.list().get(0).toString().split(",")[0];
 	    String objectFailed=objectFailedFull.split(".")[(objectFailedFull.split(".").length)-1];
 	    openmrsData.put("failedObject", objectFailed);
+	    
+	    String sql9="select contained_classes from sync_record where state='REJECTED' and uuid=original_uuid";
+	    SQLQuery query9=session.createSQLQuery(sql9);	    
+	    int rejectedObject=query9.list().size();
+	    openmrsData.put("rejectedObject", ""+rejectedObject);
+	    
+	    
 	    
 		return openmrsData;	
 		

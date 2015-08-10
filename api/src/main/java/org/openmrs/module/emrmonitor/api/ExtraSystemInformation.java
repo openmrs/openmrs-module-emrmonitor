@@ -574,10 +574,10 @@ public String getCPUInfo(String startsWith) {
 
             {                
              	put("SystemInfo.emrSyncDataInformation.pendingRecords", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("pendingRecords"));
-             	put("SystemInfo.emrSyncDataInformation.failedRecord", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedRecord"));
+             	put("SystemInfo.emrSyncDataInformation.rejectedObject", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("rejectedObject"));
+                put("SystemInfo.emrSyncDataInformation.failedRecord", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedRecord"));
              	put("SystemInfo.emrSyncDataInformation.failedObject", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedObject"));
-             	      
-            }
+             }
         });
 		
 		extraSystemInformation.put("SystemInfo.title.softwareVersionInformation", new LinkedHashMap<String, String>() {
