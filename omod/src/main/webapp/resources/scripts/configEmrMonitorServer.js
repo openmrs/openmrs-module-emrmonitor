@@ -22,24 +22,34 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
 
             $scope.selectServer = function(server) {
                 $scope.showServers = false;
+                $scope.displayServerMetrics = false;
                 $scope.showSelectedServer = true;
 
                 $scope.selectedServer = server;
-                $scope.serverName = server.serverName;
+                $scope.name = server.name;
                 $scope.serverUrl = server.serverUrl;
                 $scope.serverUserName = server.serverUserName;
                 $scope.serverUserPassword = server.serverUserPassword;
+            }
+            $scope.displayServerMetrics = function(server) {
+                $scope.showServers = false;
+                $scope.showSelectedServer = false;
+                $scope.displayServerMetrics = true;
+
+                $scope.selectedServer = server;
+
             }
 
             $scope.cancelUpdate = function() {
                 $scope.showSelectedServer = false;
                 $scope.showServers = true;
+                $scope.displayServerMetrics = false;
             }
 
             $scope.updateServerInfo = function() {
                 var server = {
                     uuid: $scope.selectedServer.uuid,
-                    serverName: $scope.serverName,
+                    name: $scope.name,
                     serverUrl: $scope.serverUrl,
                     serverUserName: $scope.serverUserName,
                     serverUserPassword: $scope.serverUserPassword
@@ -51,6 +61,7 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
                         console.log("Server info updated!");
                         $scope.getServers();
                         $scope.showSelectedServer = false;
+                        $scope.displayServerMetrics = false;
                     })
                     .error(function(error) {
                         console.log("Failed to update server info: " + error);

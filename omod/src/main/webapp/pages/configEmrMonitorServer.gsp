@@ -28,9 +28,7 @@ ${ ui.includeFragment("emrmonitor", "menu") }
             <div class="form-group">
                 <div class="input-group">
                     <div class="input-group-addon"><i class="fa fa-search"></i></div>
-
                     <input type="text" class="form-control" placeholder="Search Servers" ng-model="searchServer">
-
                 </div>
             </div>
         </form>
@@ -40,13 +38,13 @@ ${ ui.includeFragment("emrmonitor", "menu") }
             <thead>
             <tr>
                 <td>
-                    <a href="#" ng-click="sortType = 'serverId'; sortReverse = !sortReverse">
+                    <a href="#" ng-click="sortType = 'id'; sortReverse = !sortReverse">
                     Id
-                    <span ng-show="sortType == 'serverId'" class="fa fa-caret-down"></span>
+                    <span ng-show="sortType == 'id'" class="fa fa-caret-down"></span>
                     </a>
                 </td>
                 <td>
-                    <a href="#" ng-click="sortType = 'serverName'; sortReverse = !sortReverse">
+                    <a href="#" ng-click="sortType = 'name'; sortReverse = !sortReverse">
                     Name
                     </a>
                 </td>
@@ -67,12 +65,12 @@ ${ ui.includeFragment("emrmonitor", "menu") }
             </tr>
             </thead>
             <tr ng-repeat="server in serversFound | orderBy:sortType:sortReverse | filter:searchServer">
-                <td>{{ server.serverId }}</td>
-                <td> {{ server.serverName }} </td>
+                <td>{{ server.id }}</td>
+                <td> {{ server.name }} </td>
                 <td>{{ server.serverUserName }}</td>
                 <td>{{ server.uuid }}</td>
                 <td>{{ server.serverType }}</td>
-                <td><a href="#" ng-click="selectServer(server)">Edit</a><br/><a href="#">View</a></td>
+                <td><a href="#" ng-click="selectServer(server)">Edit</a><br/><a href="#" ng-click="displayServerMetrics(server)">View</a></td>
             </tr>
             </tbody>
 
@@ -86,7 +84,7 @@ ${ ui.includeFragment("emrmonitor", "menu") }
         <form>
             <p>
                 <label>name</label>
-                <input ng-model="serverName"/>
+                <input ng-model="name"/>
             </p>
 
             <p>
@@ -109,7 +107,26 @@ ${ ui.includeFragment("emrmonitor", "menu") }
             <button class="button confirm right" ng-click="updateServerInfo()">Save</button>
         </form>
 
+    </div>
 
+    <div ng-show="displayServerMetrics">
+        <div ng-repeat="(key,val) in selectedServer.systemInformation">
+            <h4>{{ key }}</h4>
+            <table class="table table-bordered table-striped">
+                <tbody>
+                    <thead>
+                    <tr>
+                        <td>Metric</td>
+                        <td>Value</td>
+                    </tr>
+                    </thead>
+                    <tr ng-repeat="(key, val) in val">
+                        <td>{{ key }}</td>
+                        <td>{{ val }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>

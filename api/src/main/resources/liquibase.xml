@@ -8,15 +8,15 @@
         See http://www.liquibase.org/manual/home#available_database_refactorings
         for a list of supported elements and attributes
     -->
-    <changeSet id="201506221653-1" author="cioan">
+    <changeSet id="emrmonitor-201508100945-1" author="cioan">
         <comment>Adds emrmonitor_server table</comment>
         <createTable tableName="emrmonitor_server">
 
-            <column name="server_id" type="int" autoIncrement="true">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <column name="server_name" type="varchar(255)">
+            <column name="name" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
 
@@ -44,7 +44,14 @@
                 <constraints nullable="false"/>
             </column>
 
+            <column name="changed_by" type="int" />
             <column name="date_changed" type="datetime" />
+            <column name="voided" type="tinyint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voided_by" type="int" />
+            <column name="date_voided" type="datetime" />
+            <column name="void_reason" type="varchar(255)" defaultValue="null"/>
 
         </createTable>
 

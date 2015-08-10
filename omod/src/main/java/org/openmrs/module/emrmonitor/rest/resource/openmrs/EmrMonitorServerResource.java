@@ -102,7 +102,7 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
     @Override
     public DelegatingResourceDescription getCreatableProperties() throws ResourceDoesNotSupportOperationException {
         DelegatingResourceDescription description = new DelegatingResourceDescription();
-        description.addProperty("serverName");
+        description.addProperty("name");
         description.addProperty("serverType");
         description.addProperty("serverUrl");
         description.addProperty("serverUserName");
@@ -151,7 +151,7 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
     public DelegatingResourceDescription getRepresentationDescription(Representation rep) {
 
         DelegatingResourceDescription description = new DelegatingResourceDescription();
-        description.addProperty("serverName");
+        description.addProperty("name");
         description.addProperty("serverType");
         description.addProperty("serverUrl");
         description.addProperty("serverUserName");

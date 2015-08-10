@@ -66,14 +66,14 @@ public class EmrMonitorActivator extends BaseModuleActivator {
             if (localServer == null) {
                 //create new Local Server record
                 localServer = new EmrMonitorServer();
-                localServer.setServerName(InetAddress.getLocalHost().getHostName());
+                localServer.setName(InetAddress.getLocalHost().getHostName());
                 localServer.setServerType(EmrMonitorServerType.LOCAL);
                 localServer.setDateCreated(new Date());
                 localServer.setUuid(UUID.randomUUID().toString());
             }
 
             Map<String, Map<String, String>> systemInformation = Context.getAdministrationService().getSystemInformation();
-            Map<String, Map<String, String>> extraSystemInfo = Context.getService(EmrMonitorService.class).getExtraSystemInfo();
+            Map<String, Map<String, String>> extraSystemInfo = null; //Context.getService(EmrMonitorService.class).getExtraSystemInfo();
             if (extraSystemInfo != null && extraSystemInfo.size() > 0) {
                 systemInformation.putAll(extraSystemInfo);
             }
@@ -84,7 +84,7 @@ public class EmrMonitorActivator extends BaseModuleActivator {
                 log.error("failed to generate new local server system information");
             }
         } catch (Exception e) {
-            log.error("error generating local server system information");
+            log.error("error generating local server system information", e);
         }
 
 		log.info("OpenMRS EmrMonitor Module started");

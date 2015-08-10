@@ -6,11 +6,11 @@
 <hibernate-mapping package="org.openmrs.module.emrmonitor">
 
     <class name="EmrMonitorServer" table="${project.parent.artifactId}_server">
-        <id name="serverId" type="java.lang.Integer" column="server_id" unsaved-value="0">
+        <id name="id" type="java.lang.Integer" column="id" unsaved-value="0">
             <generator class="native" />
         </id>
 
-        <property name="serverName" type="java.lang.String" column="server_name" length="255" not-null="true" />
+        <property name="name" type="java.lang.String" column="name" length="255" not-null="true" />
 
         <property name="serverType" column="server_type" length="45" not-null="true">
             <type name="org.openmrs.util.HibernateEnumType">

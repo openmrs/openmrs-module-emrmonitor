@@ -219,7 +219,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
             throw new IllegalArgumentException("Unknown remote server");
         }
         if (!remoteServerConfiguration.getServerUrl().startsWith("https://")) {
-            log.warn("non-HTTPS connection to " + remoteServerConfiguration.getServerName());
+            log.warn("non-HTTPS connection to " + remoteServerConfiguration.getName());
         }
 
         WebResource resource = restClient.resource(remoteServerConfiguration.getServerUrl()).path("ws/rest/v1/emrmonitor/server").queryParam("v", "default");

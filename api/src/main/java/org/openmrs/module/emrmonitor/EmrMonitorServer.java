@@ -1,17 +1,20 @@
 package org.openmrs.module.emrmonitor;
 
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.openmrs.BaseOpenmrsData;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
-public class EmrMonitorServer {
+public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
 
-    private Integer serverId;
+    private Integer id;
 
-    private String serverName;
+    private String name;
 
     private EmrMonitorServerType serverType;
 
@@ -29,20 +32,22 @@ public class EmrMonitorServer {
 
     private Map<String, Map<String, String>> systemInformation = null;
 
-    public Integer getServerId() {
-        return serverId;
+    @Override
+    public Integer getId() {
+        return id;
     }
 
-    public void setServerId(Integer serverId) {
-        this.serverId = serverId;
+    @Override
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getServerName() {
-        return serverName;
+    public String getName() {
+        return name;
     }
 
-    public void setServerName(String serverName) {
-        this.serverName = serverName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public EmrMonitorServerType getServerType() {
@@ -77,35 +82,17 @@ public class EmrMonitorServer {
         this.serverUserPassword = serverUserPassword;
     }
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public Date getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Date dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public Date getDateChanged() {
-        return dateChanged;
-    }
-
-    public void setDateChanged(Date dateChanged) {
-        this.dateChanged = dateChanged;
-    }
-
     public Map<String, Map<String, String>> getSystemInformation() {
         return systemInformation;
     }
 
     public void setSystemInformation(Map<String, Map<String, String>> systemInformation) {
         this.systemInformation = systemInformation;
+    }
+
+    @Override
+    @JsonIgnore
+    public Boolean isVoided() {
+        return super.isVoided();
     }
 }
