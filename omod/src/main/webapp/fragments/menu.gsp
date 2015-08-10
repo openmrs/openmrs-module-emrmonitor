@@ -12,4 +12,9 @@
             Register
         </a>
     </li>
+     <li>
+        <a href="/${ ui.contextPath() }/emrmonitor/compareEmrMonitorServers.page">
+            Compare Servers
+        </a>
+    </li>
 </ul>
