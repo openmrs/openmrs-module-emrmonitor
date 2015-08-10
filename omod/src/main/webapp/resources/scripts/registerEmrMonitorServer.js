@@ -17,8 +17,6 @@ angular.module('registerEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' 
                 $scope.errorMessage = null;
 
                 var server = {
-                    serverName: $scope.parentServerName,
-                    serverType: "PARENT",
                     serverUrl: $scope.parentServerUrl,
                     serverUserName: $scope.parentUserName,
                     serverUserPassword: $scope.parentUserPassword
@@ -51,7 +49,7 @@ angular.module('registerEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' 
                     serverUserPassword: $scope.parentUserPassword
                 };
 
-                $http.post("/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/connect/" ,
+                $http.post("/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/register/" ,
                     server)
                     .success(function() {
                         console.log("Successfully connected to remote server!");

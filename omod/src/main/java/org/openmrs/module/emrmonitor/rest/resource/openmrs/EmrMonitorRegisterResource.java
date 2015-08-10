@@ -1,4 +1,4 @@
-package org.openmrs.module.emrmonitor.rest.resource.openmrs1_9;
+package org.openmrs.module.emrmonitor.rest.resource.openmrs;
 
 
 import org.openmrs.api.context.Context;
@@ -18,7 +18,7 @@ import java.io.IOException;
 
 @Resource(name = RestConstants.VERSION_1 + EmrMonitorRestController.EMRMONITOR_REST_NAMESPACE
         + "/register", supportedClass = EmrMonitorServer.class, supportedOpenmrsVersions = {"1.9.*", "1.10.*", "1.11.*", "1.12.*"})
-public class EmrMonitorRegisterResource1_9  extends DelegatingCrudResource<EmrMonitorServer> {
+public class EmrMonitorRegisterResource extends DelegatingCrudResource<EmrMonitorServer> {
     /**
      * Gets the delegate object with the given unique id. Implementations may decide whether
      * "unique id" means a uuid, or if they also want to retrieve delegates based on a unique

@@ -61,14 +61,18 @@ ${ ui.includeFragment("emrmonitor", "menu") }
                     Type
                     </a>
                 </td>
+                <td>
+                    Action
+                </td>
             </tr>
             </thead>
             <tr ng-repeat="server in serversFound | orderBy:sortType:sortReverse | filter:searchServer">
                 <td>{{ server.serverId }}</td>
-                <td><a ng-click="selectServer(server)"> {{ server.serverName }} </a></td>
+                <td> {{ server.serverName }} </td>
                 <td>{{ server.serverUserName }}</td>
                 <td>{{ server.uuid }}</td>
                 <td>{{ server.serverType }}</td>
+                <td><a href="#" ng-click="selectServer(server)">Edit</a><br/><a href="#">View</a></td>
             </tr>
             </tbody>
 

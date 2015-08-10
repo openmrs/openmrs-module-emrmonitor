@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 
@@ -29,7 +30,7 @@ import java.util.UUID;
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
  */
-public class EmrMonitorActivator implements ModuleActivator {
+public class EmrMonitorActivator extends BaseModuleActivator {
 	
 	protected Log log = LogFactory.getLog(getClass());
 		
