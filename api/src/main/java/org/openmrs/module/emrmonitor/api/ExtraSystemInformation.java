@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -186,107 +187,28 @@ public String getCPUInfo(String startsWith) {
 
 //UPTIME FUNCTIONNALITY
 	 // logging all PC activities in the emr.log file
-  public void getmonitorFileData() throws IOException{
+  public void writeInformationinTheLocalFile() throws IOException{
   	try {
   		String sCurrentLine;
-			BufferedReader br=new BufferedReader(new FileReader("/home/emts.log"));
+			BufferedReader br=new BufferedReader(new FileReader("/home/emt.log"));
 			while ((sCurrentLine = br.readLine()) != null) {
 				//System.out.println(sCurrentLine);
 			}
-			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
    }
-   Runnable activeserver = new Runnable() {
-	       public void run() {
-	    	  Process p = null;
-	    	try {
-				p = Runtime.getRuntime().exec("src/main/resources/pcheartbeat.sh");
-			 } catch (IOException e) {
-					e.printStackTrace();
-			}
-		    	StringBuilder sb = new StringBuilder();
-		    	BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		    	String line="";
-		       try {
-				while ((line = reader.readLine())!= null) {
-							sb.append(line); 
-						}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}p.destroy();
-	       }
-	    };
-
-	    //shutdown method to call the the startup.sh file to be executed when the
-	    //JVM is shutting down so that it log shutdown informations when the module is shutting down
-	    public void attachShutDownHook(){
- 		 Runtime.getRuntime().addShutdownHook( new Thread(new Runnable() {
-       @Override
-      public void run() {
- 	      Process p=null;
-		     try {
-			p = Runtime.getRuntime().exec("src/main/resources/pcstartup.sh");
-		     } catch (IOException e) {
-			e.printStackTrace();
-		    }
-		  StringBuilder sb = new StringBuilder();
-	    	BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	    	String line="";
-	       try{
-				if ((line = reader.readLine())!= null) {
-							sb.append(line); 
-						}
-			} catch (IOException e) {
-				e.printStackTrace();
-			 }
-			p.destroy();
-         }
-       }));
-   }
-	// running and calling scripts for monitor heart beat infotmation
-	public void getServerActivity() throws IOException, ParseException{
- 	 
-		 //check if day is between Monday and Friday to run the script.
-		 Calendar now = Calendar.getInstance();
-		 int day = now.get(Calendar.DAY_OF_WEEK);
-		 if (day >= Calendar.MONDAY && day <= Calendar.FRIDAY){
-       //get time that the pc should start beating
-		 String string1 = "08:00:00";
-	     Date time1 = new SimpleDateFormat("HH:mm:ss").parse(string1);
-       Calendar calendar1 = Calendar.getInstance();
-       calendar1.setTime(time1);
-       
-       //set the time that the pc should stop beating
-       String string2 = "17:00:00";
-	      Date time2 = new SimpleDateFormat("HH:mm:ss").parse(string2);
-	      Calendar calendar2 = Calendar.getInstance();
-	      calendar2.setTime(time2);
-	      calendar2.add(Calendar.DATE, 1);
-	      
-	      //get the current time of each morning to compare if it is between 8am and 5pm, 
-	      //and if it lies between, start logging pc activity every 15 minutes
-	      Calendar currentime = Calendar.getInstance();
-		  DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-		  String someRandomTimes=dateFormat.format(currentime.getTime());
-		  Date d= new SimpleDateFormat("HH:mm:ss").parse(someRandomTimes);
-		  Calendar calendar4 = Calendar.getInstance();
-		  calendar4.setTime(d);
-		  calendar4.add(Calendar.DATE, 1);
-   
-        Date currentTime = calendar4.getTime();
-       if (currentTime.after(calendar1.getTime()) && currentTime.before(calendar2.getTime())) {
-       //call the executor method to run the heartbeat script every 15 minutes
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
- 	      executor.scheduleAtFixedRate(activeserver, 1, 900, TimeUnit.SECONDS);
- 	      attachShutDownHook(); 
- 	      //System.out.println("======check if you are in this class======");
-		} 
-	  }  //call the getMonitorfileData to start writing logs information into the emr.log file.
-		 getmonitorFileData();
-   }
+  // running and calling scripts for monitor heart beat information
+  public void getServerActivity() throws IOException, ParseException{
+      Process p = null;
+	   p = Runtime.getRuntime().exec("src/main/resources/configurecrontab.sh");
+		
+	 StringBuilder sb = new StringBuilder();
+	
+   	BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+   	String line="";
+        writeInformationinTheLocalFile();
+    }
 	
 	    //methods for reading into the local file emr.log and getting its data to start calculating uptime
 	   String obsId;
@@ -306,10 +228,13 @@ public String getCPUInfo(String startsWith) {
 	  double totalHoursUptimelastWeek=0;
 	  double totalHoursUptimeThisMonth=0;
 	  double totalHoursUptimeLastMonth=0;
+	  Date lastDateInPcwasOn=null;
+	  Set <String> timespcCrashedSet=new TreeSet<String>();
 	  
 		 void getPCinformationMonitored() throws IOException, ParseException{
 			try {
 				String sCurrentLine = new String();
+				String standardLine = new String();
 				BufferedReader br = new BufferedReader(new FileReader(
 						"/Users/neza/emts.log"));
 				//This Week range
@@ -326,12 +251,22 @@ public String getCPUInfo(String startsWith) {
 				int lastDateLastMonth=getendDate(-30);
 				
 				while ((sCurrentLine = br.readLine()) != null) {
+					if(!sCurrentLine.startsWith(";")){
+						standardLine=sCurrentLine;
+					}
 					 int firstIndexDate=Integer.parseInt(sCurrentLine.split("-")[0]);
 				if(firstIndexDate >= lastDateThisWeek && firstIndexDate<= firstDateThisWeek){
 					
-							if (sCurrentLine.contains("HEARTBEAT")) {
-								valueSplited = sCurrentLine.split(";");
-								manipulateString(all);}
+							if (standardLine.contains("HEARTBEAT")) {
+								valueSplited = standardLine.split(";");
+								manipulateString(all);
+								
+								List<Date> lastheartBeatstartList=new ArrayList<Date>();
+								lastheartBeatstartList.add(date);
+								TreeSet<Date> lastTimeofStart = new TreeSet<Date>(lastheartBeatstartList);
+								lastDateInPcwasOn=lastTimeofStart.last();
+								System.out.println("lastDateInPcwasOn: "+lastDateInPcwasOn);
+							}
 							 ArrayList<Double> hoursworked = new ArrayList<Double>(); 
 						        hoursworked.add(hoursWeekly);
 							    TreeSet<Double> set = new TreeSet<Double>(hoursworked);
@@ -339,8 +274,8 @@ public String getCPUInfo(String startsWith) {
 							}
 				
 				if(firstIndexDate >= lastDateLastWeek && firstIndexDate<= firstDateLastWeek){
-					if (sCurrentLine.contains("HEARTBEAT")) {
-						valueSplited = sCurrentLine.split(";");
+					if (standardLine.contains("HEARTBEAT")) {
+						valueSplited = standardLine.split(";");
 						manipulateString(all);}
 					    ArrayList<Double> hoursworkedLastWeek = new ArrayList<Double>(); 
 					    hoursworkedLastWeek.add(hoursLastWeek);
@@ -349,8 +284,8 @@ public String getCPUInfo(String startsWith) {
 					     }
 				
 				if(firstIndexDate >= lastDateThisMonth && firstIndexDate<= firstDateThisMonth){
-					if (sCurrentLine.contains("HEARTBEAT")) {
-						valueSplited = sCurrentLine.split(";");
+					if (standardLine.contains("HEARTBEAT")) {
+						valueSplited = standardLine.split(";");
 						manipulateString(all);}
 					    ArrayList<Double> hoursworkedThisMonth = new ArrayList<Double>(); 
 					    hoursworkedThisMonth.add(hoursThisMonth);
@@ -358,14 +293,20 @@ public String getCPUInfo(String startsWith) {
 					    totalHoursUptimeThisMonth=setThisMonth.last();
 					     }
 				if(firstIndexDate >= lastDateLastMonth && firstIndexDate<= firstDateLastMonth){
-					if (sCurrentLine.contains("HEARTBEAT")) {
-						valueSplited = sCurrentLine.split(";");
+					if (standardLine.contains("HEARTBEAT")) {
+						valueSplited = standardLine.split(";");
 						manipulateString(all);}
 					    ArrayList<Double> hoursworkedLastMonth = new ArrayList<Double>(); 
 					    hoursworkedLastMonth.add(hoursLastMonth);
 					    TreeSet<Double> setLastMonth =new TreeSet<Double>(hoursworkedLastMonth);
 					    totalHoursUptimeLastMonth=setLastMonth.last();
 					      }
+				
+				if(standardLine!=null & standardLine.contains("STARTUP;DIRTY")){
+					  List<String> timesofCrash=new ArrayList<String>();
+					  timesofCrash.add(standardLine);
+					  timespcCrashedSet=new TreeSet<String>(timesofCrash);
+				}
 				       }
 				
 				br.close();
@@ -453,6 +394,34 @@ public String getCPUInfo(String startsWith) {
 			totalLastMonthyuptime=LastMonthpercent.toString();
 			return  totalLastMonthyuptime;
 	   }
+	    
+	    public String getLastTimePcWasOn(){
+	    	try {
+				getPCinformationMonitored();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			
+	    	DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss zzz yyyy");
+	    	String lastPCInformation = formatter.format(lastDateInPcwasOn);
+	    	System.out.println("last time pc was on"+lastPCInformation);
+	    	return lastPCInformation;
+	    	
+	    }
+	    
+	    public String getTimesOfCrash(){
+	    	try{
+	    		getPCinformationMonitored();
+	    	}
+	    	catch (Exception e) {}
+	    	int timesofcrash=timespcCrashedSet.size();
+	    	String timesPcCrashed=String.valueOf(timesofcrash);
+	    	 System.out.println("times machine has crached: "+timesPcCrashed);
+			
+			return timesPcCrashed;
+	    }
 	   
 	     String manipulateString(String line) throws ParseException{
 			String obsId = valueSplited[0];
@@ -490,13 +459,8 @@ public String getCPUInfo(String startsWith) {
 						 hoursLastMonth= (int) ((totalheartBeats / (1000*60*60)) % 24);
 							}
 					}
-				
-				
-				
 			}
-			
 			return all;
-			
 		}
 	    public int getstartDate(int days){
 			
@@ -626,6 +590,14 @@ public String getCPUInfo(String startsWith) {
 					put("SystemInfo.uptimeInformation.LastMonthUptimePercentage", getLastMonthUpTimeActivity());				
 				}
 			});
+          extraSystemInformation.put("SystemInfo.title.timeofstartorcrush", new LinkedHashMap<String, String>() {
+            	
+    	        private static final long serialVersionUID = 1L;
+    				{
+    					put("SystemInfo.timeofstartorcrush.LastTimePCWasOn",getLastTimePcWasOn());
+    					put("SystemInfo.timeofstartorcrush.LastTimePCWasOn",getTimesOfCrash());
+    				}
+    			});
 				
 		
 		return extraSystemInformation;		
