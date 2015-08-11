@@ -41,6 +41,7 @@
 	<!-- Maps hibernate file's, if present -->
 	<mappingFiles>
         EmrMonitorServer.hbm.xml
+        EmrMonitorReport.hbm.xml
 	</mappingFiles>
 
 	<!-- Internationalization -->

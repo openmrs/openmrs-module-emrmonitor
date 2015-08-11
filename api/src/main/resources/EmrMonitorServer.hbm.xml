@@ -18,6 +18,14 @@
             </type>
         </property>
 
+        <!-- bi-directional one-to-many association to EmrMonitorReport -->
+        <set name="emrMonitorReports" lazy="false" inverse="true" batch-size="1000"
+             cascade="all-delete-orphan" sort="natural"
+             order-by="date_created desc">
+            <key column="emrmonitor_server_id" not-null="true" />
+            <one-to-many class="EmrMonitorReport" />
+        </set>
+
         <property name="serverUrl" type="java.lang.String" column="server_url" length="255" not-null="false" />
         <property name="serverUserName" type="java.lang.String" column="server_user_name" length="45" not-null="false" />
         <property name="serverUserPassword" type="java.lang.String" column="server_user_password" length="45" not-null="false" />

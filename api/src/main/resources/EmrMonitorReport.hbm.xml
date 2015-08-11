@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.module.emrmonitor">
+
+    <class name="EmrMonitorReport" table="${project.parent.artifactId}_report">
+        <id name="id" type="java.lang.Integer" column="id" unsaved-value="0">
+            <generator class="native" />
+        </id>
+
+        <many-to-one name="emrMonitorServer" class="org.openmrs.module.emrmonitor.EmrMonitorServer" not-null="true">
+            <column name="emrmonitor_server_id" />
+        </many-to-one>
+
+        <property name="status" column="status" length="45" not-null="true">
+            <type name="org.openmrs.util.HibernateEnumType">
+                <param name="enumClassName">org.openmrs.module.emrmonitor.EmrMonitorReport$SubmissionStatus</param>
+            </type>
+        </property>
+
+        <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+
+
+    </class>
+
+
+</hibernate-mapping>

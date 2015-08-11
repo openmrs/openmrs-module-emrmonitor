@@ -9,6 +9,7 @@ import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
 
@@ -31,6 +32,8 @@ public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
     private Date dateChanged;
 
     private Map<String, Map<String, String>> systemInformation = null;
+
+    private Set<EmrMonitorReport> emrMonitorReports;
 
     @Override
     public Integer getId() {
@@ -88,6 +91,14 @@ public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
 
     public void setSystemInformation(Map<String, Map<String, String>> systemInformation) {
         this.systemInformation = systemInformation;
+    }
+
+    public Set<EmrMonitorReport> getEmrMonitorReports() {
+        return emrMonitorReports;
+    }
+
+    public void setEmrMonitorReports(Set<EmrMonitorReport> emrMonitorReports) {
+        this.emrMonitorReports = emrMonitorReports;
     }
 
     @Override

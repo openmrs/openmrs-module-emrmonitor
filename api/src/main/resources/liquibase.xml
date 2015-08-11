@@ -8,7 +8,7 @@
         See http://www.liquibase.org/manual/home#available_database_refactorings
         for a list of supported elements and attributes
     -->
-    <changeSet id="emrmonitor-201508100945-1" author="cioan">
+    <changeSet id="emrmonitor-1" author="cioan">
         <comment>Adds emrmonitor_server table</comment>
         <createTable tableName="emrmonitor_server">
 
@@ -54,6 +54,34 @@
             <column name="void_reason" type="varchar(255)" defaultValue="null"/>
 
         </createTable>
+
+    </changeSet>
+
+    <changeSet id="emrmonitor-2" author="cioan">
+        <comment>Adds emrmonitor_report table</comment>
+        <createTable tableName="emrmonitor_report">
+
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="emrmonitor_server_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="varchar(45)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="emrmonitor_server_id"
+                                 baseTableName="emrmonitor_report" baseColumnNames="emrmonitor_server_id"
+                                 referencedTableName="emrmonitor_server" referencedColumnNames="id"/>
 
     </changeSet>
 </databaseChangeLog>

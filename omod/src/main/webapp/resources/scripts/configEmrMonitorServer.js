@@ -8,6 +8,7 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
             $scope.searchServer   = '';     // set the default search/filter term
             $scope.showServers = false;
             $scope.showSelectedServer = false;
+            $scope.displayServerMetrics = false;
 
 
             $scope.getServers =  function(){
@@ -42,8 +43,8 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
 
             $scope.cancelUpdate = function() {
                 $scope.showSelectedServer = false;
-                $scope.showServers = true;
                 $scope.displayServerMetrics = false;
+                $scope.getServers();
             }
 
             $scope.updateServerInfo = function() {
