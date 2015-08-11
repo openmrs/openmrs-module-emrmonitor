@@ -65,7 +65,7 @@ angular.module('compareEmrMonitorServers', ['encounterService', 'ui.bootstrap'])
           if (value === str) {
             var tr = document.createElement('tr');
             var t = document.createElement('td');
-            t.innerHTML = server.serverName;
+            t.innerHTML = server.name;
             tr.appendChild(t);
 
             for (var i in keys) {

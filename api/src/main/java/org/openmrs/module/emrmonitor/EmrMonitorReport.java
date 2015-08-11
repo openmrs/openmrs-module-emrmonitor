@@ -1,9 +1,21 @@
 package org.openmrs.module.emrmonitor;
 
 
-import java.util.Date;
+import org.openmrs.util.OpenmrsUtil;
 
-public class EmrMonitorReport {
+import java.util.Date;
+import java.util.Set;
+
+public class EmrMonitorReport implements Comparable<EmrMonitorReport>{
+
+    @Override
+    public int compareTo(EmrMonitorReport other) {
+        int retValue = 0;
+        if (other != null && getDateCreated() != null) {
+            retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
+        }
+        return retValue;
+    }
 
     public enum SubmissionStatus {
         WAITING_TO_SEND, SENT, LOCAL_ONLY
@@ -12,6 +24,8 @@ public class EmrMonitorReport {
     private Integer id;
 
     private EmrMonitorServer emrMonitorServer;
+
+    private Set<EmrMonitorReportMetric> metrics;
 
     private Date dateCreated;
 
@@ -31,6 +45,14 @@ public class EmrMonitorReport {
 
     public void setEmrMonitorServer(EmrMonitorServer emrMonitorServer) {
         this.emrMonitorServer = emrMonitorServer;
+    }
+
+    public Set<EmrMonitorReportMetric> getMetrics() {
+        return metrics;
+    }
+
+    public void setMetrics(Set<EmrMonitorReportMetric> metrics) {
+        this.metrics = metrics;
     }
 
     public Date getDateCreated() {

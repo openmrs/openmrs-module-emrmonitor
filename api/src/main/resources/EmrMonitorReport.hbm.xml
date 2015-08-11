@@ -14,6 +14,14 @@
             <column name="emrmonitor_server_id" />
         </many-to-one>
 
+        <!-- bi-directional one-to-many association to EmrMonitorReport -->
+        <set name="metrics" lazy="false" inverse="true" batch-size="1000"
+             cascade="all-delete-orphan" sort="natural"
+             order-by="date_created desc">
+            <key column="emrmonitor_report_id" not-null="true" />
+            <one-to-many class="EmrMonitorReportMetric" />
+        </set>
+
         <property name="status" column="status" length="45" not-null="true">
             <type name="org.openmrs.util.HibernateEnumType">
                 <param name="enumClassName">org.openmrs.module.emrmonitor.EmrMonitorReport$SubmissionStatus</param>

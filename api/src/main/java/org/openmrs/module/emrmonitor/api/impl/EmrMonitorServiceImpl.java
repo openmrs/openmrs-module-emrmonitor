@@ -23,6 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.module.emrmonitor.EmrMonitorReport;
+import org.openmrs.module.emrmonitor.EmrMonitorReportMetric;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.EmrMonitorProperties;
@@ -37,8 +39,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * It is a default implementation of {@link EmrMonitorService}.
@@ -123,11 +128,46 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     }
 
     @Override
+    public EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report) {
+        if (report != null ){
+            Date dateCreated = new Date();
+            if (report.getDateCreated() == null ) {
+                report.setDateCreated(dateCreated);
+            }
+            report = dao.saveEmrMonitorReport(report);
+        }
+        return report;
+    }
+
+    @Override
     public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server, Map<String, Map<String, String>> systemInformation) {
         EmrMonitorServer emrMonitorServer = null;
         if (server != null ) {
             emrMonitorServer = saveEmrMonitorServer(server);
             if (systemInformation != null) {
+                Date dateCreated = new Date();
+                EmrMonitorReport emrMonitorReport = new EmrMonitorReport();
+                emrMonitorReport.setEmrMonitorServer(emrMonitorServer);
+                emrMonitorReport.setDateCreated(dateCreated);
+                Set<EmrMonitorReportMetric> reportMetrics = new TreeSet<EmrMonitorReportMetric>();
+
+                for (String category : systemInformation.keySet()) {
+                    Map<String, String> metrics = systemInformation.get(category);
+                    for (String metric : metrics.keySet()) {
+                        String value = metrics.get(metric);
+                        EmrMonitorReportMetric emrMonitorReportMetric = new EmrMonitorReportMetric();
+                        emrMonitorReportMetric.setCategory(category);
+                        emrMonitorReportMetric.setEmrMonitorReport(emrMonitorReport);
+                        emrMonitorReportMetric.setMetric(metric);
+                        emrMonitorReportMetric.setValue(value);
+                        emrMonitorReportMetric.setDateCreated(dateCreated);
+                        reportMetrics.add(emrMonitorReportMetric);
+                    }
+                }
+                emrMonitorReport.setMetrics(reportMetrics);
+                emrMonitorReport.setStatus(EmrMonitorReport.SubmissionStatus.WAITING_TO_SEND);
+                saveEmrMonitorReport(emrMonitorReport);
+
                 emrMonitorServer.setSystemInformation(systemInformation);
                 emrMonitorServer = saveSystemInformation(emrMonitorServer);
             }

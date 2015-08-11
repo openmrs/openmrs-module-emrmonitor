@@ -109,7 +109,7 @@ ${ ui.includeFragment("emrmonitor", "menu") }
 
     </div>
 
-    <div ng-show="displayServerMetrics">
+    <div ng-show="showServerMetrics">
         <div ng-repeat="(key,val) in selectedServer.systemInformation">
             <h4>{{ key }}</h4>
             <table class="table table-bordered table-striped">

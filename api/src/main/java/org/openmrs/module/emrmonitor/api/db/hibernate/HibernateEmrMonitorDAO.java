@@ -21,6 +21,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
@@ -101,6 +102,16 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
             log.error("Error saving EmrMonitor Server", e);
         }
         return server;
+    }
+
+    @Override
+    public EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report) {
+        try{
+            sessionFactory.getCurrentSession().saveOrUpdate(report);
+        } catch (Exception e) {
+            log.error("Error saving EmrMonitorReport", e);
+        }
+        return report;
     }
 
 	@Override

@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.emrmonitor.api.db;
 
+import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
@@ -32,6 +33,8 @@ public interface EmrMonitorDAO {
     EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
 
     EmrMonitorServer getEmrMonitorServerByUuid(String serverUuid);
+
+    EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report);
     
     Map<String, String> getOpenmrsData();
 }

@@ -8,7 +8,7 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
             $scope.searchServer   = '';     // set the default search/filter term
             $scope.showServers = false;
             $scope.showSelectedServer = false;
-            $scope.displayServerMetrics = false;
+            $scope.showServerMetrics = false;
 
 
             $scope.getServers =  function(){
@@ -23,7 +23,7 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
 
             $scope.selectServer = function(server) {
                 $scope.showServers = false;
-                $scope.displayServerMetrics = false;
+                $scope.showServerMetrics = false;
                 $scope.showSelectedServer = true;
 
                 $scope.selectedServer = server;
@@ -32,10 +32,12 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
                 $scope.serverUserName = server.serverUserName;
                 $scope.serverUserPassword = server.serverUserPassword;
             }
+
             $scope.displayServerMetrics = function(server) {
+
                 $scope.showServers = false;
                 $scope.showSelectedServer = false;
-                $scope.displayServerMetrics = true;
+                $scope.showServerMetrics = true;
 
                 $scope.selectedServer = server;
 
@@ -43,7 +45,7 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
 
             $scope.cancelUpdate = function() {
                 $scope.showSelectedServer = false;
-                $scope.displayServerMetrics = false;
+                $scope.showServerMetrics = false;
                 $scope.getServers();
             }
 
@@ -62,7 +64,7 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
                         console.log("Server info updated!");
                         $scope.getServers();
                         $scope.showSelectedServer = false;
-                        $scope.displayServerMetrics = false;
+                        $scope.showServerMetrics = false;
                     })
                     .error(function(error) {
                         console.log("Failed to update server info: " + error);

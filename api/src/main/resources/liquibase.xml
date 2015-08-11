@@ -84,4 +84,40 @@
                                  referencedTableName="emrmonitor_server" referencedColumnNames="id"/>
 
     </changeSet>
+
+    <changeSet id="emrmonitor-3" author="cioan">
+        <comment>Adds emrmonitor_report_metric table</comment>
+        <createTable tableName="emrmonitor_report_metric">
+
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="emrmonitor_report_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="category" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="metric" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="value" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="emrmonitor_report_id"
+                                 baseTableName="emrmonitor_report_metric" baseColumnNames="emrmonitor_report_id"
+                                 referencedTableName="emrmonitor_report" referencedColumnNames="id"/>
+
+    </changeSet>
 </databaseChangeLog>

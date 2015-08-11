@@ -93,6 +93,7 @@ public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
         this.systemInformation = systemInformation;
     }
 
+    @JsonIgnore
     public Set<EmrMonitorReport> getEmrMonitorReports() {
         return emrMonitorReports;
     }
