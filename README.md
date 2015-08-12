@@ -49,33 +49,22 @@ The module provides a REST web services API that allows the child servers to reg
 ```
 
 ### Data Model
-Data is store in the following OpenMRS tables:
-
+Data is stored/represented in/by the following OpenMRS tables/objects:
 * EmrMonitorServer: contains entries for all registered servers
 
-`
-+----------------------+--------------+------+-----+---------+----------------+
-| Field                | Type         | Null | Key | Default | Extra          |
-+----------------------+--------------+------+-----+---------+----------------+
-| id                   | int(11)      | NO   | PRI | NULL    | auto_increment |
-| name                 | varchar(255) | NO   |     | NULL    |                |
-| server_type          | varchar(45)  | NO   |     | NULL    |                |
-| server_url           | varchar(255) | YES  |     | NULL    |                |
-| server_user_name     | varchar(45)  | YES  |     | NULL    |                |
-| server_user_password | varchar(45)  | YES  |     | NULL    |                |
-| uuid                 | char(38)     | NO   | UNI | NULL    |                |
-| date_created         | datetime     | NO   |     | NULL    |                |
-| changed_by           | int(11)      | YES  |     | NULL    |                |
-| date_changed         | datetime     | YES  |     | NULL    |                |
-| voided               | tinyint(4)   | NO   |     | 0       |                |
-| voided_by            | int(11)      | YES  |     | NULL    |                |
-| date_voided          | datetime     | YES  |     | NULL    |                |
-| void_reason          | varchar(255) | YES  |     | NULL    |                |
-+----------------------+--------------+------+-----+---------+----------------+
-`
+```java
+EmrMonitorServer extends BaseOpenmrsData implements Serializable{
+    Integer id;
+    String name;
+    EmrMonitorServerType serverType; //LOCAL, PARENT, CHILD
+    String serverUrl;
+    String serverUserName;
+    String serverUserPassword;
+    Set<EmrMonitorReport> emrMonitorReports;
+}
+```
 
-* Have this extend BaseOpenmrsMetdata?  Make serverId -> id, serverName -> name
-* Remove systemInformation property from this class
+* EmrMonitorReport: contains a list of reports generated for each server
 
 EmrMonitorReport {
  EmrMonitorServer server;
@@ -87,5 +76,5 @@ EmrMonitorReportMetric {
  EmrMonitorReport report;
  String category;
  String metric;
- String value;  // Consider valueNumeric, valueBoolean, valueText...?
+ String value;  
 }
