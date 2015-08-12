@@ -1,1 +1,0 @@
-This is a service for monitoring a network of OpenMRS servers.
