@@ -14,7 +14,7 @@ The module provides a REST web services API that allows the child servers to reg
     * POST: creates a new EMRMonitorServer record in the system
         - e.g. posting an json like below adds a new server node to the list of servers to be monitored
 
-```
+```json
 {
     "name": "Kamarando",
     "serverType": "CHILD",
@@ -48,10 +48,11 @@ The module provides a REST web services API that allows the child servers to reg
     }
 ```
 
-### Data Model
+#### Data Model
+Each server produces a list of reports similar to the systemInformation node above. Each report contains a list of system metrics.
+
 Data is stored/represented in/by the following OpenMRS tables/objects:
 * EmrMonitorServer: contains entries for all registered servers
-
 ```java
 EmrMonitorServer extends BaseOpenmrsData implements Serializable{
     Integer id;
@@ -63,18 +64,25 @@ EmrMonitorServer extends BaseOpenmrsData implements Serializable{
     Set<EmrMonitorReport> emrMonitorReports;
 }
 ```
-
-* EmrMonitorReport: contains a list of reports generated for each server
-
-EmrMonitorReport {
- EmrMonitorServer server;
- Date reportDate;
- SubmissionStatus status; // WAITING_TO_SEND, SENT, LOCAL_ONLY
+* EmrMonitorReport: contains a list of reports generated for each server.
+```java
+EmrMonitorReport implements Comparable<EmrMonitorReport>{
+    public enum SubmissionStatus {
+        WAITING_TO_SEND, SENT, LOCAL_ONLY
+    }
+    Integer id;
+    EmrMonitorServer emrMonitorServer;
+    Set<EmrMonitorReportMetric> metrics;
+    private SubmissionStatus status;
 }
-
-EmrMonitorReportMetric {
- EmrMonitorReport report;
- String category;
- String metric;
- String value;  
+```
+* EmrMonitorReportMetric: contains a list of metrics for each report. A metric has name and value and belongs to a category:
+```java
+EmrMonitorReportMetric implements Comparable<EmrMonitorReportMetric>{
+    private Integer id;
+    private EmrMonitorReport emrMonitorReport;
+    private String category;
+    private String metric;
+    private String value;
 }
+```
