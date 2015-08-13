@@ -86,3 +86,82 @@ EmrMonitorReportMetric implements Comparable<EmrMonitorReportMetric>{
     private String value;
 }
 ```
+#### Service Layer
+
+* EmrMonitorService: Methods to manipulate data stored in database. These should follow standard OpenMRS conventions:
+  ** EMR Monitor Server
+    ```java
+    EmrMonitorServer getEmrMonitorServer(Integer);
+    EmrMonitorServer getEmrMonitorServerByUuid(String);
+    List<EmrMonitorServer> getAllEmrMonitorServers();
+    EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer);
+    EmrMonitorServer retireEmrMonitorServer(EmrMonitorServer);
+    void purgeEmrMonitorServer(EmrMonitorServer);
+
+    EmrMonitorServer getLocalServer();
+    EmrMonitorServer getParentServer();
+    List<EmrMonitorServer> getChildServers();
+    ```
+
+  ** EMR Monitor Report
+    ```java
+    EmrMonitorReport getEmrMonitorReport(Integer);
+    EmrMonitorReport getEmrMonitorReportByUuid(String);
+    EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport);
+    void purgeEmrMonitorReport(EmrMonitorReport);
+
+    EmrMonitorReport generateEmrMonitorReport();
+    List<EmrMonitorReport> getEmrMonitorReports(EmrMonitorReportQuery);
+    Map<EmrMonitorServer, EmrMonitorReport> getLatestEmrMonitorReports();
+    EmrMonitorReport getLatestEmrMonitorReport(EmrMonitorServer);
+    ```java
+
+    ** Emr Monitor Report Metric
+        ```java
+        EmrMonitorReportMetric getEmrMonitorReportMetrics(EmrMonitorReportMetricQuery);
+        ```
+    ** Methods to communicate between servers (might want these to go in a different class)
+        ```java
+        ConnectionStatus testConnectionToParent();
+        ConnectionStatus sendReportToParent();
+        ```
+
+
+#### Metric Generation Strategy:
+```java
+interface MetricProducer {
+ boolean canProduceMetricsForCurrentSystem();
+ List<EmrMonitorReportMetric> produceMetrics();
+}
+```
+* Implementations of this class should be registered with Spring using @Component
+* The service will iterate over all of these beans, call their produceMetrics method, and combine into a Report
+
+#### Implementations:
+
+* We should logically organize the different information we are currently collecting from
+the methods available in the admnistrationService, and what we have already written in ExtraSystemInformation,
+and group them together into implementations of MetricProducer
+
+* For things like Sync Information, this should be in it's own class, and the "canProduceMetricsForCurrentSystem"
+method will check whether or not sync is started
+
+* For things that are O/S-specific, this should be similarly encapsulated, with a means for either automatically (or via GP),
+determining which are appropriate given the running O/S.  This _should_ be possible to determine automatically.
+
+* Ideally we would have one or more implementations that allow for more to be added in.  Eg.
+```java
+ConfigurableMetricProducer implements MetricProducer {
+ // This would load xml files from somewhere in the .OpenMRS directory, parse these, and allow for executing things like:
+ *  SQL queries
+ *  Runtime commands on the underlying O/S
+ *  Groovy scripts
+}
+```
+#####Processing:
+* We will need several scheduled tasks:
+(I prefer Spring-managed tasks like we do in reporting, over use of the SchedulerService)
+
+  ** Task 1. Generate report for the Local Server on a periodic basis and save it
+  ** Task 2. If parent configured, check whether any reports have been generated but not transmitted, and send them
+  ** Task 3. Clean up history of reports (if desired, to save space)
