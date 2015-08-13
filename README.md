@@ -89,7 +89,7 @@ EmrMonitorReportMetric implements Comparable<EmrMonitorReportMetric>{
 #### Service Layer
 
 * EmrMonitorService: Methods to manipulate data stored in database. These should follow standard OpenMRS conventions:
-  ** EMR Monitor Server
+  * EMR Monitor Server
     ```java
     EmrMonitorServer getEmrMonitorServer(Integer);
     EmrMonitorServer getEmrMonitorServerByUuid(String);
@@ -102,8 +102,7 @@ EmrMonitorReportMetric implements Comparable<EmrMonitorReportMetric>{
     EmrMonitorServer getParentServer();
     List<EmrMonitorServer> getChildServers();
     ```
-
-  ** EMR Monitor Report
+  * EMR Monitor Report
     ```java
     EmrMonitorReport getEmrMonitorReport(Integer);
     EmrMonitorReport getEmrMonitorReportByUuid(String);
@@ -162,6 +161,6 @@ ConfigurableMetricProducer implements MetricProducer {
 * We will need several scheduled tasks:
 (I prefer Spring-managed tasks like we do in reporting, over use of the SchedulerService)
 
-  ** Task 1. Generate report for the Local Server on a periodic basis and save it
-  ** Task 2. If parent configured, check whether any reports have been generated but not transmitted, and send them
-  ** Task 3. Clean up history of reports (if desired, to save space)
+    * Task 1. Generate report for the Local Server on a periodic basis and save it
+    * Task 2. If parent configured, check whether any reports have been generated but not transmitted, and send them
+    * Task 3. Clean up history of reports (if desired, to save space)
