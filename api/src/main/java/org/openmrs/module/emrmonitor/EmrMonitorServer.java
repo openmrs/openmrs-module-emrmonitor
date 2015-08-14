@@ -1,6 +1,7 @@
 package org.openmrs.module.emrmonitor;
 
 
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.BaseOpenmrsData;
 import org.openmrs.api.context.Context;
@@ -8,6 +9,7 @@ import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,6 +88,27 @@ public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
     }
 
     public Map<String, Map<String, String>> getSystemInformation() {
+        if (systemInformation == null) {
+            Set<EmrMonitorReport> reports = getEmrMonitorReports();
+            if (reports != null && reports.size()>0) {
+                EmrMonitorReport lastReport = reports.iterator().next();
+                if (lastReport !=null) {
+                    systemInformation = new LinkedHashMap<String, Map<String, String>>();
+                    Set<EmrMonitorReportMetric> metrics = lastReport.getMetrics();
+                    for (EmrMonitorReportMetric metric : metrics) {
+                        String category = metric.getCategory();
+                        String metricName = metric.getMetric();
+                        String metricValue = metric.getValue();
+                        Map<String, String> categoryMetrics = systemInformation.get(category);
+                        if (categoryMetrics == null) {
+                            categoryMetrics = new LinkedHashMap<String, String>();
+                        }
+                        categoryMetrics.put(metricName, metricValue);
+                        systemInformation.put(category, categoryMetrics);
+                    }
+                }
+            }
+        }
         return systemInformation;
     }
 

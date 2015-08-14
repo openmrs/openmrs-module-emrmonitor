@@ -75,43 +75,10 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
 	    return dao;
     }
 
-    @Override
-    public EmrMonitorServer saveSystemInformation(EmrMonitorServer emrMonitorServer) {
-
-        File systemStatusInfoFile = new File(String.format("%s/%s", EmrMonitorProperties.getEmrMonitorDirectory().getAbsolutePath(), emrMonitorServer.getUuid()));
-        try {
-            if (systemStatusInfoFile.exists()) {
-                boolean delete = systemStatusInfoFile.delete();
-                if (!delete) {
-                    log.error("failed to delete previous version of system status info");
-                    return null;
-                }
-            }
-            FileWriter file = new FileWriter(systemStatusInfoFile.getAbsolutePath());
-            file.write(new ObjectMapper().writeValueAsString(emrMonitorServer));
-            file.flush();
-            file.close();
-        } catch (IOException e) {
-            log.error("failed to open file for for writing", e);
-        }
-        return emrMonitorServer;
-    }
 
     @Override
-    public List<EmrMonitorServer> getEmrMonitorServers() {
-        List<EmrMonitorServer> servers = dao.getEmrMonitorServers();
-        if (servers != null && servers.size() > 0) {
-            List<EmrMonitorServer> emrServers = new ArrayList<EmrMonitorServer>();
-            for (EmrMonitorServer server : servers){
-                EmrMonitorServer emrMonitorServer = getSystemInformation(server.getUuid());
-                if ( emrMonitorServer != null ) {
-                    server.setSystemInformation(emrMonitorServer.getSystemInformation());
-                    emrServers.add(server);
-                }
-            }
-            return emrServers;
-        }
-        return servers;
+    public List<EmrMonitorServer> getAllEmrMonitorServers() {
+        return dao.getEmrMonitorServers();
     }
 
     @Override
@@ -167,9 +134,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
                 emrMonitorReport.setMetrics(reportMetrics);
                 emrMonitorReport.setStatus(EmrMonitorReport.SubmissionStatus.WAITING_TO_SEND);
                 saveEmrMonitorReport(emrMonitorReport);
-
                 emrMonitorServer.setSystemInformation(systemInformation);
-                emrMonitorServer = saveSystemInformation(emrMonitorServer);
             }
         }
         return emrMonitorServer;
@@ -229,23 +194,6 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     @Override
     public EmrMonitorServer getEmrMonitorServerByUuid(String serverUuid) {
         return (EmrMonitorServer) dao.getEmrMonitorServerByUuid(serverUuid);
-    }
-
-    @Override
-    public EmrMonitorServer getSystemInformation(String serverUuid) {
-        EmrMonitorServer emrMonitorServer = null;
-        if (StringUtils.isNotBlank(serverUuid)) {
-            File systemStatusInfoFile = new File(String.format("%s/%s", EmrMonitorProperties.getEmrMonitorDirectory().getAbsolutePath(), serverUuid));
-            if (systemStatusInfoFile.exists()) {
-                try {
-                    emrMonitorServer = new ObjectMapper().readValue(systemStatusInfoFile, EmrMonitorServer.class);
-
-                } catch (IOException e) {
-                    log.error("failed to read and parse system status info file: " + systemStatusInfoFile.getAbsolutePath(), e);
-                }
-            }
-        }
-        return emrMonitorServer;
     }
 
 	@Override

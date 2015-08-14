@@ -24,7 +24,7 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
      */
     @Override
     public SimpleObject getAll(RequestContext context) throws ResponseException {
-        SimpleObject simpleObject = new SimpleObject().add("servers", Context.getService(EmrMonitorService.class).getEmrMonitorServers());
+        SimpleObject simpleObject = new SimpleObject().add("servers", Context.getService(EmrMonitorService.class).getAllEmrMonitorServers());
         return simpleObject;
     }
 
