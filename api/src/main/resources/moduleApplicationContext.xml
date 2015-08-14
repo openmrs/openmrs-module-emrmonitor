@@ -50,6 +50,20 @@
             </list>
         </property>
     </bean>
-	
+
+    <bean id="emrmonitorTimerFactory" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
+        <property name="scheduledExecutorTasks">
+            <list>
+                <bean id="refillIdentifierPools" class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
+                    <property name="delay" value="60000" /> <!-- delay 60 seconds -->
+                    <property name="period" value="120000" /> <!-- run every 2 minutes -->
+                    <property name="runnable">
+                        <bean class="org.openmrs.module.emrmonitor.task.GenerateLocalReportTask"/>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
 
 </beans>
