@@ -4,6 +4,7 @@ package org.openmrs.module.emrmonitor;
 import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.BaseOpenmrsData;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 
@@ -129,5 +130,23 @@ public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
     @JsonIgnore
     public Boolean isVoided() {
         return super.isVoided();
+    }
+
+    @Override
+    @JsonIgnore
+    public User getChangedBy() {
+        return super.getChangedBy();
+    }
+
+    @Override
+    @JsonIgnore
+    public User getCreator() {
+        return super.getCreator();
+    }
+
+    @Override
+    @JsonIgnore
+    public User getVoidedBy() {
+        return super.getVoidedBy();
     }
 }

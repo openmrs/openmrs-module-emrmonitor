@@ -17,11 +17,11 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.openmrs.api.APIException;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorReportMetric;
@@ -34,12 +34,8 @@ import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.MediaType;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,7 +74,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
 
     @Override
     public List<EmrMonitorServer> getAllEmrMonitorServers() {
-        return dao.getEmrMonitorServers();
+        return dao.getAllEmrMonitorServers();
     }
 
     @Override
@@ -163,20 +159,33 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
             EmrMonitorServer localServer = getEmrMonitorServerByType(EmrMonitorServerType.LOCAL);
             if (localServer != null) {
                 localServer.setServerType(EmrMonitorServerType.CHILD);
+                localServer.setId(null);
+                localServer.setDateCreated(null);
+                localServer.setDateChanged(null);
             }
             String localServerJson = mapper.writeValueAsString(localServer);
 
             WebResource resource = restClient.resource(server.getServerUrl()).path("ws/rest/v1/emrmonitor/server");
             restClient.setReadTimeout(EmrMonitorProperties.REMOTE_SERVER_TIMEOUT);
-            resource.addFilter(new HTTPBasicAuthFilter(server.getServerUserName(), server.getServerUserPassword()));
-            ClientResponse response = resource.accept(MediaType.APPLICATION_JSON_TYPE).post(ClientResponse.class, localServerJson);
 
-            if (response !=null) {
+            resource.addFilter(new HTTPBasicAuthFilter(server.getServerUserName(), server.getServerUserPassword()));
+
+            ClientResponse response = resource.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON_TYPE).post(ClientResponse.class, localServerJson);
+
+            if (response.getStatus() == 200) {
                 EmrMonitorServer emrMonitorServer = new ObjectMapper().readValue(response.toString(), EmrMonitorServer.class);
             }
 
         }
         return server;
+    }
+
+    @Override
+    public EmrMonitorServer voidEmrMonitorServer(EmrMonitorServer server, String reason) throws APIException {
+        if (server == null) {
+            return null;
+        }
+        return dao.saveEmrMonitorServer(server);
     }
 
     @Override

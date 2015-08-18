@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public interface EmrMonitorDAO {
 
-    List<EmrMonitorServer> getEmrMonitorServers();
+    List<EmrMonitorServer> getAllEmrMonitorServers();
 
     EmrMonitorServer getEmrMonitorServerByType(EmrMonitorServerType serverType);
 

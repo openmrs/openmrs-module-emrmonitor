@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.emrmonitor.api;
 
+import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
@@ -60,4 +61,6 @@ public interface EmrMonitorService extends OpenmrsService {
     public EmrMonitorServer testConnection(EmrMonitorServer server) throws IOException;
 
     public EmrMonitorServer registerServer(EmrMonitorServer server) throws IOException ;
+
+    public EmrMonitorServer voidEmrMonitorServer(EmrMonitorServer server, String reason) throws APIException;
 }

@@ -33,7 +33,16 @@
         <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
         <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
         <property name="dateChanged" type="java.util.Date" column="date_changed" length="19"/>
+        <many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
+        <property name="voided" type="boolean" not-null="true" />
 
+        <many-to-one name="voidedBy" class="org.openmrs.User" column="voided_by" />
+
+        <property name="dateVoided" type="java.util.Date"
+                  column="date_voided" length="19" />
+
+        <property name="voidReason" type="java.lang.String"
+                  column="void_reason" length="255" />
 
     </class>
 

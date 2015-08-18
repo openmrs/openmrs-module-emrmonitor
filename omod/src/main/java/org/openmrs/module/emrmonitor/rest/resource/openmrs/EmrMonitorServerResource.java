@@ -66,7 +66,11 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
      */
     @Override
     protected void delete(EmrMonitorServer delegate, String reason, RequestContext context) throws ResponseException {
-
+        if (delegate.isVoided()){
+            return;
+        }
+        EmrMonitorServer emrMonitorServer = Context.getService(EmrMonitorService.class).voidEmrMonitorServer(delegate, "delete via ws");
+        return;
     }
 
     /**
@@ -159,7 +163,6 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
         description.addProperty("systemInformation");
         description.addProperty("dateCreated");
         description.addProperty("dateChanged");
-        // description.addProperty("display", findMethod("getDisplayString"));
         description.addSelfLink();
         return description;
     }

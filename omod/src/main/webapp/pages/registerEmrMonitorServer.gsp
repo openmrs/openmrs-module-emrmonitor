@@ -18,22 +18,18 @@ ${ ui.includeFragment("emrmonitor", "menu") }
         <h3>Parent Server</h3>
 
         <form>
-            <p>
-                <label>name</label>
-                <input ng-model="parentServerName"/>
-            </p>
 
             <p>
                 <label>url</label>
-                <input ng-model="parentServerUrl"/>
+                <input ng-model="parentServerUrl" placeholder="http://server_address:8080/openmrs"/>
             </p>
             <p>
                 <label>username</label>
-                <input ng-model="parentUserName"/>
+                <input ng-model="parentUserName" placeholder="enter user name to access parent server"/>
             </p>
             <p>
                 <label>password</label>
-                <input ng-model="parentUserPassword"/>
+                <input ng-model="parentUserPassword" type="password" placeholder="enter password"/>
             </p>
             <div class="field-error" ng-show="errorMessage">{{ errorMessage }}</div>
             <p>

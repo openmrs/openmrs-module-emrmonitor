@@ -26,6 +26,7 @@ import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
 
+import java.beans.Expression;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +54,9 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
     }
 
     @Override
-    public List<EmrMonitorServer> getEmrMonitorServers() {
+    public List<EmrMonitorServer> getAllEmrMonitorServers() {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class);
+        criteria.add(Restrictions.eq("voided", false));
         List<EmrMonitorServer> list = null;
         try {
             list = (List<EmrMonitorServer>) criteria.list();

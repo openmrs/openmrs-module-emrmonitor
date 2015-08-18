@@ -76,7 +76,11 @@ ${ ui.includeFragment("emrmonitor", "menu") }
                 <td>{{ server.uuid }}</td>
                 <td>{{ server.serverType }}</td>
                 <td>{{ server.dateChanged | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-                <td><a href="#" ng-click="selectServer(server)">Edit</a><br/><a href="#" ng-click="displayServerMetrics(server)">View</a></td>
+                <td>
+                    <a href="#" ng-click="selectServer(server)">Edit</a><br/>
+                    <a href="#" ng-click="deleteServer(server)">Delete</a><br/>
+                    <a href="#" ng-click="displayServerMetrics(server)">View</a>
+                </td>
             </tr>
             </tbody>
 

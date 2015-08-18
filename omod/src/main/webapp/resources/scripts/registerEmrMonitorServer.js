@@ -5,10 +5,9 @@ angular.module('registerEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' 
 
             $scope.showRegisterServer = true;
 
-            $scope.parentServerName = "HarmonyServer";
-            $scope.parentServerUrl = "http://197.243.32.206:8081/openmrs";
-            $scope.parentUserName = "[Enter User Name]";
-            $scope.parentUserPassword = "[Enter Password]";
+            $scope.parentServerUrl = null;
+            $scope.parentUserName = null;
+            $scope.parentUserPassword = null;
 
             $scope.testConnection = function() {
                 console.log("test connection" );
@@ -29,8 +28,8 @@ angular.module('registerEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' 
                         $scope.successMessage = "Successfully connected to remote server!";
                     })
                     .error(function(error) {
-                        console.log("Failed to connect to remote server: " + error);
-                        $scope.errorMessage = "Failed to connect to remote server: " + error;
+                        console.log("Failed to connect to remote server: " + error.error.message);
+                        $scope.errorMessage = "Failed to connect to remote server: " + error.error.message;
                     });
 
             }
@@ -42,7 +41,6 @@ angular.module('registerEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' 
                 $scope.errorMessage = null;
 
                 var server = {
-                    name: $scope.parentServerName,
                     serverType: "PARENT",
                     serverUrl: $scope.parentServerUrl,
                     serverUserName: $scope.parentUserName,
@@ -56,8 +54,8 @@ angular.module('registerEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' 
                         $scope.successMessage = "Successfully connected to remote server!";
                     })
                     .error(function(error) {
-                        console.log("Failed to connect to remote server: " + error);
-                        $scope.errorMessage = "Failed to connect to remote server: " + error;
+                        console.log("Failed to register with remote server: " + error.error.message);
+                        $scope.errorMessage = "Failed to register with remote server: " + error.error.message;
                     });
 
             }

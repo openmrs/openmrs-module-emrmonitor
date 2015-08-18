@@ -71,7 +71,7 @@ public class EmrMonitorRegisterResource extends DelegatingCrudResource<EmrMonito
         } catch (IOException e) {
             log.error("error registering server", e);
         }
-        return null;
+        return remoteServer;
     }
 
     /**
@@ -97,7 +97,7 @@ public class EmrMonitorRegisterResource extends DelegatingCrudResource<EmrMonito
     @Override
     public DelegatingResourceDescription getRepresentationDescription(Representation rep) {
         DelegatingResourceDescription description = new DelegatingResourceDescription();
-        description.addProperty("serverName");
+        description.addProperty("name");
         description.addProperty("serverType");
         description.addProperty("serverUrl");
         description.addProperty("serverUserName");
@@ -119,7 +119,6 @@ public class EmrMonitorRegisterResource extends DelegatingCrudResource<EmrMonito
     @Override
     public DelegatingResourceDescription getCreatableProperties() throws ResourceDoesNotSupportOperationException {
         DelegatingResourceDescription description = new DelegatingResourceDescription();
-        description.addProperty("serverName");
         description.addProperty("serverType");
         description.addProperty("serverUrl");
         description.addProperty("serverUserName");

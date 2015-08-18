@@ -33,6 +33,20 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
                 $scope.serverUserPassword = server.serverUserPassword;
             }
 
+            $scope.deleteServer = function(server) {
+                $http.delete("/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/server/" + server.uuid)
+                    .success(function() {
+                        console.log("Server: " + server.name + " has been deleted");
+                        $scope.getServers();
+                        $scope.showSelectedServer = false;
+                        $scope.showServerMetrics = false;
+                    })
+                    .error(function(error) {
+                        console.log("Failed to delete server: " + error.error.message);
+                        window.alert("Failed to delete server: " + error.error.message);
+                    });
+            }
+
             $scope.displayServerMetrics = function(server) {
 
                 $scope.showServers = false;
@@ -67,7 +81,7 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
                         $scope.showServerMetrics = false;
                     })
                     .error(function(error) {
-                        console.log("Failed to update server info: " + error);
+                        console.log("Failed to update server info: " + error.error.message);
                         window.alert("Error");
                     });
 
