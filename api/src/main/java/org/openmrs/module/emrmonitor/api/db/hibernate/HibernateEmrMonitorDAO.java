@@ -82,13 +82,13 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
     }
 
     @Override
-    public EmrMonitorServer getEmrMonitorServerByType(EmrMonitorServerType serverType) {
+    public List<EmrMonitorServer> getEmrMonitorServerByType(EmrMonitorServerType serverType) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class);
         criteria.add(Restrictions.eq("serverType", serverType));
         try {
             List<EmrMonitorServer> list = (List<EmrMonitorServer>) criteria.list();
             if (list != null && list.size() > 0 ) {
-                return (EmrMonitorServer) list.get(0);
+                return list;
             }
         } catch (Exception e) {
             log.error("Failed to retrieve emr monitor servers", e);
@@ -104,6 +104,11 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
             log.error("Error saving EmrMonitor Server", e);
         }
         return server;
+    }
+
+    @Override
+    public void deleteEmrMonitorServer(EmrMonitorServer server) {
+        sessionFactory.getCurrentSession().delete(server);
     }
 
     @Override

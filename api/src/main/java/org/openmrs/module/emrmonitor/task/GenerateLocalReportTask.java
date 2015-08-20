@@ -25,7 +25,7 @@ public class GenerateLocalReportTask extends EmrMonitorTask{
         public void run() {
             try {
                 // refresh Local Server EmrMonitorServer record
-                EmrMonitorServer localServer = Context.getService(EmrMonitorService.class).getEmrMonitorServerByType(EmrMonitorServerType.LOCAL);
+                EmrMonitorServer localServer = Context.getService(EmrMonitorService.class).getLocalServer();
                 if (localServer == null) {
                     //create new Local Server record
                     localServer = new EmrMonitorServer();

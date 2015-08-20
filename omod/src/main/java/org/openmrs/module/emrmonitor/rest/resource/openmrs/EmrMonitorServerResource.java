@@ -1,7 +1,9 @@
 package org.openmrs.module.emrmonitor.rest.resource.openmrs;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
+import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.openmrs.module.emrmonitor.rest.controller.EmrMonitorRestController;
 import org.openmrs.module.webservices.rest.SimpleObject;
@@ -9,10 +11,15 @@ import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.openmrs.module.webservices.rest.web.RestConstants;
 import org.openmrs.module.webservices.rest.web.annotation.Resource;
 import org.openmrs.module.webservices.rest.web.representation.Representation;
+import org.openmrs.module.webservices.rest.web.resource.api.PageableResult;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
+import org.openmrs.module.webservices.rest.web.resource.impl.NeedsPaging;
 import org.openmrs.module.webservices.rest.web.response.ResourceDoesNotSupportOperationException;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Resource(name = RestConstants.VERSION_1 + EmrMonitorRestController.EMRMONITOR_REST_NAMESPACE
         + "/server", supportedClass = EmrMonitorServer.class, supportedOpenmrsVersions = {"1.9.*", "1.10.*", "1.11.*", "1.12.*"})
@@ -141,7 +148,7 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
      */
     @Override
     public void purge(EmrMonitorServer delegate, RequestContext context) throws ResponseException {
-
+        Context.getService(EmrMonitorService.class).purgeEmrMonitorServer(delegate);
     }
 
     /**
@@ -165,5 +172,24 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
         description.addProperty("dateChanged");
         description.addSelfLink();
         return description;
+    }
+
+    /**
+     * Implementations should override this method if they are actually searchable.
+     *
+     * @param context
+     */
+    @Override
+    protected PageableResult doSearch(RequestContext context) {
+        List<EmrMonitorServer> servers= new ArrayList<EmrMonitorServer>();
+        String type = context.getParameter("type");
+        if (StringUtils.isNotBlank(type)) {
+            List<EmrMonitorServer> emrMonitorServers = Context.getService(EmrMonitorService.class)
+                    .getEmrMonitorServerByType(EmrMonitorServerType.valueOf(type));
+            if (emrMonitorServers != null && emrMonitorServers.size() > 0) {
+                servers = emrMonitorServers;
+            }
+        }
+        return new NeedsPaging<EmrMonitorServer>(servers, context);
     }
 }

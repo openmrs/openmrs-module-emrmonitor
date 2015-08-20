@@ -156,26 +156,36 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
         if (server != null) {
             ObjectMapper mapper = new ObjectMapper();
 
-            EmrMonitorServer localServer = getEmrMonitorServerByType(EmrMonitorServerType.LOCAL);
+            EmrMonitorServer localServer = getLocalServer();
             if (localServer != null) {
-                localServer.setServerType(EmrMonitorServerType.CHILD);
-                localServer.setId(null);
-                localServer.setDateCreated(null);
-                localServer.setDateChanged(null);
+                EmrMonitorServer copy = localServer.copy();
+                copy.setServerType(EmrMonitorServerType.CHILD);
+                String localServerJson = mapper.writeValueAsString(copy);
+
+                WebResource resource = restClient.resource(server.getServerUrl()).path("ws/rest/v1/emrmonitor/server");
+                restClient.setReadTimeout(EmrMonitorProperties.REMOTE_SERVER_TIMEOUT);
+                resource.addFilter(new HTTPBasicAuthFilter(server.getServerUserName(), server.getServerUserPassword()));
+                ClientResponse response = resource.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON_TYPE).post(ClientResponse.class, localServerJson);
+
+                log.warn("response.getStatus = " + response.getStatus());
+                log.warn("response = " + response.toString());
+                if (response.getStatus() == 201) {
+                    // entity has been created
+                    EmrMonitorServer emrMonitorServer = null;
+                    try {
+                        String responseEntity = response.getEntity(String.class);
+                        emrMonitorServer = new ObjectMapper().readValue(responseEntity, EmrMonitorServer.class);
+                    } catch(Exception e) {
+                        throw new IOException("failed to de-serialize server node received from the parent: " + response.toString());
+                    }
+                    emrMonitorServer.setServerType(EmrMonitorServerType.PARENT);
+                    //add remote server as the PARENT server in the emrmonitor_server table
+                    saveEmrMonitorServer(emrMonitorServer, emrMonitorServer.getSystemInformation());
+                    return emrMonitorServer;
+                } else {
+                    throw new IOException("failed to register with parent server: " + response.toString());
+                }
             }
-            String localServerJson = mapper.writeValueAsString(localServer);
-
-            WebResource resource = restClient.resource(server.getServerUrl()).path("ws/rest/v1/emrmonitor/server");
-            restClient.setReadTimeout(EmrMonitorProperties.REMOTE_SERVER_TIMEOUT);
-
-            resource.addFilter(new HTTPBasicAuthFilter(server.getServerUserName(), server.getServerUserPassword()));
-
-            ClientResponse response = resource.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON_TYPE).post(ClientResponse.class, localServerJson);
-
-            if (response.getStatus() == 200) {
-                EmrMonitorServer emrMonitorServer = new ObjectMapper().readValue(response.toString(), EmrMonitorServer.class);
-            }
-
         }
         return server;
     }
@@ -189,6 +199,11 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     }
 
     @Override
+    public void purgeEmrMonitorServer(EmrMonitorServer server) throws APIException {
+       dao.deleteEmrMonitorServer(server);
+    }
+
+    @Override
     public Map<String, Map<String, String>> getExtraSystemInfo() {
     	
     	ExtraSystemInformation extinfo=new ExtraSystemInformation();
@@ -196,7 +211,16 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     }
 
     @Override
-    public EmrMonitorServer getEmrMonitorServerByType(EmrMonitorServerType serverType) {
+    public EmrMonitorServer getLocalServer() {
+        List<EmrMonitorServer> servers = getEmrMonitorServerByType(EmrMonitorServerType.LOCAL);
+        if (servers != null && servers.size() > 0) {
+            return servers.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public List<EmrMonitorServer> getEmrMonitorServerByType(EmrMonitorServerType serverType) {
         return dao.getEmrMonitorServerByType(serverType);
     }
 

@@ -46,7 +46,9 @@ public interface EmrMonitorService extends OpenmrsService {
 
     public List<EmrMonitorServer> getAllEmrMonitorServers();
 
-    public EmrMonitorServer getEmrMonitorServerByType(EmrMonitorServerType serverType);
+    public List<EmrMonitorServer> getEmrMonitorServerByType(EmrMonitorServerType serverType);
+
+    public EmrMonitorServer getLocalServer();
 
     public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
 
@@ -63,4 +65,7 @@ public interface EmrMonitorService extends OpenmrsService {
     public EmrMonitorServer registerServer(EmrMonitorServer server) throws IOException ;
 
     public EmrMonitorServer voidEmrMonitorServer(EmrMonitorServer server, String reason) throws APIException;
+
+    public void purgeEmrMonitorServer(EmrMonitorServer server) throws APIException;
+
 }

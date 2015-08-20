@@ -50,11 +50,6 @@ ${ ui.includeFragment("emrmonitor", "menu") }
                 </td>
                 <td>UserName</td>
                 <td>
-                    <a href="#" ng-click="sortType = 'uuid'; sortReverse = !sortReverse">
-                    uuid
-                    </a>
-                </td>
-                <td>
                     <a href="#" ng-click="sortType = 'serverType'; sortReverse = !sortReverse">
                     Type
                     </a>
@@ -73,7 +68,6 @@ ${ ui.includeFragment("emrmonitor", "menu") }
                 <td>{{ server.id }}</td>
                 <td> {{ server.name }} </td>
                 <td>{{ server.serverUserName }}</td>
-                <td>{{ server.uuid }}</td>
                 <td>{{ server.serverType }}</td>
                 <td>{{ server.dateChanged | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                 <td>

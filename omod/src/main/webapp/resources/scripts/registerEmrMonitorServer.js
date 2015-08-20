@@ -51,7 +51,7 @@ angular.module('registerEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' 
                     server)
                     .success(function() {
                         console.log("Successfully connected to remote server!");
-                        $scope.successMessage = "Successfully connected to remote server!";
+                        $scope.successMessage = "Successfully registered with    remote server!";
                     })
                     .error(function(error) {
                         console.log("Failed to register with remote server: " + error.error.message);

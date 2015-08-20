@@ -126,6 +126,24 @@ public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
         this.emrMonitorReports = emrMonitorReports;
     }
 
+    /**
+     * Shallow copy of the EmrMonitorServer
+     * @return
+     */
+    public EmrMonitorServer copy() {
+        return copyHelper(new EmrMonitorServer());
+    }
+
+    private EmrMonitorServer copyHelper(EmrMonitorServer target) {
+        target.setName(this.getName());
+        target.setUuid(this.getUuid());
+        target.setServerUrl(this.getServerUrl());
+        target.setServerUserName(getServerUserName());
+        target.setServerUserPassword(getServerUserPassword());
+        target.setSystemInformation(this.getSystemInformation());
+        return target;
+    }
+
     @Override
     @JsonIgnore
     public Boolean isVoided() {

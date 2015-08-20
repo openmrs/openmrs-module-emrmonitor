@@ -11,6 +11,7 @@ import org.openmrs.module.webservices.rest.web.annotation.Resource;
 import org.openmrs.module.webservices.rest.web.representation.Representation;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
+import org.openmrs.module.webservices.rest.web.response.GenericRestException;
 import org.openmrs.module.webservices.rest.web.response.ResourceDoesNotSupportOperationException;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
@@ -64,14 +65,13 @@ public class EmrMonitorRegisterResource extends DelegatingCrudResource<EmrMonito
      * @return the saved instance
      */
     @Override
-    public EmrMonitorServer save(EmrMonitorServer delegate) {
-        EmrMonitorServer remoteServer = null;
+    public EmrMonitorServer save(EmrMonitorServer delegate) throws ResponseException{
         try {
-            remoteServer = Context.getService(EmrMonitorService.class).registerServer(delegate);
+            return Context.getService(EmrMonitorService.class).registerServer(delegate);
         } catch (IOException e) {
-            log.error("error registering server", e);
+            throw new GenericRestException("failed to register server: "+ e.getMessage(), e);
         }
-        return remoteServer;
+
     }
 
     /**

@@ -34,6 +34,8 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
             }
 
             $scope.deleteServer = function(server) {
+
+
                 $http.delete("/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/server/" + server.uuid)
                     .success(function() {
                         console.log("Server: " + server.name + " has been deleted");

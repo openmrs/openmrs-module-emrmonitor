@@ -28,7 +28,7 @@ public interface EmrMonitorDAO {
 
     List<EmrMonitorServer> getAllEmrMonitorServers();
 
-    EmrMonitorServer getEmrMonitorServerByType(EmrMonitorServerType serverType);
+    List<EmrMonitorServer> getEmrMonitorServerByType(EmrMonitorServerType serverType);
 
     EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
 
@@ -37,4 +37,6 @@ public interface EmrMonitorDAO {
     EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report);
     
     Map<String, String> getOpenmrsData();
+
+    void deleteEmrMonitorServer(EmrMonitorServer server);
 }
