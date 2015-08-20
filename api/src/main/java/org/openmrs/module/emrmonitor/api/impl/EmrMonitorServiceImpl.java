@@ -151,8 +151,38 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     }
 
     @Override
+    public EmrMonitorServer getRemoteParentServer(EmrMonitorServer remoteServer) throws IOException{
+        if (remoteServer != null) {
+            WebResource resource = restClient.resource(remoteServer.getServerUrl()).path("ws/rest/v1/emrmonitor/server").queryParam("type", "LOCAL");
+            restClient.setReadTimeout(EmrMonitorProperties.REMOTE_SERVER_TIMEOUT);
+            resource.addFilter(new HTTPBasicAuthFilter(remoteServer.getServerUserName(), remoteServer.getServerUserPassword()));
+            ClientResponse response = resource.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
+            log.warn("response.getStatus = " + response.getStatus());
+            log.warn("response = " + response.toString());
+            if (response.getStatus() == 200) {
+                //Http Response OK
+                try {
+                    String json = response.getEntity(String.class);
+                    JsonNode results = new ObjectMapper().readValue(json, JsonNode.class).get("results");
+                    for (JsonNode result : results) {
+                        EmrMonitorServer emrMonitorServer = new ObjectMapper().readValue(result.toString(), EmrMonitorServer.class);
+                        if (emrMonitorServer !=null){
+                            // found the PARENT server
+                            return emrMonitorServer;
+                        }
+                    }
+
+                } catch (IOException e) {
+                    throw new IOException("failed to de-serialize server node received from the parent: " + e.getMessage());
+                }
+            }
+
+        }
+        return null;
+    }
+
+    @Override
     public EmrMonitorServer registerServer(EmrMonitorServer server) throws IOException {
-        EmrMonitorServer parentServer = null;
         if (server != null) {
             ObjectMapper mapper = new ObjectMapper();
 
@@ -171,17 +201,16 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
                 log.warn("response = " + response.toString());
                 if (response.getStatus() == 201) {
                     // entity has been created
-                    EmrMonitorServer emrMonitorServer = null;
-                    try {
-                        String responseEntity = response.getEntity(String.class);
-                        emrMonitorServer = new ObjectMapper().readValue(responseEntity, EmrMonitorServer.class);
-                    } catch(Exception e) {
-                        throw new IOException("failed to de-serialize server node received from the parent: " + response.toString());
+                    EmrMonitorServer emrMonitorServer = getRemoteParentServer(server);
+                    if (emrMonitorServer != null) {
+                        emrMonitorServer.setServerType(EmrMonitorServerType.PARENT);
+                        emrMonitorServer.setServerUrl(server.getServerUrl());
+                        emrMonitorServer.setServerUserName(server.getServerUserName());
+                        emrMonitorServer.setServerUserPassword(server.getServerUserPassword());
+                        //add remote server as the PARENT server in the emrmonitor_server table
+                        saveEmrMonitorServer(emrMonitorServer, emrMonitorServer.getSystemInformation());
+                        return emrMonitorServer;
                     }
-                    emrMonitorServer.setServerType(EmrMonitorServerType.PARENT);
-                    //add remote server as the PARENT server in the emrmonitor_server table
-                    saveEmrMonitorServer(emrMonitorServer, emrMonitorServer.getSystemInformation());
-                    return emrMonitorServer;
                 } else {
                     throw new IOException("failed to register with parent server: " + response.toString());
                 }

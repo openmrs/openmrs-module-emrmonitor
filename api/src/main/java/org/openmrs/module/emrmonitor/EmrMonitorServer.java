@@ -3,6 +3,7 @@ package org.openmrs.module.emrmonitor;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.openmrs.BaseOpenmrsData;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -14,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
 
     private Integer id;

@@ -50,6 +50,8 @@ public interface EmrMonitorService extends OpenmrsService {
 
     public EmrMonitorServer getLocalServer();
 
+    public EmrMonitorServer getRemoteParentServer(EmrMonitorServer remoteServer) throws IOException;
+
     public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
 
     public Map<String, Map<String, String>> getExtraSystemInfo();
