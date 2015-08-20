@@ -39,4 +39,6 @@ public interface EmrMonitorDAO {
     Map<String, String> getOpenmrsData();
 
     void deleteEmrMonitorServer(EmrMonitorServer server);
+
+    List<EmrMonitorReport> getEmrMonitorReportByServerAndStatus(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus status);
 }

@@ -50,6 +50,8 @@ public interface EmrMonitorService extends OpenmrsService {
 
     public EmrMonitorServer getLocalServer();
 
+    public EmrMonitorServer refreshLocalServerReport();
+
     public EmrMonitorServer getRemoteParentServer(EmrMonitorServer remoteServer) throws IOException;
 
     public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
@@ -60,8 +62,6 @@ public interface EmrMonitorService extends OpenmrsService {
 
     public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server, Map<String, Map<String,String>> systemInformation);
 
-    public EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report);
-
     public EmrMonitorServer testConnection(EmrMonitorServer server) throws IOException;
 
     public EmrMonitorServer registerServer(EmrMonitorServer server) throws IOException ;
@@ -70,4 +70,9 @@ public interface EmrMonitorService extends OpenmrsService {
 
     public void purgeEmrMonitorServer(EmrMonitorServer server) throws APIException;
 
+    public EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report);
+
+    public List<EmrMonitorReport> getEmrMonitorReportByServerAndStatus(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus status);
+
+    boolean sendEmrMonitorReports(EmrMonitorServer parent, List<EmrMonitorReport> reports);
 }

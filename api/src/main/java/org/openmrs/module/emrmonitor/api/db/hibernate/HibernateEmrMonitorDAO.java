@@ -16,6 +16,7 @@ package org.openmrs.module.emrmonitor.api.db.hibernate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -121,7 +122,26 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
         return report;
     }
 
-	@Override
+    @Override
+    public List<EmrMonitorReport> getEmrMonitorReportByServerAndStatus(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus status) {
+
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorReport.class);
+        criteria.add(Restrictions.eq("emrMonitorServer", server));
+        criteria.add(Restrictions.eq("status", status));
+
+        try {
+            List<EmrMonitorReport> list = (List<EmrMonitorReport>)criteria.list();
+            if (list != null && list.size() > 0) {
+                return list;
+            }
+        } catch (Exception e) {
+            log.error("failed to retrieve a list of reports", e);
+        }
+
+        return null;
+    }
+
+    @Override
 	public Map<String, String> getOpenmrsData() {
 		Map openmrsData	=new HashMap<String, Integer>();
 		Session session=sessionFactory.getCurrentSession();

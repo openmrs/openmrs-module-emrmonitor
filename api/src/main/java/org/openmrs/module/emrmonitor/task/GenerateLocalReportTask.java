@@ -23,33 +23,7 @@ public class GenerateLocalReportTask extends EmrMonitorTask{
     private class RunnableTask implements Runnable {
         @Override
         public void run() {
-            try {
-                // refresh Local Server EmrMonitorServer record
-                EmrMonitorServer localServer = Context.getService(EmrMonitorService.class).getLocalServer();
-                if (localServer == null) {
-                    //create new Local Server record
-                    localServer = new EmrMonitorServer();
-                    localServer.setName(InetAddress.getLocalHost().getHostName());
-                    localServer.setServerType(EmrMonitorServerType.LOCAL);
-                    localServer.setDateCreated(new Date());
-                    localServer.setUuid(UUID.randomUUID().toString());
-                }
-
-                Map<String, Map<String, String>> systemInformation = Context.getAdministrationService().getSystemInformation();
-                Map<String, Map<String, String>> extraSystemInfo = null; //Context.getService(EmrMonitorService.class).getExtraSystemInfo();
-                if (extraSystemInfo != null && extraSystemInfo.size() > 0) {
-                    systemInformation.putAll(extraSystemInfo);
-                }
-                localServer.setSystemInformation(systemInformation);
-
-                localServer = Context.getService(EmrMonitorService.class).saveEmrMonitorServer(localServer, systemInformation);
-                if (localServer == null) {
-                    log.error("failed to generate new local server system information");
-                }
-            } catch (Exception e) {
-                log.error("error generating local server system information", e);
-            }
-
+            Context.getService(EmrMonitorService.class).refreshLocalServerReport();
         }
     }
 }

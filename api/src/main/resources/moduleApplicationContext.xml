@@ -54,11 +54,18 @@
     <bean id="emrmonitorTimerFactory" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
         <property name="scheduledExecutorTasks">
             <list>
-                <bean id="refillIdentifierPools" class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
-                    <property name="delay" value="60000" /> <!-- delay 60 seconds -->
-                    <property name="period" value="120000" /> <!-- run every 2 minutes -->
+                <bean id="generateLocalReports" class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
+                    <property name="delay" value="120000" /> <!-- delay 120 seconds -->
+                    <property name="period" value="600000" /> <!-- run every 10 minutes -->
                     <property name="runnable">
                         <bean class="org.openmrs.module.emrmonitor.task.GenerateLocalReportTask"/>
+                    </property>
+                </bean>
+                <bean id="transmitLocalReports" class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
+                    <property name="delay" value="30000" /> <!-- delay 2 minutes -->
+                    <property name="period" value="600000" /> <!-- run every 10 minutes -->
+                    <property name="runnable">
+                        <bean class="org.openmrs.module.emrmonitor.task.TransmitLocalReportTask"/>
                     </property>
                 </bean>
             </list>

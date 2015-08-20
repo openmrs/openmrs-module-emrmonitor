@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorReportMetric;
@@ -35,11 +36,13 @@ import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 /**
  * It is a default implementation of {@link EmrMonitorService}.
@@ -100,6 +103,17 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
             report = dao.saveEmrMonitorReport(report);
         }
         return report;
+    }
+
+    @Override
+    public List<EmrMonitorReport> getEmrMonitorReportByServerAndStatus(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus status) {
+        return dao.getEmrMonitorReportByServerAndStatus(server, status);
+    }
+
+    @Override
+    public boolean sendEmrMonitorReports(EmrMonitorServer parent, List<EmrMonitorReport> reports) {
+
+        return false;
     }
 
     @Override
@@ -246,6 +260,39 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
             return servers.get(0);
         }
         return null;
+    }
+
+    @Override
+    public EmrMonitorServer refreshLocalServerReport() {
+        EmrMonitorServer localServer = null;
+        try {
+            // refresh Local Server EmrMonitorServer record
+            localServer = Context.getService(EmrMonitorService.class).getLocalServer();
+            if (localServer == null) {
+                //create new Local Server record
+                localServer = new EmrMonitorServer();
+                localServer.setName(InetAddress.getLocalHost().getHostName());
+                localServer.setServerType(EmrMonitorServerType.LOCAL);
+                localServer.setDateCreated(new Date());
+                localServer.setUuid(UUID.randomUUID().toString());
+            }
+
+            Map<String, Map<String, String>> systemInformation = Context.getAdministrationService().getSystemInformation();
+            Map<String, Map<String, String>> extraSystemInfo = null; //Context.getService(EmrMonitorService.class).getExtraSystemInfo();
+            if (extraSystemInfo != null && extraSystemInfo.size() > 0) {
+                systemInformation.putAll(extraSystemInfo);
+            }
+            localServer.setSystemInformation(systemInformation);
+
+            localServer = saveEmrMonitorServer(localServer, systemInformation);
+            if (localServer == null) {
+                log.error("failed to generate new local server system information");
+            }
+        } catch (Exception e) {
+            log.error("error generating local server system information", e);
+        }
+
+        return localServer;
     }
 
     @Override
