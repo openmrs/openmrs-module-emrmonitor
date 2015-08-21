@@ -60,7 +60,7 @@ public interface EmrMonitorService extends OpenmrsService {
 
 	public Map<String, String> getOpenmrsData();
 
-    public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server, Map<String, Map<String,String>> systemInformation);
+    public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server, Map<String, Map<String,String>> systemInformation, EmrMonitorReport.SubmissionStatus reportStatus);
 
     public EmrMonitorServer testConnection(EmrMonitorServer server) throws IOException;
 
@@ -70,9 +70,11 @@ public interface EmrMonitorService extends OpenmrsService {
 
     public void purgeEmrMonitorServer(EmrMonitorServer server) throws APIException;
 
+    public Map<String, Map<String, String>> getSystemInfoFromReport(EmrMonitorReport report) throws IOException;
+
     public EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report);
 
     public List<EmrMonitorReport> getEmrMonitorReportByServerAndStatus(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus status);
 
-    boolean sendEmrMonitorReports(EmrMonitorServer parent, List<EmrMonitorReport> reports);
+    boolean sendEmrMonitorReports(EmrMonitorServer parent, List<EmrMonitorReport> reports) throws IOException;
 }

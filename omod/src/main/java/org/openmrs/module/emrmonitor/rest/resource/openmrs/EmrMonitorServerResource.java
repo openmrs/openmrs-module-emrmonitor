@@ -2,6 +2,7 @@ package org.openmrs.module.emrmonitor.rest.resource.openmrs;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
@@ -49,19 +50,6 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
     }
 
     /**
-     * @param uuid
-     * @param propertiesToUpdate
-     * @param context
-     * @see org.openmrs.module.webservices.rest.web.resource.api.Updatable#update(String,
-     * org.openmrs.module.webservices.rest.SimpleObject)
-     */
-    @Override
-    public Object update(String uuid, SimpleObject propertiesToUpdate, RequestContext context) throws ResponseException {
-        // if CHILD server exists and
-        return super.update(uuid, propertiesToUpdate, context);
-    }
-
-    /**
      * Void or retire delegate, whichever action is appropriate for the resource type. Subclasses
      * need to override this method, which is called internally by
      * {@link #delete(String, String, org.openmrs.module.webservices.rest.web.RequestContext)}.
@@ -98,8 +86,15 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
      */
     @Override
     public EmrMonitorServer save(EmrMonitorServer delegate) {
+        if (delegate.getId() != null){
+            // existing EmrMonitorServer record gets updated
+            log.warn("updating current EmrMonitorServer record: " + delegate.toString());
+        } else {
+            log.warn("creating new EmrMonitorServer record: " + delegate.toString());
+        }
         if (delegate.getSystemInformation() != null) {
-            return Context.getService(EmrMonitorService.class).saveEmrMonitorServer(delegate, delegate.getSystemInformation());
+            return Context.getService(EmrMonitorService.class)
+                    .saveEmrMonitorServer(delegate, delegate.getSystemInformation(), EmrMonitorReport.SubmissionStatus.RECEIVED);
         }
         return Context.getService(EmrMonitorService.class).saveEmrMonitorServer(delegate);
     }

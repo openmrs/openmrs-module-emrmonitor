@@ -18,7 +18,7 @@ public class EmrMonitorReport implements Comparable<EmrMonitorReport>{
     }
 
     public enum SubmissionStatus {
-        WAITING_TO_SEND, SENT, LOCAL_ONLY
+        WAITING_TO_SEND, SENT, RECEIVED, LOCAL_ONLY
     }
 
     private Integer id;

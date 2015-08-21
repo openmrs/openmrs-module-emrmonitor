@@ -139,6 +139,7 @@ public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
     private EmrMonitorServer copyHelper(EmrMonitorServer target) {
         target.setName(this.getName());
         target.setUuid(this.getUuid());
+        target.setServerType(this.getServerType());
         target.setServerUrl(this.getServerUrl());
         target.setServerUserName(getServerUserName());
         target.setServerUserPassword(getServerUserPassword());

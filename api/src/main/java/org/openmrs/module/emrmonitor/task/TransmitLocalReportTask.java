@@ -29,12 +29,12 @@ public class TransmitLocalReportTask extends EmrMonitorTask{
                         List<EmrMonitorReport> reports = Context.getService(EmrMonitorService.class)
                                 .getEmrMonitorReportByServerAndStatus(localServer, EmrMonitorReport.SubmissionStatus.WAITING_TO_SEND);
                         if (reports != null && reports.size() > 0) {
+                            log.warn("transmiting " + reports.size() + " reports");
                             for (EmrMonitorServer parent : parents) {
                                 Context.getService(EmrMonitorService.class).sendEmrMonitorReports(parent, reports);
                             }
                         }
                     }
-
                 }
             } catch (Exception e) {
                 log.error("error transmitting local report ", e);

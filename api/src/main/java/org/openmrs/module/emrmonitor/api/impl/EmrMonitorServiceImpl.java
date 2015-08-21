@@ -19,8 +19,10 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
@@ -38,6 +40,8 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -111,13 +115,64 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     }
 
     @Override
-    public boolean sendEmrMonitorReports(EmrMonitorServer parent, List<EmrMonitorReport> reports) {
+    public boolean sendEmrMonitorReports(EmrMonitorServer parent, List<EmrMonitorReport> reports) throws IOException {
+        if (parent != null) {
+            String parentServerUrl = parent.getServerUrl();
+            String parentServerUserName = parent.getServerUserName();
+            String parentServerUserPassword = parent.getServerUserPassword();
+            restClient.setReadTimeout(EmrMonitorProperties.REMOTE_SERVER_TIMEOUT);
 
+            for (EmrMonitorReport report : reports) {
+                EmrMonitorServer monitorServer = report.getEmrMonitorServer();
+                Map<String, Map<String, String>> systemInfoFromReport = getSystemInfoFromReport(report);
+
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, Object> updatedReport = new HashMap<String, Object>();
+                updatedReport.put("uuid", monitorServer.getUuid());
+                updatedReport.put("systemInformation", systemInfoFromReport);
+                String jsonUpdatedReport = mapper.writeValueAsString(updatedReport);
+
+                WebResource resource = restClient.resource(parentServerUrl).path("ws/rest/v1/emrmonitor/server/" + monitorServer.getUuid());
+                resource.addFilter(new HTTPBasicAuthFilter(parentServerUserName, parentServerUserPassword));
+                ClientResponse response = resource.type(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON_TYPE)
+                        .post(ClientResponse.class, jsonUpdatedReport);
+                log.warn("report transmit response.getStatus = " + response.getStatus());
+                log.warn("report transmit response = " + response.toString());
+                if (response.getStatus() == 200) {
+                    report.setStatus(EmrMonitorReport.SubmissionStatus.SENT);
+                    saveEmrMonitorReport(report);
+                    return true;
+                } else {
+                    throw new IOException("failed to send metrics report to parent server: " + response.toString());
+                }
+            }
+        }
         return false;
     }
 
+    public Map<String, Map<String, String>> getSystemInfoFromReport(EmrMonitorReport report) {
+        Map<String, Map<String, String>> systemInformation = null;
+        if (report !=null) {
+            systemInformation = new LinkedHashMap<String, Map<String, String>>();
+            Set<EmrMonitorReportMetric> metrics = report.getMetrics();
+            for (EmrMonitorReportMetric metric : metrics) {
+                String category = metric.getCategory();
+                String metricName = metric.getMetric();
+                String metricValue = metric.getValue();
+                Map<String, String> categoryMetrics = systemInformation.get(category);
+                if (categoryMetrics == null) {
+                    categoryMetrics = new LinkedHashMap<String, String>();
+                }
+                categoryMetrics.put(metricName, metricValue);
+                systemInformation.put(category, categoryMetrics);
+            }
+        }
+        return systemInformation;
+    }
+
     @Override
-    public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server, Map<String, Map<String, String>> systemInformation) {
+    public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server, Map<String, Map<String, String>> systemInformation, EmrMonitorReport.SubmissionStatus reportStatus) {
         EmrMonitorServer emrMonitorServer = null;
         if (server != null ) {
             emrMonitorServer = saveEmrMonitorServer(server);
@@ -142,7 +197,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
                     }
                 }
                 emrMonitorReport.setMetrics(reportMetrics);
-                emrMonitorReport.setStatus(EmrMonitorReport.SubmissionStatus.WAITING_TO_SEND);
+                emrMonitorReport.setStatus(reportStatus);
                 saveEmrMonitorReport(emrMonitorReport);
                 emrMonitorServer.setSystemInformation(systemInformation);
             }
@@ -185,7 +240,6 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
                             return emrMonitorServer;
                         }
                     }
-
                 } catch (IOException e) {
                     throw new IOException("failed to de-serialize server node received from the parent: " + e.getMessage());
                 }
@@ -215,15 +269,14 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
                 log.warn("response = " + response.toString());
                 if (response.getStatus() == 201) {
                     // entity has been created
-                    EmrMonitorServer emrMonitorServer = getRemoteParentServer(server);
-                    if (emrMonitorServer != null) {
-                        emrMonitorServer.setServerType(EmrMonitorServerType.PARENT);
-                        emrMonitorServer.setServerUrl(server.getServerUrl());
-                        emrMonitorServer.setServerUserName(server.getServerUserName());
-                        emrMonitorServer.setServerUserPassword(server.getServerUserPassword());
+                    EmrMonitorServer remoteParentServer = getRemoteParentServer(server);
+                    if (remoteParentServer != null) {
+                        remoteParentServer.setServerType(EmrMonitorServerType.PARENT);
+                        remoteParentServer.setServerUrl(server.getServerUrl());
+                        remoteParentServer.setServerUserName(server.getServerUserName());
+                        remoteParentServer.setServerUserPassword(server.getServerUserPassword());
                         //add remote server as the PARENT server in the emrmonitor_server table
-                        saveEmrMonitorServer(emrMonitorServer, emrMonitorServer.getSystemInformation());
-                        return emrMonitorServer;
+                        return saveEmrMonitorServer(remoteParentServer, remoteParentServer.getSystemInformation(), EmrMonitorReport.SubmissionStatus.RECEIVED);
                     }
                 } else {
                     throw new IOException("failed to register with parent server: " + response.toString());
@@ -284,7 +337,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
             }
             localServer.setSystemInformation(systemInformation);
 
-            localServer = saveEmrMonitorServer(localServer, systemInformation);
+            localServer = saveEmrMonitorServer(localServer, systemInformation, EmrMonitorReport.SubmissionStatus.WAITING_TO_SEND);
             if (localServer == null) {
                 log.error("failed to generate new local server system information");
             }
