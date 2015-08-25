@@ -85,6 +85,7 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
     @Override
     public List<EmrMonitorServer> getEmrMonitorServerByType(EmrMonitorServerType serverType) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class);
+        criteria.add(Restrictions.eq("voided", false));
         criteria.add(Restrictions.eq("serverType", serverType));
         try {
             List<EmrMonitorServer> list = (List<EmrMonitorServer>) criteria.list();

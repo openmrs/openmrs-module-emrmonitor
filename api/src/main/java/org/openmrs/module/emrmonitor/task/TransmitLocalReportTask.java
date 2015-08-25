@@ -31,7 +31,11 @@ public class TransmitLocalReportTask extends EmrMonitorTask{
                         if (reports != null && reports.size() > 0) {
                             log.warn("transmiting " + reports.size() + " reports");
                             for (EmrMonitorServer parent : parents) {
-                                Context.getService(EmrMonitorService.class).sendEmrMonitorReports(parent, reports);
+                                try {
+                                    Context.getService(EmrMonitorService.class).sendEmrMonitorReports(parent, reports);
+                                } catch (Exception transmissionException){
+                                    log.error("error transmitting local report to parent: " + parent.getName() , transmissionException);
+                                }
                             }
                         }
                     }
