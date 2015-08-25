@@ -86,16 +86,6 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
      */
     @Override
     public EmrMonitorServer save(EmrMonitorServer delegate) {
-        if (delegate.getId() != null){
-            // existing EmrMonitorServer record gets updated
-            log.warn("updating current EmrMonitorServer record: " + delegate.toString());
-        } else {
-            log.warn("creating new EmrMonitorServer record: " + delegate.toString());
-        }
-        if (delegate.getSystemInformation() != null) {
-            return Context.getService(EmrMonitorService.class)
-                    .saveEmrMonitorServer(delegate, delegate.getSystemInformation(), EmrMonitorReport.SubmissionStatus.RECEIVED);
-        }
         return Context.getService(EmrMonitorService.class).saveEmrMonitorServer(delegate);
     }
 

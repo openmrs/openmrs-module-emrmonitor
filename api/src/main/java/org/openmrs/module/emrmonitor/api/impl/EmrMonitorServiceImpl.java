@@ -331,7 +331,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
             }
 
             Map<String, Map<String, String>> systemInformation = Context.getAdministrationService().getSystemInformation();
-            Map<String, Map<String, String>> extraSystemInfo = null; //Context.getService(EmrMonitorService.class).getExtraSystemInfo();
+            Map<String, Map<String, String>> extraSystemInfo = Context.getService(EmrMonitorService.class).getExtraSystemInfo();
             if (extraSystemInfo != null && extraSystemInfo.size() > 0) {
                 systemInformation.putAll(extraSystemInfo);
             }
