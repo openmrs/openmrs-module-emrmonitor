@@ -1,87 +1,62 @@
-angular.module('compareEmrMonitorServers', ['encounterService', 'ui.bootstrap'])
+angular.module('compareEmrMonitorServers', ['ngAnimate', 'ngTouch', 'ui.grid', 'ui.grid.selection', 'ui.grid.pinning', 'ui.grid.exporter', 'ui.grid.moveColumns', 'ui.grid.resizeColumns', 'ui.bootstrap'])
 
 .controller('CompareEmrMonitorServersCtrl', ['$scope', '$http',
   function($scope, $http) {
 
-    $scope.showCompareServers = false;
+    $scope.gridOptions = {
 
+      enableGridMenu: true,
+      enableSelectAll: true,
+      exporterCsvFilename: 'servers.csv',
+      exporterPdfDefaultStyle: {
+        fontSize: 9
+      },
+      exporterPdfTableStyle: {
+        margin: [30, 30, 30, 30]
+      },
+      exporterPdfTableHeaderStyle: {
+        fontSize: 10,
+        bold: true,
+        italics: true,
+        color: 'red'
+      },
+      exporterPdfHeader: {
+        text: "IMB Servers",
+        style: 'headerStyle'
+      },
+      exporterPdfFooter: function(currentPage, pageCount) {
+        return {
+          text: currentPage.toString() + ' of ' + pageCount.toString(),
+          style: 'footerStyle'
+        };
+      },
+      exporterPdfCustomFormatter: function(docDefinition) {
+        docDefinition.styles.headerStyle = {
+          fontSize: 22,
+          bold: true
+        };
+        docDefinition.styles.footerStyle = {
+          fontSize: 10,
+          bold: true
+        };
+        return docDefinition;
+      },
+      exporterPdfOrientation: 'landscape',
+      exporterPdfPageSize: 'LETTER',
+      exporterPdfMaxGridWidth: 500,
+      exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+      onRegisterApi: function(gridApi) {
+        $scope.gridApi = gridApi;
+      }
+    };
 
     $scope.getServers = function() {
       $http.get("/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/server?v=default")
         .success(function(data) {
-          $scope.servers = data.servers;
-          $scope.showCompareServers = true;
+        	$scope.gridOptions.data = data.servers;
         });
     }
 
     $scope.getServers();
-
-    /*
-     * Reads all the keys in the "systemInformation" node of the Json file and returns them in an array.
-     * They will be used as checkboxes where a user can select which data point to display.
-     */
-    $scope.getKeys = function(event) {
-      var str = event;
-      var keys = [];
-      angular.forEach($scope.servers, function(server, event) {
-        angular.forEach(server.systemInformation, function(key, value) {
-          if (value === str) {
-            angular.forEach(key, function(key, value) {
-              if (keys.indexOf(value) < 0) {
-                keys.push(value);
-              }
-            });
-          }
-        });
-
-
-      });
-      return keys;
-    };
-
-    /*
-     * Creates checkboxes from the keys using getKeys() method and displays all 
-     * the values in a table format.
-     */
-    $scope.click = function(event) {
-      var keys = $scope.getKeys(event);
-      document.getElementById("compareServers").innerHTML = "";
-      var tr = document.createElement('tr');
-      var td1 = document.createElement('td');
-      td1.innerHTML = '<h2>Servers</h2>';
-      tr.appendChild(td1);
-      for (var i in keys) {
-        var td = document.createElement('td');
-        var msg = keys[i];
-        td.innerHTML += '<h2>' + msg + '</h2>';
-        tr.appendChild(td);
-      }
-
-      document.getElementById("compareServers").appendChild(tr);
-      var str = event;
-      angular.forEach($scope.servers, function(server, event) {
-        angular.forEach(server.systemInformation, function(key, value) {
-
-          if (value === str) {
-            var tr = document.createElement('tr');
-            var t = document.createElement('td');
-            t.innerHTML = server.name;
-            tr.appendChild(t);
-
-            for (var i in keys) {
-              var td = document.createElement('td');
-              td.innerHTML += key[keys[i]];
-              tr.appendChild(td);
-            }
-            document.getElementById("compareServers").appendChild(tr);
-
-          }
-
-        });
-
-      });
-
-    };
-
   }
 ])
