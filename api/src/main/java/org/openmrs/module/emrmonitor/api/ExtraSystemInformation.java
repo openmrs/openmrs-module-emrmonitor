@@ -187,13 +187,21 @@ public String getCPUInfo(String startsWith) {
 
 //UPTIME FUNCTIONNALITY
 	 // logging all PC activities in the emr.log file
-  public void writeInformationinTheLocalFile() throws IOException{
+public void writeInformationinTheLocalFile() throws IOException{
   	try {
+  		File informationfile=new File(homedir+File.separator+"emts.log");
+		if(!informationfile.exists()) {
+			informationfile.createNewFile();
+			System.out.println("==homedir==: "+informationfile);
+    		
+		}
+		else{
   		String sCurrentLine;
-			BufferedReader br=new BufferedReader(new FileReader("/home/emt.log"));
+			BufferedReader br=new BufferedReader(new FileReader(homedir+File.separator+"emts.log"));
 			while ((sCurrentLine = br.readLine()) != null) {
-				//System.out.println(sCurrentLine);
+				//System.out.println(br);
 			}
+  	      }
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -230,13 +238,13 @@ public String getCPUInfo(String startsWith) {
 	  double totalHoursUptimeLastMonth=0;
 	  Date lastDateInPcwasOn=null;
 	  Set <String> timespcCrashedSet=new TreeSet<String>();
+	  String homedir = System.getProperty("user.home");
 	  
 		 void getPCinformationMonitored() throws IOException, ParseException{
 			try {
 				String sCurrentLine = new String();
 				String standardLine = new String();
-				BufferedReader br = new BufferedReader(new FileReader(
-						"/Users/neza/emts.log"));
+				BufferedReader br=new BufferedReader(new FileReader(homedir+File.separator+"emts.log"));
 				//This Week range
 				int firstDateThisWeek=getstartDate(0);
 				int lastDateThisWeek=getendDate(-6);
@@ -396,18 +404,19 @@ public String getCPUInfo(String startsWith) {
 	   }
 	    
 	    public String getLastTimePcWasOn(){
+	    	String lastPCInformation=null;
 	    	try {
 				getPCinformationMonitored();
-			} catch (IOException e) {
+				DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss zzz yyyy");
+		    	lastPCInformation = formatter.format(lastDateInPcwasOn);
+		    	System.out.println("last time pc was on"+lastPCInformation);
+		    } catch (IOException e) {
 				e.printStackTrace();
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-			
-	    	DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss zzz yyyy");
-	    	String lastPCInformation = formatter.format(lastDateInPcwasOn);
-	    	System.out.println("last time pc was on"+lastPCInformation);
 	    	return lastPCInformation;
+			
 	    	
 	    }
 	    
@@ -540,7 +549,7 @@ public String getCPUInfo(String startsWith) {
              	put("SystemInfo.emrSyncDataInformation.pendingRecords", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("pendingRecords"));
              	put("SystemInfo.emrSyncDataInformation.rejectedObject", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("rejectedObject"));
                 put("SystemInfo.emrSyncDataInformation.failedRecord", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedRecord"));
-             	put("SystemInfo.emrSyncDataInformation.failedObject", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedObject"));
+             	//put("SystemInfo.emrSyncDataInformation.failedObject", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedObject"));
              }
         });
 		

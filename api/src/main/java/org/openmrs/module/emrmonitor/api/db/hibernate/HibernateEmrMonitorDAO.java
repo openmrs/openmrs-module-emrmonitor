@@ -186,12 +186,12 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
 	    	openmrsData.put("failedRecord", "NO");
 	    
 	    
-	    String sql8="select contained_classes from sync_record where state='FAILED' and uuid=original_uuid";
+	    /*String sql8="select contained_classes from sync_record where state='FAILED' and uuid=original_uuid";
 	    SQLQuery query8=session.createSQLQuery(sql8);	    
 	    String objectFailedFull=query8.list().get(0).toString().split(",")[0];
 	    String objectFailed=objectFailedFull.split(".")[(objectFailedFull.split(".").length)-1];
 	    openmrsData.put("failedObject", objectFailed);
-	    
+	    */
 	    String sql9="select contained_classes from sync_record where state='REJECTED' and uuid=original_uuid";
 	    SQLQuery query9=session.createSQLQuery(sql9);	    
 	    int rejectedObject=query9.list().size();
