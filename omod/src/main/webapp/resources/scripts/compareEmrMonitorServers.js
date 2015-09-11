@@ -50,13 +50,99 @@ angular.module('compareEmrMonitorServers', ['ngAnimate', 'ngTouch', 'ui.grid', '
       }
     };
 
+    /**
+     * Reads all the keys in the "systemInformation" node of the Json file and returns them in an array.
+     * They will be used as checkboxes where a user can select which data point to display.
+     */
+    $scope.getKeys = function(event) {
+      var str = event;
+      var keys = [];
+      angular.forEach($scope.servers, function(server, event) {
+        angular.forEach(server.systemInformation, function(key, value) {
+          if (value === str) {
+            angular.forEach(key, function(key, value) {
+              if (keys.indexOf(value) < 0) {
+                keys.push(value);
+              }
+            });
+          }
+        });
+
+
+      });
+      return keys;
+    };
+
     $scope.getServers = function() {
       $http.get("/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/server?v=default")
         .success(function(data) {
-        	$scope.gridOptions.data = data.servers;
+        	$scope.servers = data.servers;
         });
     }
 
     $scope.getServers();
+
+
+    /**
+     * Creates a new Json object from 
+     * the selected key
+     */
+    $scope.click = function(clicked) {
+
+      var keys = $scope.getKeys(clicked);
+      var newJson = [];
+      angular.forEach($scope.servers, function(server, event) {
+
+        var jsonObject = {};
+        jsonObject['serverName'] = server.serverName;
+
+        for (var i in keys) {
+
+          var nestedKey = keys[i];
+          /*
+           * We want to remove the dots in the keys as javascript may
+           * interpret them as calls to object properties
+           */
+          var newKey = nestedKey.substring(nestedKey.lastIndexOf(".") + 1);
+          var nestedValue = $scope.getNestedValue(server.serverName, clicked, nestedKey);
+
+          jsonObject[newKey] = nestedValue;
+        }
+
+        newJson.push(jsonObject);
+
+      });
+
+      /*
+       * Clear the columns and load new data into the grid
+       */
+
+      $scope.gridOptions.columnDefs.length = 0;
+      $scope.gridOptions.data = newJson;
+
+
+    };
+    
+    /**
+     * Uses the server name and the selected key to retrieve the 
+     * value of corresponding to the nestedKey parameter.
+     */
+
+    $scope.getNestedValue = function(name, clicked, nestedKey) {
+      var value = null;
+      angular.forEach($scope.servers, function(server, event) {
+
+        if (server.serverName == name) {
+
+          angular.forEach(server.systemInformation, function(obj, event) {
+
+            if (event == clicked) {
+              value = obj[nestedKey];
+            }
+          });
+        }
+      });
+      return value;
+    };
   }
 ])

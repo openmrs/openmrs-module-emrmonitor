@@ -25,8 +25,21 @@ ${ ui.includeFragment("emrmonitor", "menu") }
 <h3>EMR Servers</h3>
 <div id="compare-emrmonitor-servers-app" class="container" ng-controller="CompareEmrMonitorServersCtrl">
 
-  <div ui-grid="gridOptions" ui-grid-selection ui-grid-exporter ui-grid-tree-view ui-grid-pinning ui-grid-resize-columns ui-grid-move-columns class="grid"></div>
+   
 
+    <ul ng-repeat="server in servers |limitTo:1">
+      <ul ng-repeat="(key, val) in server.systemInformation">
+        <li>
+          {{key}}
+          <input id="{{key}}" type="checkbox" ng-click="click(key)" />
+        </li>
+
+      </ul>
+    </ul>
+    <br/>
+    <br/>
+    <div ui-grid="gridOptions" ui-grid-selection ui-grid-exporter ui-grid-tree-view ui-grid-pinning ui-grid-auto-resize class="grid"></div>
+  
 </div>
 
 <script type="text/javascript">
