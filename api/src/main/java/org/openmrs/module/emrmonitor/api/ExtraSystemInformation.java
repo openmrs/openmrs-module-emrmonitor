@@ -403,7 +403,7 @@ public void writeInformationinTheLocalFile() throws IOException{
 			return  totalLastMonthyuptime;
 	   }
 	    
-	    public String getLastTimePcWasOn(){
+	    /*  public String getLastTimePcWasOn(){
 	    	String lastPCInformation=null;
 	    	try {
 				getPCinformationMonitored();
@@ -416,11 +416,9 @@ public void writeInformationinTheLocalFile() throws IOException{
 				e.printStackTrace();
 			}
 	    	return lastPCInformation;
-			
-	    	
-	    }
-	    
-	    public String getTimesOfCrash(){
+		 }
+	    */
+	   public String getTimesOfCrash(){
 	    	try{
 	    		getPCinformationMonitored();
 	    	}
@@ -549,7 +547,7 @@ public void writeInformationinTheLocalFile() throws IOException{
              	put("SystemInfo.emrSyncDataInformation.pendingRecords", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("pendingRecords"));
              	put("SystemInfo.emrSyncDataInformation.rejectedObject", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("rejectedObject"));
                 put("SystemInfo.emrSyncDataInformation.failedRecord", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedRecord"));
-             	//put("SystemInfo.emrSyncDataInformation.failedObject", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedObject"));
+             	put("SystemInfo.emrSyncDataInformation.failedObject", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedObject"));
              }
         });
 		
@@ -603,7 +601,7 @@ public void writeInformationinTheLocalFile() throws IOException{
             	
     	        private static final long serialVersionUID = 1L;
     				{
-    					put("SystemInfo.timeofstartorcrush.LastTimePCWasOn",getLastTimePcWasOn());
+    					//put("SystemInfo.timeofstartorcrush.LastTimePCWasOn",getLastTimePcWasOn());
     					put("SystemInfo.timeofstartorcrush.LastTimePCWasOn",getTimesOfCrash());
     				}
     			});
