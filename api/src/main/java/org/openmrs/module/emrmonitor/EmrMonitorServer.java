@@ -1,26 +1,20 @@
 package org.openmrs.module.emrmonitor;
 
 
-import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.openmrs.BaseOpenmrsData;
+import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.User;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
+public class EmrMonitorServer extends BaseOpenmrsMetadata implements Serializable {
 
     private Integer id;
-
-    private String name;
 
     private EmrMonitorServerType serverType;
 
@@ -29,12 +23,6 @@ public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
     private String serverUserName;
 
     private String serverUserPassword;
-
-    private String uuid;
-
-    private Date dateCreated;
-
-    private Date dateChanged;
 
     private Map<String, Map<String, String>> systemInformation = null;
 
@@ -48,14 +36,6 @@ public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
     @Override
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public EmrMonitorServerType getServerType() {
@@ -149,8 +129,8 @@ public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
 
     @Override
     @JsonIgnore
-    public Boolean isVoided() {
-        return super.isVoided();
+    public Boolean isRetired() {
+        return super.isRetired();
     }
 
     @Override
@@ -167,7 +147,7 @@ public class EmrMonitorServer extends BaseOpenmrsData implements Serializable{
 
     @Override
     @JsonIgnore
-    public User getVoidedBy() {
-        return super.getVoidedBy();
+    public User getRetiredBy() {
+        return super.getRetiredBy();
     }
 }

@@ -4,10 +4,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
-    <!--
-        See http://www.liquibase.org/manual/home#available_database_refactorings
-        for a list of supported elements and attributes
-    -->
+
     <changeSet id="emrmonitor-1" author="cioan">
         <comment>Adds emrmonitor_server table</comment>
         <createTable tableName="emrmonitor_server">
@@ -120,4 +117,13 @@
                                  referencedTableName="emrmonitor_report" referencedColumnNames="id"/>
 
     </changeSet>
+
+    <changeSet id="emrmonitor-4" author="mseaton">
+        <comment>Changes emrmonitor_server from voidable to retireable (from data to metadata)</comment>
+        <renameColumn tableName="emrmonitor_server" oldColumnName="voided" newColumnName="retired" columnDataType="tinyint" />
+        <renameColumn tableName="emrmonitor_server" oldColumnName="voided_by" newColumnName="retired_by" columnDataType="int" />
+        <renameColumn tableName="emrmonitor_server" oldColumnName="date_voided" newColumnName="date_retired" columnDataType="datetime" />
+        <renameColumn tableName="emrmonitor_server" oldColumnName="void_reason" newColumnName="retire_reason" columnDataType="int" />
+    </changeSet>
+
 </databaseChangeLog>

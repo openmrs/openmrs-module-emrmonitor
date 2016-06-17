@@ -2,7 +2,6 @@ package org.openmrs.module.emrmonitor.rest.resource.openmrs;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
@@ -61,10 +60,10 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
      */
     @Override
     protected void delete(EmrMonitorServer delegate, String reason, RequestContext context) throws ResponseException {
-        if (delegate.isVoided()){
+        if (delegate.isRetired()){
             return;
         }
-        EmrMonitorServer emrMonitorServer = Context.getService(EmrMonitorService.class).voidEmrMonitorServer(delegate, "delete via ws");
+        EmrMonitorServer emrMonitorServer = Context.getService(EmrMonitorService.class).retireEmrMonitorServer(delegate, "delete via ws");
         return;
     }
 

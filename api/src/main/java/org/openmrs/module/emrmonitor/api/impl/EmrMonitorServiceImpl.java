@@ -19,10 +19,8 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
@@ -287,7 +285,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     }
 
     @Override
-    public EmrMonitorServer voidEmrMonitorServer(EmrMonitorServer server, String reason) throws APIException {
+    public EmrMonitorServer retireEmrMonitorServer(EmrMonitorServer server, String reason) throws APIException {
         if (server == null) {
             return null;
         }

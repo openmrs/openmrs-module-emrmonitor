@@ -66,7 +66,7 @@ public interface EmrMonitorService extends OpenmrsService {
 
     public EmrMonitorServer registerServer(EmrMonitorServer server) throws IOException ;
 
-    public EmrMonitorServer voidEmrMonitorServer(EmrMonitorServer server, String reason) throws APIException;
+    public EmrMonitorServer retireEmrMonitorServer(EmrMonitorServer server, String reason) throws APIException;
 
     public void purgeEmrMonitorServer(EmrMonitorServer server) throws APIException;
 

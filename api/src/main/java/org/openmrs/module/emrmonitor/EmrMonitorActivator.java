@@ -14,21 +14,13 @@
 package org.openmrs.module.emrmonitor;
 
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.module.DaemonToken;
 import org.openmrs.module.DaemonTokenAware;
 import org.openmrs.module.ModuleActivator;
-import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.openmrs.module.emrmonitor.task.EmrMonitorTask;
-
-import java.net.InetAddress;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
@@ -64,7 +56,6 @@ public class EmrMonitorActivator extends BaseModuleActivator implements DaemonTo
 	public void started() {
         EmrMonitorTask.setEnabled(true);
 		log.info("OpenMRS EmrMonitor Module started");
-
 	}
 	
 	/**
