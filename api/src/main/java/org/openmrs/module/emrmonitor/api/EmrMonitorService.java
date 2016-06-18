@@ -25,56 +25,44 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This service exposes module's core functionality. It is a Spring managed bean which is configured in moduleApplicationContext.xml.
- * <p>
- * It can be accessed only via Context:<br>
- * <code>
- * Context.getService(EmrMonitorService.class).someMethod();
- * </code>
- * 
- * @see org.openmrs.api.context.Context
+ * Service interface for EMR monitor API functionality
  */
 @Transactional
 public interface EmrMonitorService extends OpenmrsService {
-     
-	/*
-	 * Add service methods here
-	 * 
-	 */
 
-    public EmrMonitorServer getEmrMonitorServerByUuid(String serverUuid);
+    EmrMonitorServer getEmrMonitorServerByUuid(String serverUuid);
 
-    public List<EmrMonitorServer> getAllEmrMonitorServers();
+    List<EmrMonitorServer> getAllEmrMonitorServers();
 
-    public List<EmrMonitorServer> getEmrMonitorServerByType(EmrMonitorServerType serverType);
+    List<EmrMonitorServer> getEmrMonitorServerByType(EmrMonitorServerType serverType);
 
-    public EmrMonitorServer getLocalServer();
+    EmrMonitorServer getLocalServer();
 
-    public EmrMonitorServer refreshLocalServerReport();
+    EmrMonitorServer refreshLocalServerReport();
 
-    public EmrMonitorServer getRemoteParentServer(EmrMonitorServer remoteServer) throws IOException;
+    EmrMonitorServer getRemoteParentServer(EmrMonitorServer remoteServer) throws IOException;
 
-    public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
+    EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
 
-    public Map<String, Map<String, String>> getExtraSystemInfo();
+    Map<String, Map<String, String>> getExtraSystemInfo();
 
-	public Map<String, String> getOpenmrsData();
+	Map<String, String> getOpenmrsData();
 
-    public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server, Map<String, Map<String,String>> systemInformation, EmrMonitorReport.SubmissionStatus reportStatus);
+    EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server, Map<String, Map<String,String>> systemInformation, EmrMonitorReport.SubmissionStatus reportStatus);
 
-    public EmrMonitorServer testConnection(EmrMonitorServer server) throws IOException;
+    EmrMonitorServer testConnection(EmrMonitorServer server) throws IOException;
 
-    public EmrMonitorServer registerServer(EmrMonitorServer server) throws IOException ;
+    EmrMonitorServer registerServer(EmrMonitorServer server) throws IOException ;
 
-    public EmrMonitorServer retireEmrMonitorServer(EmrMonitorServer server, String reason) throws APIException;
+    EmrMonitorServer retireEmrMonitorServer(EmrMonitorServer server, String reason) throws APIException;
 
-    public void purgeEmrMonitorServer(EmrMonitorServer server) throws APIException;
+    void purgeEmrMonitorServer(EmrMonitorServer server) throws APIException;
 
-    public Map<String, Map<String, String>> getSystemInfoFromReport(EmrMonitorReport report) throws IOException;
+    Map<String, Map<String, String>> getSystemInfoFromReport(EmrMonitorReport report) throws IOException;
 
-    public EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report);
+    EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report);
 
-    public List<EmrMonitorReport> getEmrMonitorReportByServerAndStatus(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus status);
+    List<EmrMonitorReport> getEmrMonitorReportByServerAndStatus(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus status);
 
     boolean sendEmrMonitorReports(EmrMonitorServer parent, List<EmrMonitorReport> reports) throws IOException;
 }
