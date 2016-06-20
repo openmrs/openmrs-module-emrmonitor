@@ -16,18 +16,16 @@ package org.openmrs.module.emrmonitor.api.db.hibernate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
 
-import java.beans.Expression;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,44 +145,45 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
 		Map openmrsData	=new HashMap<String, Integer>();
 		Session session=sessionFactory.getCurrentSession();
 		
-		String sql="SELECT patient_id FROM orders where voided=0";
+		String sql="SELECT count(*) FROM orders where voided=0";
 	    SQLQuery query=session.createSQLQuery(sql);
-	    int numOrders=query.list().size();
+	    BigInteger numOrders = (BigInteger) query.list().get(0);
 	    openmrsData.put("orders", ""+numOrders);
 	    
-	    String sql2="select patient_id from patient where voided=0";
-	    SQLQuery query2=session.createSQLQuery(sql2);	    
-	    int numPatients=query2.list().size();	    
+	    String sql2="select count(*) from patient where voided=0";
+	    SQLQuery query2=session.createSQLQuery(sql2);
+        BigInteger numPatients= (BigInteger) query2.list().get(0);
 	    openmrsData.put("patients", ""+numPatients);
 	    
-	    String sql3="select patient_id from encounter where voided=0";
-	    SQLQuery query3=session.createSQLQuery(sql3);	    
-	    int numEncounters=query3.list().size();	    
-	    openmrsData.put("encounters", ""+numEncounters);
+	    String sql3="select count(*) from encounter where voided=0";
+	    SQLQuery query3=session.createSQLQuery(sql3);
+        BigInteger numEncounters= (BigInteger) query3.list().get(0);
+        openmrsData.put("encounters", ""+numEncounters);
 	    
-	    String sql4="select person_id from obs where voided=0";
-	    SQLQuery query4=session.createSQLQuery(sql4);	    
-	    int numObs=query4.list().size();	    
+	    String sql4="select count(*) from obs where voided=0";
+	    SQLQuery query4=session.createSQLQuery(sql4);
+        BigInteger numObs = (BigInteger) query4.list().get(0);
 	    openmrsData.put("observations", ""+numObs);
 		
-	    String sql5="select record_id from sync_record where state!='COMMITTED' and state!='NOT_SUPPOSED_TO_SYNC' and uuid=original_uuid";
-	    SQLQuery query5=session.createSQLQuery(sql5);	    
-	    int numPendingRecords=query5.list().size();	    
-	    openmrsData.put("pendingRecords", ""+numPendingRecords);	    
+	    String sql5="select count(*) from sync_record where state!='COMMITTED' and state!='NOT_SUPPOSED_TO_SYNC' and uuid=original_uuid";
+	    SQLQuery query5=session.createSQLQuery(sql5);
+        BigInteger numPendingRecords= (BigInteger) query5.list().get(0);
+        openmrsData.put("pendingRecords", ""+numPendingRecords);
 		
 	    String sql6="SELECT VERSION()";
 	    SQLQuery query6=session.createSQLQuery(sql6);	    
 	    String mysqlVersion=query6.list().get(0).toString();	    
 	    openmrsData.put("mysqlVersion", ""+mysqlVersion);
 	    
-	    String sql7="select record_id from sync_record where state in ('FAILED','FAILED_AND_STOPPED') and uuid=original_uuid";
-	    SQLQuery query7=session.createSQLQuery(sql7);	    
-	    int numFailedRecords=query7.list().size();
-	    if(numFailedRecords>0)
-	    	openmrsData.put("failedRecord", "YES");
-	    else
-	    	openmrsData.put("failedRecord", "NO");
-	    
+	    String sql7="select count(*) from sync_record where state in ('FAILED','FAILED_AND_STOPPED') and uuid=original_uuid";
+	    SQLQuery query7=session.createSQLQuery(sql7);
+        BigInteger numFailedRecords= (BigInteger) query7.list().get(0);
+        if(numFailedRecords.intValue() > 0) {
+            openmrsData.put("failedRecord", "YES");
+        }
+	    else {
+            openmrsData.put("failedRecord", "NO");
+        }
 	    
 	    String sql8="select contained_classes from sync_record where state='FAILED' and uuid=original_uuid";
 	    SQLQuery query8=session.createSQLQuery(sql8);	    
@@ -198,9 +197,7 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
 	    SQLQuery query9=session.createSQLQuery(sql9);	    
 	    int rejectedObject=query9.list().size();
 	    openmrsData.put("rejectedObject", ""+rejectedObject);
-	    
-	    
-	    
+
 		return openmrsData;	
 		
 	}

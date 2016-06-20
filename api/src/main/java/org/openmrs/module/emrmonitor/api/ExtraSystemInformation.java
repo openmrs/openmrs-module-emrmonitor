@@ -1,5 +1,10 @@
 package org.openmrs.module.emrmonitor.api;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.SessionFactory;
+import org.openmrs.api.context.Context;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,15 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.SessionFactory;
-import org.hibernate.loader.custom.Return;
-import org.openmrs.api.context.Context;
 public class ExtraSystemInformation {
 
 	private static final long serialVersionUID = 1L;
@@ -522,35 +518,34 @@ public void writeInformationinTheLocalFile() throws IOException{
 				put("SystemInfo.hardDriverInformation.usedMemory", getUsedPhyisycalMemory());				
 			}
 		});
-        
-        
+
+		final Map<String, String> openmrsData = Context.getService(EmrMonitorService.class).getOpenmrsData();
 		extraSystemInformation.put("SystemInfo.title.emrPatientsDataInformation", new LinkedHashMap<String, String>() {
 
             private static final long serialVersionUID = 1L;
 
             {
                 
-             	put("SystemInfo.emrDataInformation.numberOfOrders", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("orders"));
-             	put("SystemInfo.emrDataInformation.numberOfPatients", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("patients"));
-             	put("SystemInfo.emrDataInformation.numberOfEncounters", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("encounters"));
-             	put("SystemInfo.emrDataInformation.numberOfObservations", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("observations"));
+             	put("SystemInfo.emrDataInformation.numberOfOrders", openmrsData.get("orders"));
+             	put("SystemInfo.emrDataInformation.numberOfPatients", openmrsData.get("patients"));
+             	put("SystemInfo.emrDataInformation.numberOfEncounters", openmrsData.get("encounters"));
+             	put("SystemInfo.emrDataInformation.numberOfObservations", openmrsData.get("observations"));
                 
             }
         });
-		
-		
+
 		extraSystemInformation.put("SystemInfo.title.emrSyncDataInformation", new LinkedHashMap<String, String>() {
 
             private static final long serialVersionUID = 1L;
 
             {                
-             	put("SystemInfo.emrSyncDataInformation.pendingRecords", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("pendingRecords"));
-             	put("SystemInfo.emrSyncDataInformation.rejectedObject", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("rejectedObject"));
-                put("SystemInfo.emrSyncDataInformation.failedRecord", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedRecord"));
-             	put("SystemInfo.emrSyncDataInformation.failedObject", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("failedObject"));
+             	put("SystemInfo.emrSyncDataInformation.pendingRecords", openmrsData.get("pendingRecords"));
+             	put("SystemInfo.emrSyncDataInformation.rejectedObject", openmrsData.get("rejectedObject"));
+                put("SystemInfo.emrSyncDataInformation.failedRecord", openmrsData.get("failedRecord"));
+             	put("SystemInfo.emrSyncDataInformation.failedObject", openmrsData.get("failedObject"));
              }
         });
-		
+
 		extraSystemInformation.put("SystemInfo.title.softwareVersionInformation", new LinkedHashMap<String, String>() {
 
             private static final long serialVersionUID = 1L;
@@ -558,13 +553,14 @@ public void writeInformationinTheLocalFile() throws IOException{
             {                
             	put("SystemInfo.softwareVersionInformation.ubuntu", ""+getVersion("lsb_release --release").split(":")[1].trim());
             	put("SystemInfo.softwareVersionInformation.mysql", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("mysqlVersion").split("-")[0]);
-             	put("SystemInfo.softwareVersionInformation.tomcat", ""+getVersion("java -cp "+Context.getAdministrationService().getGlobalProperty("emrmonitor.tomcatPath")+"/lib/catalina.jar org.apache.catalina.util.ServerInfo").split(":")[1].trim());
+             	// TODO make this null-safe (make everything in this file null-safe fwiw)
+				put("SystemInfo.softwareVersionInformation.tomcat", ""+getVersion("java -cp "+Context.getAdministrationService().getGlobalProperty("emrmonitor.tomcatPath")+"/lib/catalina.jar org.apache.catalina.util.ServerInfo").split(":")[1].trim());
              	put("SystemInfo.softwareVersionInformation.Firefox", ""+getVersion("firefox -version"));
              	put("SystemInfo.softwareVersionInformation.Chrome", ""+getVersion("google-chrome -version"));
              	
             }
         });
-		
+
 		extraSystemInformation.put("SystemInfo.title.connectionInformation", new LinkedHashMap<String, String>() {
 
             private static final long serialVersionUID = 1L;
@@ -574,7 +570,7 @@ public void writeInformationinTheLocalFile() throws IOException{
             	put("SystemInfo.connectionInformation.connectedToTheServer", ""+checkConnection());
             	
             }
-        });		
+        });
 		extraSystemInformation.put("SystemInfo.title.cpuInformation", new LinkedHashMap<String, String>() {
 
             private static final long serialVersionUID = 1L;
@@ -585,8 +581,8 @@ public void writeInformationinTheLocalFile() throws IOException{
             	put("SystemInfo.cpuInformation.numberOfCPU", ""+getCPUInfo("CPU(s):"));
             	put("SystemInfo.cpuInformation.cpusize", ""+getCPUInfo("CPU MHz"));
              }
-        });		
-		
+        });
+
           extraSystemInformation.put("SystemInfo.title.uptimeMemoryInformation", new LinkedHashMap<String, String>() {
         	
 	        private static final long serialVersionUID = 1L;
@@ -606,7 +602,7 @@ public void writeInformationinTheLocalFile() throws IOException{
     				}
     			});
 				
-		
+
 		return extraSystemInformation;		
 	}
 	
