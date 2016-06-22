@@ -1,19 +1,21 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ *  obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
 package org.openmrs.module.emrmonitor.task;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.emrmonitor.EmrMonitorServer;
-import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
-
-import java.net.InetAddress;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * Generate system metrics report for the Local Server on a periodic basis
  */
-public class GenerateLocalReportTask extends EmrMonitorTask{
+public class GenerateLocalReportTask extends EmrMonitorTask {
 
     @Override
     protected Runnable getRunnableTask() {

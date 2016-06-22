@@ -19,9 +19,6 @@
         <property name="value" type="java.lang.String" column="value" length="255" not-null="false" />
 
         <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
-
-
     </class>
-
 
 </hibernate-mapping>
