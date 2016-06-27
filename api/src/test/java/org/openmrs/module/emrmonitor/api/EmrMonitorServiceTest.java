@@ -19,7 +19,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 /**
- * Tests {@link ${EmrMonitorService}}.
+ * Tests EmrMonitorService
  */
 public class  EmrMonitorServiceTest extends BaseModuleContextSensitiveTest {
 	
