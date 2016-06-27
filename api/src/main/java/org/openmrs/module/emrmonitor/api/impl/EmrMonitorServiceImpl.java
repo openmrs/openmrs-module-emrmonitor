@@ -28,7 +28,7 @@ import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorReportMetric;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
-import org.openmrs.module.emrmonitor.api.EmrMonitorProperties;
+import org.openmrs.module.emrmonitor.EmrMonitorConstants;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.openmrs.module.emrmonitor.api.ExtraSystemInformation;
 import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
@@ -118,7 +118,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
             String parentServerUrl = parent.getServerUrl();
             String parentServerUserName = parent.getServerUserName();
             String parentServerUserPassword = parent.getServerUserPassword();
-            restClient.setReadTimeout(EmrMonitorProperties.REMOTE_SERVER_TIMEOUT);
+            restClient.setReadTimeout(EmrMonitorConstants.REMOTE_SERVER_TIMEOUT);
 
             for (EmrMonitorReport report : reports) {
                 EmrMonitorServer monitorServer = report.getEmrMonitorServer();
@@ -207,7 +207,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     public EmrMonitorServer testConnection(EmrMonitorServer server)  throws IOException {
         EmrMonitorServer remoteServer = null;
         if (server != null) {
-            WebResource resource = setUpWebResource(server, EmrMonitorProperties.REMOTE_SERVER_TIMEOUT);
+            WebResource resource = setUpWebResource(server, EmrMonitorConstants.REMOTE_SERVER_TIMEOUT);
             String json = resource.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
             JsonNode results = new ObjectMapper().readValue(json, JsonNode.class).get("servers");
             if (results !=null && results.size() > 0) {
@@ -221,7 +221,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     public EmrMonitorServer getRemoteParentServer(EmrMonitorServer remoteServer) throws IOException{
         if (remoteServer != null) {
             WebResource resource = restClient.resource(remoteServer.getServerUrl()).path("ws/rest/v1/emrmonitor/server").queryParam("type", "LOCAL");
-            restClient.setReadTimeout(EmrMonitorProperties.REMOTE_SERVER_TIMEOUT);
+            restClient.setReadTimeout(EmrMonitorConstants.REMOTE_SERVER_TIMEOUT);
             resource.addFilter(new HTTPBasicAuthFilter(remoteServer.getServerUserName(), remoteServer.getServerUserPassword()));
             ClientResponse response = resource.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
             log.warn("response.getStatus = " + response.getStatus());
@@ -259,7 +259,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
                 String localServerJson = mapper.writeValueAsString(copy);
 
                 WebResource resource = restClient.resource(server.getServerUrl()).path("ws/rest/v1/emrmonitor/server");
-                restClient.setReadTimeout(EmrMonitorProperties.REMOTE_SERVER_TIMEOUT);
+                restClient.setReadTimeout(EmrMonitorConstants.REMOTE_SERVER_TIMEOUT);
                 resource.addFilter(new HTTPBasicAuthFilter(server.getServerUserName(), server.getServerUserPassword()));
                 ClientResponse response = resource.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON_TYPE).post(ClientResponse.class, localServerJson);
 

@@ -1,7 +1,7 @@
 package org.openmrs.module.emrmonitor.extension.html;
 
 import org.openmrs.module.Extension;
-import org.openmrs.module.emrmonitor.api.EmrMonitorConstants;
+import org.openmrs.module.emrmonitor.EmrMonitorConstants;
 
 import java.util.HashMap;
 import java.util.Map;
