@@ -9,18 +9,29 @@
  */
 package org.openmrs.module.emrmonitor.metric;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import java.util.Map;
 
 /**
  * Tests ServerInfoMetricProducer
  */
-public class SystemInfoMetricProducerTest {
+public class JavaRuntimeMetricProducerTest {
+
+    protected final Log log = LogFactory.getLog(this.getClass());
 	
 	@Test
 	public void shouldGetServerInfoMetrics() {
-		SystemInfoMetricProducer producer = new SystemInfoMetricProducer();
-        producer.produceMetrics();
+		JavaRuntimeMetricProducer producer = new JavaRuntimeMetricProducer();
+        Map<String, String> metrics = producer.produceMetrics();
+
+        if (log.isDebugEnabled()) {
+            log.debug("Metrics:");
+            for (String key : metrics.keySet()) {
+                log.debug(key + ": " + metrics.get(key));
+            }
+        }
 	}
 }

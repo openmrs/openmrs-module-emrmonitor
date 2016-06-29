@@ -10,8 +10,7 @@
 
 package org.openmrs.module.emrmonitor.metric;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.stereotype.Component;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -22,20 +21,21 @@ import oshi.software.os.OSFileStore;
 import oshi.software.os.OperatingSystem;
 import oshi.util.FormatUtil;
 
+import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Interface for a class that can generate metrics for monitoring
+ * Produces core metrics around server information that is not specific to OpenMRS usage
  */
 @Component
-public class SystemInfoMetricProducer implements MetricProducer {
-
-    protected final Log log = LogFactory.getLog(this.getClass());
+public class ServerMetricProducer implements MetricProducer {
 
     @Override
     public String getNamespace() {
-        return "systemInfo";
+        return "system";
     }
 
     /**
@@ -86,13 +86,25 @@ public class SystemInfoMetricProducer implements MetricProducer {
         metrics.put("cpu.family", processor.getFamily());
         metrics.put("cpu.physicalCount", Integer.toString(processor.getPhysicalProcessorCount()));
         metrics.put("cpu.logicalCount", Integer.toString(processor.getLogicalProcessorCount()));
+        // TODO: Use process information to get information on Tomcat, MySQL usage
 
         // Networks
+        List<String> networks = new ArrayList<String>();
         for (NetworkIF networkIF : hal.getNetworkIFs()) {
-            metrics.put("network." + networkIF.getName() + ".name", networkIF.getName());
-            metrics.put("network." + networkIF.getName() + ".ipAddress", networkIF.getIPv4addr()[0]);
+            String networkName = networkIF.getName();
+            networks.add(networkName);
+            metrics.put("network." + networkName + ".name", networkIF.getName());
+            metrics.put("network." + networkName + ".ipAddress", networkIF.getIPv4addr()[0]);
+        }
+        metrics.put("network.list", OpenmrsUtil.join(networks, ","));
+        try {
+            metrics.put("network.hostname", InetAddress.getLocalHost().getCanonicalHostName());
+        }
+        catch (Exception e) {
+            metrics.put("network.hostname", "unknown");
         }
 
+        // Disks
         long totalSpace = 0;
         long usableSpace = 0;
         for (OSFileStore fileStore : hal.getFileStores()) {
@@ -103,11 +115,6 @@ public class SystemInfoMetricProducer implements MetricProducer {
         metrics.put("disk.totalSpace.bytes", Long.toString(totalSpace));
         metrics.put("disk.usableSpace", FormatUtil.formatBytes(usableSpace));
         metrics.put("disk.usableSpace.bytes", Long.toString(usableSpace));
-
-        log.debug("Metrics:");
-        for (String key : metrics.keySet()) {
-            log.debug(key + ": " + metrics.get(key));
-        }
 
         return metrics;
     }
