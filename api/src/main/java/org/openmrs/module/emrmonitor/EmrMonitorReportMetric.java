@@ -74,6 +74,11 @@ public class EmrMonitorReportMetric implements Comparable<EmrMonitorReportMetric
     }
 
     @Override
+    public String toString() {
+        return getMetric() + ": " + getValue();
+    }
+
+    @Override
     public int compareTo(EmrMonitorReportMetric other) {
         int retValue = 0;
 

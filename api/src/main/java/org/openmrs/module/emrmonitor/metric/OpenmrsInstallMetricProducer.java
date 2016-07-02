@@ -61,7 +61,7 @@ public class OpenmrsInstallMetricProducer implements MetricProducer {
         for (Module module : ModuleFactory.getLoadedModules()) {
             modules.add(module.getModuleId());
         }
-        metrics.put("modules.list", OpenmrsUtil.join(modules, ","));
+        //metrics.put("modules.list", OpenmrsUtil.join(modules, ",")); // TODO: Figure out how to deal with this.  Too long for current column.
         for (String moduleId : modules) {
             Module module = ModuleFactory.getModuleById(moduleId);
             metrics.put("module."+moduleId+".started", Boolean.toString(module.isStarted()));
