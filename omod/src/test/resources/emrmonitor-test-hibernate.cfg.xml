@@ -7,5 +7,6 @@
     <session-factory>
        <mapping resource="EmrMonitorServer.hbm.xml" />
        <mapping resource="EmrMonitorReport.hbm.xml"/>
+       <mapping resource="EmrMonitorReportMetric.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

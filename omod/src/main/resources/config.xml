@@ -32,6 +32,7 @@
 	<mappingFiles>
         EmrMonitorServer.hbm.xml
         EmrMonitorReport.hbm.xml
+        EmrMonitorReportMetric.hbm.xml
 	</mappingFiles>
 
 	<messages>

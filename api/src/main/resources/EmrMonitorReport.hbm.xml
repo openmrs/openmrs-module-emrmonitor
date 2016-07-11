@@ -18,13 +18,9 @@
 
         <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
 
-        <set name="metrics" table="emrmonitor_report_metric" lazy="false" order-by="metric">
+        <set name="metrics" table="emrmonitor_report_metric" lazy="false" inverse="true" cascade="all-delete-orphan" order-by="metric">
             <key column="report_id" not-null="true" />
-            <composite-element class="EmrMonitorReportMetric">
-                <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" not-null="true" />
-                <property name="metric" type="java.lang.String" />
-                <property name="value" type="java.lang.String" />
-            </composite-element>
+            <one-to-many class="EmrMonitorReportMetric" />
         </set>
 
         <property name="status" column="status" length="45" not-null="true">

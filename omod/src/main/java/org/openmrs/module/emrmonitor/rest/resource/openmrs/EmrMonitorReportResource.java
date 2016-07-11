@@ -11,6 +11,7 @@ package org.openmrs.module.emrmonitor.rest.resource.openmrs;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
+import org.openmrs.module.emrmonitor.EmrMonitorReportMetric;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.openmrs.module.emrmonitor.rest.controller.EmrMonitorRestController;
@@ -77,8 +78,11 @@ public class EmrMonitorReportResource extends DelegatingCrudResource<EmrMonitorR
     }
 
     @Override
-    public EmrMonitorReport save(EmrMonitorReport delegate) throws ResponseException {
-        return getEmrMonitorService().saveEmrMonitorReport(delegate);
+    public EmrMonitorReport save(EmrMonitorReport report) throws ResponseException {
+        for (EmrMonitorReportMetric m : report.getMetrics()) {
+            m.setReport(report);  // TODO: Figure out why this is necessary
+        }
+        return getEmrMonitorService().saveEmrMonitorReport(report);
     }
 
     @Override

@@ -9,6 +9,7 @@
  */
 package org.openmrs.module.emrmonitor;
 
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.util.OpenmrsUtil;
 
 import java.util.UUID;
@@ -16,8 +17,9 @@ import java.util.UUID;
 /**
  * Represents a particular metric in an EmrMonitorReport
  */
-public class EmrMonitorReportMetric implements Comparable<EmrMonitorReportMetric> {
+public class EmrMonitorReportMetric extends BaseOpenmrsObject implements Comparable<EmrMonitorReportMetric> {
 
+    private Integer id;
     private String uuid;
     private EmrMonitorReport report;
     private String metric;
@@ -32,6 +34,16 @@ public class EmrMonitorReportMetric implements Comparable<EmrMonitorReportMetric
         this.report = report;
         this.metric = metric;
         this.value = value;
+    }
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getUuid() {

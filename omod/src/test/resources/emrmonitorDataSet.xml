@@ -4,6 +4,6 @@
     <emrmonitor_server id="2" uuid="8482c992-4462-11e6-be45-e82aea237783" name="Kabarondo" server_type="CHILD"/>
 
     <emrmonitor_report id="10" uuid="1379f06d-4463-11e6-be45-e82aea237783" server_id="1" date_created="2016-07-01 00:00:00.0" status="LOCAL_ONLY"/>
-    <emrmonitor_report_metric uuid="1a6f1170-44c3-11e6-be45-e82aea237783" report_id="10" metric="system.memory.total" value="512GB"/>
-    <emrmonitor_report_metric uuid="238b8411-44c3-11e6-be45-e82aea237783" report_id="10" metric="system.memory.free" value="364GB"/>
+    <emrmonitor_report_metric id="100" uuid="1a6f1170-44c3-11e6-be45-e82aea237783" report_id="10" metric="system.memory.total" value="512GB"/>
+    <emrmonitor_report_metric id="101" uuid="238b8411-44c3-11e6-be45-e82aea237783" report_id="10" metric="system.memory.free" value="364GB"/>
  </dataset>

@@ -93,11 +93,7 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
 
     @Override
     public EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report) {
-        try {
-            sessionFactory.getCurrentSession().saveOrUpdate(report);
-        } catch (Exception e) {
-            log.error("Error saving EmrMonitorReport", e);
-        }
+        sessionFactory.getCurrentSession().saveOrUpdate(report);
         return report;
     }
 
@@ -108,23 +104,12 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
 
     @Override
     public List<EmrMonitorReport> getEmrMonitorReports(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus... status) {
-
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorReport.class);
         criteria.add(Restrictions.eq("server", server));
         if (status != null && status.length > 0) {
             criteria.add(Restrictions.in("status", status));
         }
-
-        try {
-            List<EmrMonitorReport> list = (List<EmrMonitorReport>)criteria.list();
-            if (list != null && list.size() > 0) {
-                return list;
-            }
-        } catch (Exception e) {
-            log.error("failed to retrieve a list of reports", e);
-        }
-
-        return null;
+        return criteria.list();
     }
 
     @Override
