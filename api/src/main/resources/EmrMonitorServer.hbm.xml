@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs.module.emrmonitor">
 
-    <class name="EmrMonitorServer" table="${project.parent.artifactId}_server">
+    <class name="EmrMonitorServer" table="emrmonitor_server">
         <id name="id" type="java.lang.Integer" column="id" unsaved-value="0">
             <generator class="native" />
         </id>
@@ -18,26 +18,6 @@
                 <param name="enumClassName">org.openmrs.module.emrmonitor.EmrMonitorServerType</param>
             </type>
         </property>
-
-        <!-- bi-directional one-to-many association to EmrMonitorReport -->
-        <set name="emrMonitorReports" lazy="false" inverse="true" batch-size="1000"
-             cascade="all-delete-orphan" sort="natural"
-             order-by="date_created desc">
-            <key column="emrmonitor_server_id" not-null="true" />
-            <one-to-many class="EmrMonitorReport" />
-        </set>
-
-        <property name="serverUrl" type="java.lang.String" column="server_url" length="255" not-null="false" />
-        <property name="serverUserName" type="java.lang.String" column="server_user_name" length="45" not-null="false" />
-        <property name="serverUserPassword" type="java.lang.String" column="server_user_password" length="45" not-null="false" />
-
-        <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
-        <property name="dateChanged" type="java.util.Date" column="date_changed" length="19"/>
-        <many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
-        <property name="retired" type="boolean" not-null="true" />
-        <many-to-one name="retiredBy" class="org.openmrs.User" column="retired_by" />
-        <property name="dateRetired" type="java.util.Date" column="date_retired" length="19" />
-        <property name="retireReason" type="java.lang.String" column="retire_reason" length="255" />
 
     </class>
 

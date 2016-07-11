@@ -11,42 +11,43 @@ package org.openmrs.module.emrmonitor;
 
 import org.openmrs.util.OpenmrsUtil;
 
-import java.util.Date;
+import java.util.UUID;
 
 /**
  * Represents a particular metric in an EmrMonitorReport
  */
-public class EmrMonitorReportMetric implements Comparable<EmrMonitorReportMetric>{
+public class EmrMonitorReportMetric implements Comparable<EmrMonitorReportMetric> {
 
-    private Integer id;
-    private EmrMonitorReport emrMonitorReport;
-    private String category;
+    private String uuid;
+    private EmrMonitorReport report;
     private String metric;
     private String value;
-    private Date dateCreated;
 
-    public Integer getId() {
-        return id;
+    public EmrMonitorReportMetric() {
+        uuid = UUID.randomUUID().toString();
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public EmrMonitorReportMetric(EmrMonitorReport report, String metric, String value) {
+        this();
+        this.report = report;
+        this.metric = metric;
+        this.value = value;
     }
 
-    public EmrMonitorReport getEmrMonitorReport() {
-        return emrMonitorReport;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setEmrMonitorReport(EmrMonitorReport emrMonitorReport) {
-        this.emrMonitorReport = emrMonitorReport;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
-    public String getCategory() {
-        return category;
+    public EmrMonitorReport getReport() {
+        return report;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setReport(EmrMonitorReport report) {
+        this.report = report;
     }
 
     public String getMetric() {
@@ -65,33 +66,13 @@ public class EmrMonitorReportMetric implements Comparable<EmrMonitorReportMetric
         this.value = value;
     }
 
-    public Date getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Date dateCreated) {
-        this.dateCreated = dateCreated;
+    @Override
+    public int compareTo(EmrMonitorReportMetric o) {
+        return OpenmrsUtil.compareWithNullAsGreatest(getMetric(), o.getMetric());
     }
 
     @Override
     public String toString() {
         return getMetric() + ": " + getValue();
-    }
-
-    @Override
-    public int compareTo(EmrMonitorReportMetric other) {
-        int retValue = 0;
-
-        retValue =OpenmrsUtil.compareWithNullAsGreatest(getValue(), other.getValue());
-        if (retValue == 0){
-            retValue =OpenmrsUtil.compareWithNullAsGreatest(getMetric(), other.getMetric());
-        }
-        if (retValue == 0){
-            retValue =OpenmrsUtil.compareWithNullAsGreatest(getCategory(), other.getCategory());
-        }
-        if (retValue == 0 && getDateCreated() != null) {
-            retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
-        }
-        return retValue;
     }
 }

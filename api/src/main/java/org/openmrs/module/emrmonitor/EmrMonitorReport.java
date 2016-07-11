@@ -9,24 +9,24 @@
  */
 package org.openmrs.module.emrmonitor;
 
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.util.OpenmrsUtil;
 
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Represents a particular monitoring report for a given server on a given date
  */
-public class EmrMonitorReport implements Comparable<EmrMonitorReport>{
+public class EmrMonitorReport extends BaseOpenmrsObject implements Comparable<EmrMonitorReport>{
 
     public enum SubmissionStatus {
         WAITING_TO_SEND, SENT, RECEIVED, LOCAL_ONLY
     }
 
     private Integer id;
-    private EmrMonitorServer emrMonitorServer;
+    private EmrMonitorServer server;
     private Set<EmrMonitorReportMetric> metrics;
     private Date dateCreated;
     private SubmissionStatus status;
@@ -39,20 +39,41 @@ public class EmrMonitorReport implements Comparable<EmrMonitorReport>{
         this.id = id;
     }
 
-    public EmrMonitorServer getEmrMonitorServer() {
-        return emrMonitorServer;
+    public EmrMonitorServer getServer() {
+        return server;
     }
 
-    public void setEmrMonitorServer(EmrMonitorServer emrMonitorServer) {
-        this.emrMonitorServer = emrMonitorServer;
+    public void setServer(EmrMonitorServer server) {
+        this.server = server;
     }
 
     public Set<EmrMonitorReportMetric> getMetrics() {
+        if (metrics == null) {
+            metrics = new TreeSet<EmrMonitorReportMetric>();
+        }
         return metrics;
     }
 
     public void setMetrics(Set<EmrMonitorReportMetric> metrics) {
         this.metrics = metrics;
+    }
+
+    public EmrMonitorReportMetric getMetric(String metric) {
+        for (EmrMonitorReportMetric m : getMetrics()) {
+            if (m.getMetric().equals(metric)) {
+                return m;
+            }
+        }
+        return null;
+    }
+
+    public void setMetric(String name, String value) {
+        EmrMonitorReportMetric m = getMetric(name);
+        if (m == null) {
+            m = new EmrMonitorReportMetric(this, name, value);
+            getMetrics().add(m);
+        }
+        m.setValue(value);
     }
 
     public Date getDateCreated() {
@@ -80,21 +101,8 @@ public class EmrMonitorReport implements Comparable<EmrMonitorReport>{
         return retValue;
     }
 
-    public Map<String, Map<String, String>> getMetricsByCategory() {
-        Map<String, Map<String, String>> ret = new LinkedHashMap<String, Map<String, String>>();
-        for (EmrMonitorReportMetric metric : getMetrics()) {
-            Map<String, String> categoryMetrics = ret.get(metric.getCategory());
-            if (categoryMetrics == null) {
-                categoryMetrics = new LinkedHashMap<String, String>();
-                ret.put(metric.getCategory(), categoryMetrics);
-            }
-            categoryMetrics.put(metric.getMetric(), metric.getValue());
-        }
-        return ret;
-    }
-
     @Override
     public String toString() {
-        return "Monitor report of " + getEmrMonitorServer().getName() + " on " + getDateCreated();
+        return "Monitor report of " + getServer().getName() + " on " + getDateCreated();
     }
 }

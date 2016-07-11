@@ -21,7 +21,7 @@ angular.module('compareEmrMonitorServers', ['ngAnimate', 'ngTouch', 'ui.grid', '
         color: 'red'
       },
       exporterPdfHeader: {
-        text: "IMB Servers",
+        text: "Servers",
         style: 'headerStyle'
       },
       exporterPdfFooter: function(currentPage, pageCount) {

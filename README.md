@@ -71,19 +71,9 @@ EmrMonitorReport implements Comparable<EmrMonitorReport>{
         WAITING_TO_SEND, SENT, LOCAL_ONLY
     }
     Integer id;
-    EmrMonitorServer emrMonitorServer;
+    EmrMonitorServer server;
     Set<EmrMonitorReportMetric> metrics;
     private SubmissionStatus status;
-}
-```
-* EmrMonitorReportMetric: contains a list of metrics for each report. A metric has name and value and belongs to a category:
-```java
-EmrMonitorReportMetric implements Comparable<EmrMonitorReportMetric>{
-    private Integer id;
-    private EmrMonitorReport emrMonitorReport;
-    private String category;
-    private String metric;
-    private String value;
 }
 ```
 #### Service Layer
@@ -164,3 +154,16 @@ ConfigurableMetricProducer implements MetricProducer {
     * Task 1. Generate report for the Local Server on a periodic basis and save it
     * Task 2. If parent configured, check whether any reports have been generated but not transmitted, and send them
     * Task 3. Clean up history of reports (if desired, to save space)
+
+##### Report Config
+trigger_type
+trigger_config
+or
+run_on_startup
+run_on_context_refresh
+run_on_event
+run_on_cron
+
+report_template (null indicates default)
+destination_url
+destination_username/password (can we use key-based authentication here instead?)

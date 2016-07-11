@@ -1,20 +1,20 @@
-angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
+angular.module('configEmrMonitorServer', [ 'ui.bootstrap' ])
 
     .controller('ConfigEmrMonitorServerCtrl', [ '$scope', '$http',
         function($scope, $http) {
 
             $scope.sortType     = 'serverType'; // set the default sort type
-            $scope.sortReverse  = false;  // set the default sort order
+            $scope.sortReverse  = true;  // set the default sort order
             $scope.searchServer   = '';     // set the default search/filter term
             $scope.showServers = false;
             $scope.showSelectedServer = false;
             $scope.showServerMetrics = false;
-
-
+            $scope.serverMetrics = {};
+            
             $scope.getServers =  function(){
                 $http.get("/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/server?v=default")
                     .success(function(data) {
-                        $scope.serversFound = data.servers;
+                        $scope.serversFound = data.results;
                         $scope.showServers = true;
                     });
             }
@@ -28,13 +28,9 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
 
                 $scope.selectedServer = server;
                 $scope.name = server.name;
-                $scope.serverUrl = server.serverUrl;
-                $scope.serverUserName = server.serverUserName;
-                $scope.serverUserPassword = server.serverUserPassword;
             }
 
             $scope.deleteServer = function(server) {
-
 
                 $http.delete("/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/server/" + server.uuid)
                     .success(function() {
@@ -55,7 +51,7 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
                 $scope.showSelectedServer = false;
                 $scope.showServerMetrics = true;
 
-                $scope.selectedServer = server;
+                $scope.serverMetrics = server;
 
             }
 
@@ -69,9 +65,6 @@ angular.module('configEmrMonitorServer', [ 'encounterService', 'ui.bootstrap' ])
                 var server = {
                     uuid: $scope.selectedServer.uuid,
                     name: $scope.name,
-                    serverUrl: $scope.serverUrl,
-                    serverUserName: $scope.serverUserName,
-                    serverUserPassword: $scope.serverUserPassword
                 };
 
                 $http.post("/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/server/" + server.uuid,

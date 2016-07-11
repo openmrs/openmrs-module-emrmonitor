@@ -5,19 +5,26 @@
 
 <hibernate-mapping package="org.openmrs.module.emrmonitor">
 
-    <class name="EmrMonitorReport" table="${project.parent.artifactId}_report">
+    <class name="EmrMonitorReport" table="emrmonitor_report">
         <id name="id" type="java.lang.Integer" column="id" unsaved-value="0">
             <generator class="native" />
         </id>
 
-        <many-to-one name="emrMonitorServer" class="org.openmrs.module.emrmonitor.EmrMonitorServer" not-null="true">
-            <column name="emrmonitor_server_id" />
+        <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" not-null="true" />
+
+        <many-to-one name="server" class="org.openmrs.module.emrmonitor.EmrMonitorServer" not-null="true">
+            <column name="server_id" />
         </many-to-one>
 
-        <!-- bi-directional one-to-many association to EmrMonitorReport -->
-        <set name="metrics" lazy="false" inverse="true" batch-size="1000" cascade="all-delete-orphan" sort="natural" order-by="date_created desc">
-            <key column="emrmonitor_report_id" not-null="true" />
-            <one-to-many class="EmrMonitorReportMetric" />
+        <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+
+        <set name="metrics" table="emrmonitor_report_metric" lazy="false" order-by="metric">
+            <key column="report_id" not-null="true" />
+            <composite-element class="EmrMonitorReportMetric">
+                <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" not-null="true" />
+                <property name="metric" type="java.lang.String" />
+                <property name="value" type="java.lang.String" />
+            </composite-element>
         </set>
 
         <property name="status" column="status" length="45" not-null="true">
@@ -26,7 +33,6 @@
             </type>
         </property>
 
-        <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
     </class>
 
 </hibernate-mapping>

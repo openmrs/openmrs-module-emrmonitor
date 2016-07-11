@@ -1,37 +1,29 @@
 <%
     ui.decorateWith("appui", "standardEmrPage")
-
     ui.includeJavascript("uicommons", "angular.min.js")
     ui.includeJavascript("uicommons", "angular-resource.min.js")
     ui.includeJavascript("uicommons", "angular-common.js")
     ui.includeJavascript("uicommons", "angular-ui/ui-bootstrap-tpls-0.11.2.min.js")
-    ui.includeJavascript("uicommons", "services/encounterService.js")
-
     ui.includeJavascript("emrmonitor", "configEmrMonitorServer.js")
-
 %>
 
 ${ ui.includeFragment("emrmonitor", "menu") }
 
-<h3>EMR Servers</h3>
+<h3>Monitored Servers</h3>
 <div id="config-emrmonitor-server-app" class="container" ng-controller="ConfigEmrMonitorServerCtrl">
 
     <div ng-show="showServers">
-<!--
-        <div class="alert alert-info">
-            <p>Sort Type: {{ sortType }}</p>
-            <p>Sort Reverse: {{ sortReverse }}</p>
-            <p>Search Query: {{ searchServer }}</p>
-        </div>
--->
+
         <form>
-            <div class="form-group">
-                <div class="input-group">
-                    <div class="input-group-addon"><i class="fa fa-search"></i></div>
-                    <input type="text" class="form-control" placeholder="Search Servers" ng-model="searchServer">
-                </div>
+            <div class="form-group" style="display:table-row">
+                <i style="display:table-cell; padding-right:10px;" class="fa fa-search"></i>
+                <span style="display:table-cell">
+                    <input type="text" placeholder="Search Servers" ng-model="searchServer" size="50">
+                </span>
             </div>
         </form>
+
+        <br/>
 
         <table class="table table-bordered table-striped">
             <tbody>
@@ -39,24 +31,17 @@ ${ ui.includeFragment("emrmonitor", "menu") }
             <tr>
                 <td>
                     <a href="#" ng-click="sortType = 'id'; sortReverse = !sortReverse">
-                    Id
-                    <span ng-show="sortType == 'id'" class="fa fa-caret-down"></span>
+                        Id
                     </a>
                 </td>
                 <td>
                     <a href="#" ng-click="sortType = 'name'; sortReverse = !sortReverse">
-                    Name
+                        Name
                     </a>
                 </td>
-                <td>UserName</td>
                 <td>
                     <a href="#" ng-click="sortType = 'serverType'; sortReverse = !sortReverse">
-                    Type
-                    </a>
-                </td>
-                <td>
-                    <a href="#" ng-click="sortType = 'dateChanged'; sortReverse = !sortReverse">
-                        DateChanged
+                        Type
                     </a>
                 </td>
                 <td>
@@ -66,13 +51,10 @@ ${ ui.includeFragment("emrmonitor", "menu") }
             </thead>
             <tr ng-repeat="server in serversFound | orderBy:sortType:sortReverse | filter:searchServer">
                 <td>{{ server.id }}</td>
-                <td> {{ server.name }} </td>
-                <td>{{ server.serverUserName }}</td>
+                <td>{{ server.name }} </td>
                 <td>{{ server.serverType }}</td>
-                <td>{{ server.dateChanged | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                 <td>
-                    <a href="#" ng-click="selectServer(server)">Edit</a><br/>
-                    <a href="#" ng-click="deleteServer(server)">Delete</a><br/>
+                    <a href="#" ng-click="selectServer(server)">Edit</a> |
                     <a href="#" ng-click="displayServerMetrics(server)">View</a>
                 </td>
             </tr>
@@ -90,21 +72,6 @@ ${ ui.includeFragment("emrmonitor", "menu") }
                 <label>name</label>
                 <input ng-model="name"/>
             </p>
-
-            <p>
-                <label>url</label>
-                <input ng-model="serverUrl"/>
-            </p>
-            <p>
-                <label>username</label>
-                <input ng-model="serverUserName"/>
-            </p>
-            <p>
-                <label>password</label>
-                <input ng-model="serverUserPassword"/>
-            </p>
-
-
             <div class="error" ng-show="errorMessage">{{ errorMessage }}</div>
 
             <button class="button cancel" ng-click="cancelUpdate()">Cancel</button>
@@ -114,6 +81,7 @@ ${ ui.includeFragment("emrmonitor", "menu") }
     </div>
 
     <div ng-show="showServerMetrics">
+
         <div ng-repeat="(key,val) in selectedServer.systemInformation">
             <h4>{{ key }}</h4>
             <table class="table table-bordered table-striped">
@@ -131,6 +99,7 @@ ${ ui.includeFragment("emrmonitor", "menu") }
                 </tbody>
             </table>
         </div>
+
     </div>
 
 </div>

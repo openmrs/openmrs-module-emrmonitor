@@ -26,21 +26,21 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.openmrs.web</groupId>
-			<artifactId>openmrs-web</artifactId>
-			<type>jar</type>
+        <dependency>
+            <groupId>org.openmrs.web</groupId>
+            <artifactId>openmrs-web</artifactId>
+            <type>jar</type>
             <version>${openMRSVersion}</version>
             <scope>provided</scope>
-		</dependency>
+        </dependency>
 
-		<dependency>
-			<groupId>org.openmrs.web</groupId>
-			<artifactId>openmrs-web</artifactId>
-			<type>test-jar</type>
-			<scope>test</scope>
+        <dependency>
+            <groupId>org.openmrs.web</groupId>
+            <artifactId>openmrs-web</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
             <version>${openMRSVersion}</version>
-		</dependency>
+        </dependency>
 
         <dependency>
             <groupId>org.openmrs.module</groupId>
@@ -48,7 +48,6 @@
             <version>${appframeworkVersion}</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>uiframework-api</artifactId>
@@ -69,14 +68,12 @@
             <version>${webservicesRestVersion}</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>webservices.rest-omod-common</artifactId>
             <version>${webservicesRestVersion}</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>webservices.rest-omod-common</artifactId>
@@ -84,7 +81,6 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>uicommons-omod</artifactId>

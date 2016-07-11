@@ -1,9 +1,12 @@
-package org.openmrs.module.emrmonitor.api;
+package org.openmrs.module.emrmonitor.metric;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.emrmonitor.api.EmrMonitorService;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,17 +25,74 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-public class ExtraSystemInformation {
 
-	private static final long serialVersionUID = 1L;
-	
-	
+@Component
+public class ExtraSystemInformation implements MetricProducer {
+
+    @Override
+    public String getNamespace() {
+        return "extra";
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public Map<String, String> produceMetrics() {
+
+        Map<String, String> metrics = new LinkedHashMap<String, String>();
+
+        metrics.put("SystemInfo.hardDriverInformation.totalMemory", getTotalPhyisycalMemory());
+        metrics.put("SystemInfo.hardDriverInformation.freeMemory", getFreePhyisycalMemory());
+        metrics.put("SystemInfo.hardDriverInformation.availableMemory", getAvailablePhyisycalMemory());
+        metrics.put("SystemInfo.hardDriverInformation.usedMemory", getUsedPhyisycalMemory());
+
+        Map<String, String> openmrsData = Context.getService(EmrMonitorService.class).getOpenmrsData();
+
+        metrics.put("SystemInfo.emrDataInformation.numberOfOrders", openmrsData.get("orders"));
+        metrics.put("SystemInfo.emrDataInformation.numberOfPatients", openmrsData.get("patients"));
+        metrics.put("SystemInfo.emrDataInformation.numberOfEncounters", openmrsData.get("encounters"));
+        metrics.put("SystemInfo.emrDataInformation.numberOfObservations", openmrsData.get("observations"));
+
+        metrics.put("SystemInfo.emrSyncDataInformation.pendingRecords", openmrsData.get("pendingRecords"));
+        metrics.put("SystemInfo.emrSyncDataInformation.rejectedObject", openmrsData.get("rejectedObject"));
+        metrics.put("SystemInfo.emrSyncDataInformation.failedRecord", openmrsData.get("failedRecord"));
+        metrics.put("SystemInfo.emrSyncDataInformation.failedObject", openmrsData.get("failedObject"));
+
+        metrics.put("SystemInfo.softwareVersionInformation.ubuntu", ""+getVersion("lsb_release --release").split(":")[1].trim());
+        metrics.put("SystemInfo.softwareVersionInformation.mysql", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("mysqlVersion").split("-")[0]);
+
+        // TODO: Figure out how to support this, maybe looking at process information, maybe something available in a loaded Jar file
+        // metrics.put("SystemInfo.softwareVersionInformation.tomcat", "" + getVersion("java -cp "+ tomcatPath +"/lib/catalina.jar org.apache.catalina.util.ServerInfo").split(":")[1].trim());
+
+        metrics.put("SystemInfo.softwareVersionInformation.Firefox", ""+getVersion("firefox -version"));
+        metrics.put("SystemInfo.softwareVersionInformation.Chrome", ""+getVersion("google-chrome -version"));
+
+        metrics.put("SystemInfo.connectionInformation.connectedToTheServer", ""+checkConnection());
+
+        metrics.put("SystemInfo.cpuInformation.cpuLoadAverage", ""+getCPULoadAverage());
+        metrics.put("SystemInfo.cpuInformation.architecture", ""+getCPUInfo("Architecture:"));
+        metrics.put("SystemInfo.cpuInformation.cpuopmodes", ""+getCPUInfo("CPU op-mode(s):"));
+        metrics.put("SystemInfo.cpuInformation.numberOfCPU", ""+getCPUInfo("CPU(s):"));
+        metrics.put("SystemInfo.cpuInformation.cpusize", ""+getCPUInfo("CPU MHz"));
+
+        metrics.put("SystemInfo.uptimeInformation.ThisWeekUptimePercentage", getWeeklyUpTimeActivity());
+        metrics.put("SystemInfo.uptimeInformation.LastWeekUptimePercentage", getLastWeekUpTimeActivity());
+        metrics.put("SystemInfo.uptimeInformation.ThiMonthUptimePercentage", getThisMonthUpTimeActivity());
+        metrics.put("SystemInfo.uptimeInformation.LastMonthUptimePercentage", getLastMonthUpTimeActivity());
+
+        metrics.put("SystemInfo.timeofstartorcrush.LastTimePCWasOn",getTimesOfCrash());
+
+        return metrics;
+    }
+
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
 	private String totalPhyisycalMemory;
@@ -45,11 +105,7 @@ public class ExtraSystemInformation {
 	 
 	private SessionFactory factory;
 	
-	 Date date = null;
-	
-     long totalheartBeatsWeekly=0L;
-	
-	 long totalheartBeatsMonthly=0L;
+    Date date = null;
 	
 	private String totalWeeklyuptime;
 	
@@ -59,8 +115,6 @@ public class ExtraSystemInformation {
 	
 	private String totalLastMonthyuptime;
 	
-	long monthlyDates;
-	
 	public SessionFactory getFactory() {
 		return factory;
 	}
@@ -69,21 +123,13 @@ public class ExtraSystemInformation {
 		this.factory = factory;
 	}
 
-
 	File[] roots = File.listRoots();
-    
 
 	public String getTotalPhyisycalMemory() {
-		
 		for (File root : roots) {
 			totalPhyisycalMemory=root.getTotalSpace()/(1024*1024*1024)+" GiB";
 		}
-		
 		return totalPhyisycalMemory;
-	}
-
-	public void setTotalPhyisycalMemory(String totalPhyisycalMemory) {
-		this.totalPhyisycalMemory = totalPhyisycalMemory;
 	}
 
 	public String getFreePhyisycalMemory() {
@@ -95,35 +141,21 @@ public class ExtraSystemInformation {
 		return freePhyisycalMemory;
 	}
 
-	public void setFreePhyisycalMemory(String freePhyisycalMemory) {
-		this.freePhyisycalMemory = freePhyisycalMemory;
-	}
-
 	public String getAvailablePhyisycalMemory() {
-		
 		for (File root : roots) {
 			availablePhyisycalMemory=root.getUsableSpace()/(1024*1024*1024)+" GiB";
 		}
-		
 		return availablePhyisycalMemory;
 	}
 
-	public void setAvailablePhyisycalMemory(String availablePhyisycalMemory) {
-		this.availablePhyisycalMemory = availablePhyisycalMemory;
-	}
-
 	public String getUsedPhyisycalMemory() {
-		
 		for (File root : roots) {
 			usedPhyisycalMemory=(root.getTotalSpace()-root.getFreeSpace())/(1024*1024*1024)+" GiB";
 		}
-		
 		return usedPhyisycalMemory;
 	}
 
-	public void setUsedPhyisycalMemory(String usedPhyisycalMemory) {
-		this.usedPhyisycalMemory = usedPhyisycalMemory;
-	}
+
 public String getVersion(String command) {
 	String s=null;
 	Process p;
@@ -170,11 +202,10 @@ public String getCPUInfo(String startsWith) {
 	try {
 	    p = Runtime.getRuntime().exec("lscpu");
 	    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	    //s = br.readLine();
-	    while ((s=br.readLine())!=null) {
-	    	if(s.startsWith(startsWith))
-	    		return s.split(":")[1].trim();
-	        System.out.println(s);
+	    while ((s = br.readLine()) != null) {
+	    	if (s.startsWith(startsWith)) {
+                return s.split(":")[1].trim();
+            }
 		}
 	        
 	} catch (Exception e) {}
@@ -398,22 +429,7 @@ public void writeInformationinTheLocalFile() throws IOException{
 			totalLastMonthyuptime=LastMonthpercent.toString();
 			return  totalLastMonthyuptime;
 	   }
-	    
-	    /*  public String getLastTimePcWasOn(){
-	    	String lastPCInformation=null;
-	    	try {
-				getPCinformationMonitored();
-				DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss zzz yyyy");
-		    	lastPCInformation = formatter.format(lastDateInPcwasOn);
-		    	System.out.println("last time pc was on"+lastPCInformation);
-		    } catch (IOException e) {
-				e.printStackTrace();
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-	    	return lastPCInformation;
-		 }
-	    */
+
 	   public String getTimesOfCrash(){
 	    	try{
 	    		getPCinformationMonitored();
@@ -501,109 +517,4 @@ public void writeInformationinTheLocalFile() throws IOException{
 			}
 			
 		}
-
-
-	public Map<String, Map<String, String>> getExtraSystemInformation(){
-		
-		Map<String, Map<String, String>> extraSystemInformation = new HashMap<String, Map<String,String>>();
-		
-		extraSystemInformation.put("SystemInfo.title.hardDriverInformation", new LinkedHashMap<String, String>() {
-        	
-        private static final long serialVersionUID = 1L;
-			
-			{
-				put("SystemInfo.hardDriverInformation.totalMemory", getTotalPhyisycalMemory());
-				put("SystemInfo.hardDriverInformation.freeMemory", getFreePhyisycalMemory());
-				put("SystemInfo.hardDriverInformation.availableMemory", getAvailablePhyisycalMemory());
-				put("SystemInfo.hardDriverInformation.usedMemory", getUsedPhyisycalMemory());				
-			}
-		});
-
-		final Map<String, String> openmrsData = Context.getService(EmrMonitorService.class).getOpenmrsData();
-		extraSystemInformation.put("SystemInfo.title.emrPatientsDataInformation", new LinkedHashMap<String, String>() {
-
-            private static final long serialVersionUID = 1L;
-
-            {
-                
-             	put("SystemInfo.emrDataInformation.numberOfOrders", openmrsData.get("orders"));
-             	put("SystemInfo.emrDataInformation.numberOfPatients", openmrsData.get("patients"));
-             	put("SystemInfo.emrDataInformation.numberOfEncounters", openmrsData.get("encounters"));
-             	put("SystemInfo.emrDataInformation.numberOfObservations", openmrsData.get("observations"));
-                
-            }
-        });
-
-		extraSystemInformation.put("SystemInfo.title.emrSyncDataInformation", new LinkedHashMap<String, String>() {
-
-            private static final long serialVersionUID = 1L;
-
-            {                
-             	put("SystemInfo.emrSyncDataInformation.pendingRecords", openmrsData.get("pendingRecords"));
-             	put("SystemInfo.emrSyncDataInformation.rejectedObject", openmrsData.get("rejectedObject"));
-                put("SystemInfo.emrSyncDataInformation.failedRecord", openmrsData.get("failedRecord"));
-             	put("SystemInfo.emrSyncDataInformation.failedObject", openmrsData.get("failedObject"));
-             }
-        });
-
-		extraSystemInformation.put("SystemInfo.title.softwareVersionInformation", new LinkedHashMap<String, String>() {
-
-            private static final long serialVersionUID = 1L;
-
-            {                
-            	put("SystemInfo.softwareVersionInformation.ubuntu", ""+getVersion("lsb_release --release").split(":")[1].trim());
-            	put("SystemInfo.softwareVersionInformation.mysql", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("mysqlVersion").split("-")[0]);
-             	// TODO make this null-safe (make everything in this file null-safe fwiw)
-				put("SystemInfo.softwareVersionInformation.tomcat", ""+getVersion("java -cp "+Context.getAdministrationService().getGlobalProperty("emrmonitor.tomcatPath")+"/lib/catalina.jar org.apache.catalina.util.ServerInfo").split(":")[1].trim());
-             	put("SystemInfo.softwareVersionInformation.Firefox", ""+getVersion("firefox -version"));
-             	put("SystemInfo.softwareVersionInformation.Chrome", ""+getVersion("google-chrome -version"));
-             	
-            }
-        });
-
-		extraSystemInformation.put("SystemInfo.title.connectionInformation", new LinkedHashMap<String, String>() {
-
-            private static final long serialVersionUID = 1L;
-            
-            
-            {                
-            	put("SystemInfo.connectionInformation.connectedToTheServer", ""+checkConnection());
-            	
-            }
-        });
-		extraSystemInformation.put("SystemInfo.title.cpuInformation", new LinkedHashMap<String, String>() {
-
-            private static final long serialVersionUID = 1L;
-            {                
-            	put("SystemInfo.cpuInformation.cpuLoadAverage", ""+getCPULoadAverage());
-            	put("SystemInfo.cpuInformation.architecture", ""+getCPUInfo("Architecture:"));
-            	put("SystemInfo.cpuInformation.cpuopmodes", ""+getCPUInfo("CPU op-mode(s):"));
-            	put("SystemInfo.cpuInformation.numberOfCPU", ""+getCPUInfo("CPU(s):"));
-            	put("SystemInfo.cpuInformation.cpusize", ""+getCPUInfo("CPU MHz"));
-             }
-        });
-
-          extraSystemInformation.put("SystemInfo.title.uptimeMemoryInformation", new LinkedHashMap<String, String>() {
-        	
-	        private static final long serialVersionUID = 1L;
-				{
-					put("SystemInfo.uptimeInformation.ThisWeekUptimePercentage", getWeeklyUpTimeActivity());
-					put("SystemInfo.uptimeInformation.LastWeekUptimePercentage", getLastWeekUpTimeActivity());
-					put("SystemInfo.uptimeInformation.ThiMonthUptimePercentage", getThisMonthUpTimeActivity());
-					put("SystemInfo.uptimeInformation.LastMonthUptimePercentage", getLastMonthUpTimeActivity());				
-				}
-			});
-          extraSystemInformation.put("SystemInfo.title.timeofstartorcrush", new LinkedHashMap<String, String>() {
-            	
-    	        private static final long serialVersionUID = 1L;
-    				{
-    					//put("SystemInfo.timeofstartorcrush.LastTimePCWasOn",getLastTimePcWasOn());
-    					put("SystemInfo.timeofstartorcrush.LastTimePCWasOn",getTimesOfCrash());
-    				}
-    			});
-				
-
-		return extraSystemInformation;		
-	}
-	
 }

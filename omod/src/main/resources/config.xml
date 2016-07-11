@@ -2,7 +2,6 @@
 
 <module configVersion="1.2">
 
-	<!-- Module Properties -->
 	<id>${project.parent.artifactId}</id>
 	<name>${project.parent.name}</name>
 	<version>${project.parent.version}</version>
@@ -13,7 +12,6 @@
 	</description>
 	<updateURL>https://modules.openmrs.org/modules/download/${project.parent.artifactId}/update.rdf</updateURL>
 	<require_version>${openMRSVersion}</require_version>
-	<!-- / Module Properties -->
 
     <require_modules>
         <require_module version="${appframeworkVersion}">org.openmrs.module.appframework</require_module>
@@ -22,51 +20,29 @@
         <require_module version="${uiframeworkVersion}">org.openmrs.module.uiframework</require_module>
         <require_module version="${webservicesRestVersion}">org.openmrs.module.webservices.rest</require_module>
     </require_modules>
-	
-	<!-- Module Activator -->
+
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.EmrMonitorActivator</activator>
 	
-	
-	<!-- Adds link to admin page -->
-	<extension>
-		<point>org.openmrs.admin.list</point>
-		<class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.AdminList</class>
-	</extension>
-
+	<!-- Adds link to maintenance section of admin page -->
     <extension>
         <point>org.openmrs.admin.maintenance.localHeader</point>
-        <class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.EmrMonitorLinksExt</class>
+        <class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.AdminPageMaintenanceLinksExt</class>
     </extension>
 
-	<!-- Maps hibernate file's, if present -->
 	<mappingFiles>
         EmrMonitorServer.hbm.xml
         EmrMonitorReport.hbm.xml
-        EmrMonitorReportMetric.hbm.xml
 	</mappingFiles>
 
-	<!-- Internationalization -->
-	<!-- All message codes should start with ${project.parent.artifactId}. -->
 	<messages>
 		<lang>en</lang>
 		<file>messages.properties</file>
 	</messages>
-	<!-- /Internationalization -->
 
     <privilege>
         <name>Manage EmrMonitor</name>
         <description>Able to manage and configure EmrMonitor servers</description>
     </privilege>
 
-	<globalProperty>
-		<property>emrmonitor.productionServer.ips</property>
-		<defaultValue>197.243.32.204|10.138.0.10</defaultValue>
-		<description>IP addresses of production server to connection. IPs should be separated by | </description>
-	</globalProperty>
-	<globalProperty>
-		<property>emrmonitor.tomcatPath</property>
-		<defaultValue>/usr/share/tomcat6</defaultValue>
-		<description>Path of tomcat installation</description>
-	</globalProperty>
 </module>
 

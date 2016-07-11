@@ -17,10 +17,8 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
-import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -30,39 +28,24 @@ import java.util.Map;
 @Transactional
 public interface EmrMonitorService extends OpenmrsService {
 
+    // Server Methods
+
+    EmrMonitorServer ensureLocalServer();
+    List<EmrMonitorServer> getChildServers();
     EmrMonitorServer getEmrMonitorServerByUuid(String serverUuid);
-
     List<EmrMonitorServer> getAllEmrMonitorServers();
-
-    List<EmrMonitorServer> getEmrMonitorServerByType(EmrMonitorServerType serverType);
-
-    EmrMonitorServer getLocalServer();
-
-    EmrMonitorServer refreshLocalServerReport();
-
-    EmrMonitorServer getRemoteParentServer(EmrMonitorServer remoteServer) throws IOException;
-
     EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
+    void purgeEmrMonitorServer(String uuid) throws APIException;
 
-    Map<String, Map<String, String>> getExtraSystemInfo();
+    // Report Methods
 
-	Map<String, String> getOpenmrsData();
-
-    EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server, Map<String, Map<String,String>> systemInformation, EmrMonitorReport.SubmissionStatus reportStatus);
-
-    EmrMonitorServer testConnection(EmrMonitorServer server) throws IOException;
-
-    EmrMonitorServer registerServer(EmrMonitorServer server) throws IOException ;
-
-    EmrMonitorServer retireEmrMonitorServer(EmrMonitorServer server, String reason) throws APIException;
-
-    void purgeEmrMonitorServer(EmrMonitorServer server) throws APIException;
-
-    Map<String, Map<String, String>> getSystemInfoFromReport(EmrMonitorReport report) throws IOException;
-
+    EmrMonitorReport generateEmrMonitorReport();
+    EmrMonitorReport getEmrMonitorReportByUuid(String uuid);
+    List<EmrMonitorReport> getEmrMonitorReports(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus... status);
     EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report);
+    void purgeEmrMonitorReport(EmrMonitorReport report) throws APIException;
 
-    List<EmrMonitorReport> getEmrMonitorReportByServerAndStatus(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus status);
+    // Other methods
 
-    boolean sendEmrMonitorReports(EmrMonitorServer parent, List<EmrMonitorReport> reports) throws IOException;
+    Map<String, String> getOpenmrsData();
 }

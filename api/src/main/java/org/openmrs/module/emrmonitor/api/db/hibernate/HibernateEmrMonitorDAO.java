@@ -20,6 +20,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
@@ -44,76 +45,55 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
     public void setSessionFactory(SessionFactory sessionFactory) {
 	    this.sessionFactory = sessionFactory;
     }
-    
-	/**
-     * @return the sessionFactory
-     */
-    public SessionFactory getSessionFactory() {
-	    return sessionFactory;
-    }
 
     @Override
     public List<EmrMonitorServer> getAllEmrMonitorServers() {
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class);
-        criteria.add(Restrictions.eq("retired", false));
-        List<EmrMonitorServer> list = null;
-        try {
-            list = (List<EmrMonitorServer>) criteria.list();
-        } catch (Exception e) {
-            log.error("Failed to retrieve emr monitor servers", e);
-        }
-        return list;
+        return sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class).list();
     }
 
     @Override
     public EmrMonitorServer getEmrMonitorServerByUuid(String serverUuid) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class);
         criteria.add(Restrictions.eq("uuid", serverUuid));
-        try {
-            List<EmrMonitorServer> list =  (List<EmrMonitorServer>) criteria.list();
-            if (list != null && list.size() > 0 ) {
-                return (EmrMonitorServer) list.get(0);
-            }
-        } catch (Exception e) {
-            log.error("Failed to retrieve emr monitor server record", e);
-        }
-        return null;
+        return (EmrMonitorServer)criteria.uniqueResult();
     }
 
     @Override
-    public List<EmrMonitorServer> getEmrMonitorServerByType(EmrMonitorServerType serverType) {
+    public EmrMonitorServer getLocalServer() {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class);
-        criteria.add(Restrictions.eq("retired", false));
-        criteria.add(Restrictions.eq("serverType", serverType));
-        try {
-            List<EmrMonitorServer> list = (List<EmrMonitorServer>) criteria.list();
-            if (list != null && list.size() > 0 ) {
-                return list;
-            }
-        } catch (Exception e) {
-            log.error("Failed to retrieve emr monitor servers", e);
-        }
-        return null;
+        criteria.add(Restrictions.eq("serverType", EmrMonitorServerType.LOCAL));
+        return (EmrMonitorServer)criteria.uniqueResult();
+    }
+
+    @Override
+    public List<EmrMonitorServer> getChildServers() {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorServer.class);
+        criteria.add(Restrictions.eq("serverType", EmrMonitorServerType.CHILD));
+        return criteria.list();
     }
 
     @Override
     public EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server) {
-        try{
-            sessionFactory.getCurrentSession().saveOrUpdate(server);
-        } catch (Exception e) {
-            log.error("Error saving EmrMonitor Server", e);
-        }
+        sessionFactory.getCurrentSession().saveOrUpdate(server);
         return server;
     }
 
     @Override
-    public void deleteEmrMonitorServer(EmrMonitorServer server) {
+    public void deleteEmrMonitorServer(String uuid) {
+        EmrMonitorServer server = getEmrMonitorServerByUuid(uuid);
         sessionFactory.getCurrentSession().delete(server);
     }
 
     @Override
+    public EmrMonitorReport getEmrMonitorReportByUuid(String uuid) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorReport.class);
+        criteria.add(Restrictions.eq("uuid", uuid));
+        return (EmrMonitorReport)criteria.uniqueResult();
+    }
+
+    @Override
     public EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report) {
-        try{
+        try {
             sessionFactory.getCurrentSession().saveOrUpdate(report);
         } catch (Exception e) {
             log.error("Error saving EmrMonitorReport", e);
@@ -122,11 +102,18 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
     }
 
     @Override
-    public List<EmrMonitorReport> getEmrMonitorReportByServerAndStatus(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus status) {
+    public void deleteEmrMonitorReport(EmrMonitorReport report) {
+        sessionFactory.getCurrentSession().delete(report);
+    }
+
+    @Override
+    public List<EmrMonitorReport> getEmrMonitorReports(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus... status) {
 
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorReport.class);
-        criteria.add(Restrictions.eq("emrMonitorServer", server));
-        criteria.add(Restrictions.eq("status", status));
+        criteria.add(Restrictions.eq("server", server));
+        if (status != null && status.length > 0) {
+            criteria.add(Restrictions.in("status", status));
+        }
 
         try {
             List<EmrMonitorReport> list = (List<EmrMonitorReport>)criteria.list();
@@ -164,39 +151,43 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
 	    SQLQuery query4=session.createSQLQuery(sql4);
         BigInteger numObs = (BigInteger) query4.list().get(0);
 	    openmrsData.put("observations", ""+numObs);
-		
-	    String sql5="select count(*) from sync_record where state!='COMMITTED' and state!='NOT_SUPPOSED_TO_SYNC' and uuid=original_uuid";
-	    SQLQuery query5=session.createSQLQuery(sql5);
-        BigInteger numPendingRecords= (BigInteger) query5.list().get(0);
-        openmrsData.put("pendingRecords", ""+numPendingRecords);
-		
-	    String sql6="SELECT VERSION()";
-	    SQLQuery query6=session.createSQLQuery(sql6);	    
-	    String mysqlVersion=query6.list().get(0).toString();	    
-	    openmrsData.put("mysqlVersion", ""+mysqlVersion);
-	    
-	    String sql7="select count(*) from sync_record where state in ('FAILED','FAILED_AND_STOPPED') and uuid=original_uuid";
-	    SQLQuery query7=session.createSQLQuery(sql7);
-        BigInteger numFailedRecords= (BigInteger) query7.list().get(0);
-        if(numFailedRecords.intValue() > 0) {
-            openmrsData.put("failedRecord", "YES");
-        }
-	    else {
-            openmrsData.put("failedRecord", "NO");
-        }
-	    
-	    String sql8="select contained_classes from sync_record where state='FAILED' and uuid=original_uuid";
-	    SQLQuery query8=session.createSQLQuery(sql8);	    
-	    String objectFailedFull="";
-	    if(query8.list().size()!=0){
-	    	objectFailedFull=query8.list().get(0).toString();
-	    }
-	    openmrsData.put("failedObject", objectFailedFull);
 
-	    String sql9="select contained_classes from sync_record where state='REJECTED' and uuid=original_uuid";
-	    SQLQuery query9=session.createSQLQuery(sql9);	    
-	    int rejectedObject=query9.list().size();
-	    openmrsData.put("rejectedObject", ""+rejectedObject);
+        String sql6="SELECT VERSION()";
+        SQLQuery query6=session.createSQLQuery(sql6);
+        String mysqlVersion=query6.list().get(0).toString();
+        openmrsData.put("mysqlVersion", ""+mysqlVersion);
+
+        if (ModuleFactory.isModuleStarted("sync")) {
+
+            String sql5 = "select count(*) from sync_record where state!='COMMITTED' and state!='NOT_SUPPOSED_TO_SYNC' and uuid=original_uuid";
+            SQLQuery query5 = session.createSQLQuery(sql5);
+            BigInteger numPendingRecords = (BigInteger) query5.list().get(0);
+            openmrsData.put("pendingRecords", "" + numPendingRecords);
+
+            String sql7 = "select count(*) from sync_record where state in ('FAILED','FAILED_AND_STOPPED') and uuid=original_uuid";
+            SQLQuery query7 = session.createSQLQuery(sql7);
+            BigInteger numFailedRecords = (BigInteger) query7.list().get(0);
+            if (numFailedRecords.intValue() > 0) {
+                openmrsData.put("failedRecord", "YES");
+            }
+            else {
+                openmrsData.put("failedRecord", "NO");
+            }
+
+            String sql8 = "select contained_classes from sync_record where state='FAILED' and uuid=original_uuid";
+            SQLQuery query8 = session.createSQLQuery(sql8);
+            String objectFailedFull = "";
+            if (query8.list().size() != 0) {
+                objectFailedFull = query8.list().get(0).toString();
+            }
+            openmrsData.put("failedObject", objectFailedFull);
+
+            String sql9 = "select contained_classes from sync_record where state='REJECTED' and uuid=original_uuid";
+            SQLQuery query9 = session.createSQLQuery(sql9);
+            int rejectedObject = query9.list().size();
+            openmrsData.put("rejectedObject", "" + rejectedObject);
+
+        }
 
 		return openmrsData;	
 		

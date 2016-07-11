@@ -10,6 +10,9 @@
 
 package org.openmrs.module.emrmonitor;
 
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.api.context.Context;
+
 /**
  * Constants used by the Emr Monitor module
  */
@@ -20,4 +23,19 @@ public class EmrMonitorConstants {
 
     // Constants
     public static final Integer REMOTE_SERVER_TIMEOUT = 10000;
+
+    public static final String PARENT_URL_PROPERTY = "emrmonitor.parentUrl";
+    public static final String PARENT_USERNAME_PROPERTY = "emrmonitor.parentUsername";
+    public static final String PARENT_PASSWORD_PROPERTY = "emrmonitor.parentPassword";
+
+    /**
+     * @return true if a parent server is configured
+     */
+    public static boolean isParentServerConfigured() {
+        return StringUtils.isNotBlank(getRuntimeProperty(EmrMonitorConstants.PARENT_URL_PROPERTY));
+    }
+
+    public static String getRuntimeProperty(String name) {
+        return Context.getRuntimeProperties().getProperty(name);
+    }
 }

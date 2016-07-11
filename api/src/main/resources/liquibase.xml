@@ -126,4 +126,65 @@
         <renameColumn tableName="emrmonitor_server" oldColumnName="void_reason" newColumnName="retire_reason" columnDataType="int" />
     </changeSet>
 
+    <changeSet id="emrmonitor-5" author="mseaton">
+        <comment>Drops auditable and retireable columns</comment>
+        <dropColumn tableName="emrmonitor_server" columnName="date_created"/>
+        <dropColumn tableName="emrmonitor_server" columnName="date_changed"/>
+        <dropColumn tableName="emrmonitor_server" columnName="changed_by"/>
+        <dropColumn tableName="emrmonitor_server" columnName="retired"/>
+        <dropColumn tableName="emrmonitor_server" columnName="retired_by"/>
+        <dropColumn tableName="emrmonitor_server" columnName="date_retired"/>
+        <dropColumn tableName="emrmonitor_server" columnName="retire_reason"/>
+    </changeSet>
+
+    <changeSet id="emrmonitor-6" author="mseaton">
+        <comment>Add uuid to emrmonitor_report table</comment>
+        <addColumn tableName="emrmonitor_report">
+            <column name="uuid" type="char(38)"/>
+        </addColumn>
+        <sql>update emrmonitor_report set uuid = uuid() where uuid is null</sql>
+        <addNotNullConstraint tableName="emrmonitor_report" columnName="uuid" columnDataType="char(38)" />
+        <addUniqueConstraint tableName="emrmonitor_report" columnNames="uuid" />
+    </changeSet>
+
+    <changeSet id="emrmonitor-7" author="mseaton">
+        <comment>Drops connection columns from server</comment>
+        <dropColumn tableName="emrmonitor_server" columnName="server_url"/>
+        <dropColumn tableName="emrmonitor_server" columnName="server_user_name"/>
+        <dropColumn tableName="emrmonitor_server" columnName="server_user_password"/>
+    </changeSet>
+
+    <changeSet id="emrmonitor-8" author="mseaton">
+        <comment>Remove date_created and category from report metric table</comment>
+        <dropColumn tableName="emrmonitor_report_metric" columnName="date_created"/>
+        <dropColumn tableName="emrmonitor_report_metric" columnName="category"/>
+    </changeSet>
+
+    <changeSet id="emrmonitor-9" author="mseaton">
+        <comment>Change a few column names</comment>
+        <dropForeignKeyConstraint baseTableName="emrmonitor_report" constraintName="emrmonitor_server_id" />
+        <dropForeignKeyConstraint baseTableName="emrmonitor_report_metric" constraintName="emrmonitor_report_id" />
+        <renameColumn tableName="emrmonitor_report" oldColumnName="emrmonitor_server_id" newColumnName="server_id" columnDataType="int"/>
+        <renameColumn tableName="emrmonitor_report_metric" oldColumnName="emrmonitor_report_id" newColumnName="report_id" columnDataType="int"/>
+        <addForeignKeyConstraint baseTableName="emrmonitor_report" baseColumnNames="server_id" constraintName="emr_monitor_report_server_id" referencedTableName="emrmonitor_server" referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="emrmonitor_report_metric" baseColumnNames="report_id" constraintName="emrmonitor_report_metric_report_id" referencedTableName="emrmonitor_report" referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="emrmonitor-10" author="mseaton">
+        <comment>Add uuid to emrmonitor_report_metric table</comment>
+        <addColumn tableName="emrmonitor_report_metric">
+            <column name="uuid" type="char(38)"/>
+        </addColumn>
+        <sql>update emrmonitor_report_metric set uuid = uuid() where uuid is null</sql>
+        <addNotNullConstraint tableName="emrmonitor_report_metric" columnName="uuid" columnDataType="char(38)" />
+        <addUniqueConstraint tableName="emrmonitor_report_metric" columnNames="uuid" />
+    </changeSet>
+
+    <changeSet id="emrmonitor-11" author="mseaton">
+        <comment>Increase size of metric value column</comment>
+        <modifyColumn tableName="emrmonitor_report_metric">
+            <column name="value" type="varchar(2000)"></column>
+        </modifyColumn>
+    </changeSet>
+
 </databaseChangeLog>

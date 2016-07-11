@@ -13,9 +13,9 @@
  */
 package org.openmrs.module.emrmonitor.api.db;
 
+import org.openmrs.api.APIException;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
-import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 
 import java.util.List;
@@ -26,19 +26,23 @@ import java.util.Map;
  */
 public interface EmrMonitorDAO {
 
-    List<EmrMonitorServer> getAllEmrMonitorServers();
-
-    List<EmrMonitorServer> getEmrMonitorServerByType(EmrMonitorServerType serverType);
-
-    EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
+    // Server CRUD
 
     EmrMonitorServer getEmrMonitorServerByUuid(String serverUuid);
+    EmrMonitorServer getLocalServer();
+    List<EmrMonitorServer> getChildServers();
+    List<EmrMonitorServer> getAllEmrMonitorServers();
+    EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer server);
+    void deleteEmrMonitorServer(String uuid);
 
+    // Report CRUD
+
+    EmrMonitorReport getEmrMonitorReportByUuid(String uuid);
+    List<EmrMonitorReport> getEmrMonitorReports(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus... status);
     EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report);
-    
+    void deleteEmrMonitorReport(EmrMonitorReport report) throws APIException;
+
+    // OpenMRS queries
     Map<String, String> getOpenmrsData();
 
-    void deleteEmrMonitorServer(EmrMonitorServer server);
-
-    List<EmrMonitorReport> getEmrMonitorReportByServerAndStatus(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus status);
 }
