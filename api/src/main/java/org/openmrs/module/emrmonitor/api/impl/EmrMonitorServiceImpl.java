@@ -166,6 +166,11 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     }
 
     @Override
+    public Map<String, String> getDatabaseMetadata() {
+        return dao.getDatabaseMetadata();
+    }
+
+    @Override
     public Map<String, String> getOpenmrsData() {
         return dao.getOpenmrsData();
     }

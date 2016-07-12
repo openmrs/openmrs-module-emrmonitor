@@ -46,7 +46,7 @@ public interface EmrMonitorService extends OpenmrsService {
     EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report);
     void purgeEmrMonitorReport(EmrMonitorReport report) throws APIException;
 
-    // Other methods
-
+    // Metric Queries
+    Map<String, String> getDatabaseMetadata();
     Map<String, String> getOpenmrsData();
 }

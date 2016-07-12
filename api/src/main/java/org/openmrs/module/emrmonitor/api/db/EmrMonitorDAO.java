@@ -43,7 +43,8 @@ public interface EmrMonitorDAO {
     EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report);
     void deleteEmrMonitorReport(EmrMonitorReport report) throws APIException;
 
-    // OpenMRS queries
+    // Metric Queries
+    Map<String, String> getDatabaseMetadata();
     Map<String, String> getOpenmrsData();
 
 }

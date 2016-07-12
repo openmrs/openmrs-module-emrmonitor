@@ -21,6 +21,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.jdbc.Work;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
@@ -28,7 +29,11 @@ import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
 
 import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -124,6 +129,22 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
             criteria.add(Restrictions.in("status", status));
         }
         return criteria.list();
+    }
+
+    @Override
+    public Map<String, String> getDatabaseMetadata() {
+        final Map<String, String> ret = new LinkedHashMap<String, String>();
+        sessionFactory.getCurrentSession().doWork(new Work() {
+            @Override
+            public void execute(Connection connection) throws SQLException {
+                DatabaseMetaData md = connection.getMetaData();
+                ret.put("product.name", md.getDatabaseProductName());
+                ret.put("product.version", md.getDatabaseProductVersion());
+                ret.put("product.majorVersion", Integer.toString(md.getDatabaseMajorVersion()));
+                ret.put("product.minorVersion", Integer.toString(md.getDatabaseMinorVersion()));
+            }
+        });
+        return ret;
     }
 
     @Override

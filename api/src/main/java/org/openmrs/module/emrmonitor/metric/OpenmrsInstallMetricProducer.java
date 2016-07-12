@@ -68,12 +68,6 @@ public class OpenmrsInstallMetricProducer implements MetricProducer {
             metrics.put("module."+moduleId+".version", module.getVersion());
         }
 
-        // Database
-        Properties rp = Context.getRuntimeProperties();
-        metrics.put("database.name", OpenmrsConstants.DATABASE_NAME);
-        metrics.put("database.url", rp.getProperty("connection.url"));
-
-
         /*
         Server Id
 

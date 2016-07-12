@@ -105,16 +105,21 @@ public class ServerMetricProducer implements MetricProducer {
         }
 
         // Disks
-        long totalSpace = 0;
-        long usableSpace = 0;
-        for (OSFileStore fileStore : hal.getFileStores()) {
-            totalSpace += fileStore.getTotalSpace();
-            usableSpace += fileStore.getUsableSpace();
+        int numFileStores = hal.getFileStores().length;
+        metrics.put("filestore.numPresent", Integer.toString(numFileStores));
+        for (int i=0; i<numFileStores; i++) {
+            OSFileStore fs = hal.getFileStores()[i];
+            String prefix = "disk." + i + ".";
+            metrics.put(prefix + "name", fs.getName());
+            metrics.put(prefix + "volume", fs.getVolume());
+            metrics.put(prefix + "description", fs.getDescription());
+            metrics.put(prefix + "mount", fs.getMount());
+            metrics.put(prefix + "type", fs.getType());
+            metrics.put(prefix + "totalSpace", FormatUtil.formatBytes(fs.getTotalSpace()));
+            metrics.put(prefix + "totalSpace.bytes", Long.toString(fs.getTotalSpace()));
+            metrics.put(prefix + "usableSpace", FormatUtil.formatBytes(fs.getUsableSpace()));
+            metrics.put(prefix + "usableSpace.bytes", Long.toString(fs.getUsableSpace()));
         }
-        metrics.put("disk.totalSpace", FormatUtil.formatBytes(totalSpace));
-        metrics.put("disk.totalSpace.bytes", Long.toString(totalSpace));
-        metrics.put("disk.usableSpace", FormatUtil.formatBytes(usableSpace));
-        metrics.put("disk.usableSpace.bytes", Long.toString(usableSpace));
 
         return metrics;
     }
