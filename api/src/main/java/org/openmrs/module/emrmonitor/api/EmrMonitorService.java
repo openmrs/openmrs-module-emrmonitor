@@ -41,6 +41,7 @@ public interface EmrMonitorService extends OpenmrsService {
 
     EmrMonitorReport generateEmrMonitorReport();
     EmrMonitorReport getEmrMonitorReportByUuid(String uuid);
+    EmrMonitorReport getLatestEmrMonitorReport(EmrMonitorServer server);
     List<EmrMonitorReport> getEmrMonitorReports(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus... status);
     EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report);
     void purgeEmrMonitorReport(EmrMonitorReport report) throws APIException;

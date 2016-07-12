@@ -38,6 +38,7 @@ public interface EmrMonitorDAO {
     // Report CRUD
 
     EmrMonitorReport getEmrMonitorReportByUuid(String uuid);
+    EmrMonitorReport getLatestEmrMonitorReport(EmrMonitorServer server);
     List<EmrMonitorReport> getEmrMonitorReports(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus... status);
     EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report);
     void deleteEmrMonitorReport(EmrMonitorReport report) throws APIException;

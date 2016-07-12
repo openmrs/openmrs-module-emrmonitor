@@ -10,19 +10,22 @@
 package org.openmrs.module.emrmonitor.rest.resource.openmrs;
 
 import org.openmrs.api.context.Context;
+import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.openmrs.module.emrmonitor.rest.controller.EmrMonitorRestController;
-import org.openmrs.module.webservices.rest.SimpleObject;
 import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.openmrs.module.webservices.rest.web.RestConstants;
+import org.openmrs.module.webservices.rest.web.annotation.PropertyGetter;
 import org.openmrs.module.webservices.rest.web.annotation.Resource;
 import org.openmrs.module.webservices.rest.web.representation.DefaultRepresentation;
 import org.openmrs.module.webservices.rest.web.representation.FullRepresentation;
 import org.openmrs.module.webservices.rest.web.representation.RefRepresentation;
 import org.openmrs.module.webservices.rest.web.representation.Representation;
+import org.openmrs.module.webservices.rest.web.resource.api.PageableResult;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
+import org.openmrs.module.webservices.rest.web.resource.impl.NeedsPaging;
 import org.openmrs.module.webservices.rest.web.response.ResourceDoesNotSupportOperationException;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
@@ -36,9 +39,9 @@ import java.util.List;
 public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorServer> {
 
     @Override
-    public SimpleObject getAll(RequestContext context) throws ResponseException {
+    protected PageableResult doGetAll(RequestContext context) throws ResponseException {
         List<EmrMonitorServer> servers = getEmrMonitorService().getAllEmrMonitorServers();
-        return new SimpleObject().add("results", servers);
+        return new NeedsPaging<EmrMonitorServer>(servers, context);
     }
 
     @Override
@@ -97,9 +100,15 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
             if (rep instanceof DefaultRepresentation || rep instanceof FullRepresentation) {
                 description.addProperty("name");
                 description.addProperty("serverType");
+                description.addProperty("latestReport");
             }
         }
         return description;
+    }
+
+    @PropertyGetter("latestReport")
+    public EmrMonitorReport getLatestReport(EmrMonitorServer server) {
+        return getEmrMonitorService().getLatestEmrMonitorReport(server);
     }
 
     private EmrMonitorService getEmrMonitorService() {

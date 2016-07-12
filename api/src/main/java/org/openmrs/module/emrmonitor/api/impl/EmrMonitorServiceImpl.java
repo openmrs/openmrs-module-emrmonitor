@@ -156,6 +156,11 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     }
 
     @Override
+    public EmrMonitorReport getLatestEmrMonitorReport(EmrMonitorServer server) {
+        return dao.getLatestEmrMonitorReport(server);
+    }
+
+    @Override
     public List<EmrMonitorReport> getEmrMonitorReports(EmrMonitorServer server, EmrMonitorReport.SubmissionStatus... status) {
         return dao.getEmrMonitorReports(server, status);
     }

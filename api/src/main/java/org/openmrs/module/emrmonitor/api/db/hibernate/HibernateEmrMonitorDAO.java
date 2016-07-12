@@ -19,6 +19,7 @@ import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
@@ -100,6 +101,19 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
     @Override
     public void deleteEmrMonitorReport(EmrMonitorReport report) {
         sessionFactory.getCurrentSession().delete(report);
+    }
+
+    @Override
+    public EmrMonitorReport getLatestEmrMonitorReport(EmrMonitorServer server) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EmrMonitorReport.class);
+        criteria.add(Restrictions.eq("server", server));
+        criteria.addOrder(Order.desc("dateCreated"));
+        criteria.setFirstResult(0).setMaxResults(1);
+        List<EmrMonitorReport> l = (List<EmrMonitorReport>)criteria.list();
+        if (l != null && l.size() > 0) {
+            return l.get(0);
+        }
+        return null;
     }
 
     @Override

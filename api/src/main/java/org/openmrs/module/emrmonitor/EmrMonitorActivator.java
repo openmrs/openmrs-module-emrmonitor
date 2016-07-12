@@ -23,48 +23,20 @@ import org.openmrs.module.emrmonitor.task.EmrMonitorTask;
 public class EmrMonitorActivator extends BaseModuleActivator implements DaemonTokenAware{
 	
 	protected Log log = LogFactory.getLog(getClass());
-		
-	/**
-	 * @see ModuleActivator#willRefreshContext()
-	 */
-	public void willRefreshContext() {
-		log.info("Refreshing OpenMRS EmrMonitor Module");
-	}
-	
-	/**
-	 * @see ModuleActivator#contextRefreshed()
-	 */
-	public void contextRefreshed() {
-		log.info("OpenMRS EmrMonitor Module refreshed");
-	}
-	
-	/**
-	 * @see ModuleActivator#willStart()
-	 */
-	public void willStart() {
-		log.info("Starting OpenMRS EmrMonitor Module");
-	}
 	
 	/**
 	 * @see ModuleActivator#started()
 	 */
 	public void started() {
         EmrMonitorTask.setEnabled(true);
-		log.info("OpenMRS EmrMonitor Module started");
-	}
-	
-	/**
-	 * @see ModuleActivator#willStop()
-	 */
-	public void willStop() {
-		log.info("Stopping OpenMRS EmrMonitor Module");
+		log.info("EmrMonitor Module started");
 	}
 	
 	/**
 	 * @see ModuleActivator#stopped()
 	 */
 	public void stopped() {
-		log.info("OpenMRS EmrMonitor Module stopped");
+		log.info("EmrMonitor Module stopped");
 	}
 
     @Override
