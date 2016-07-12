@@ -27,7 +27,12 @@
         <class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.AdminPageMaintenanceLinksExt</class>
     </extension>
 
-	<mappingFiles>
+    <servlet>
+        <servlet-name>webApplicationMetricProducerServlet</servlet-name>
+        <servlet-class>org.openmrs.module.emrmonitor.metric.WebApplicationMetricProducer</servlet-class>
+    </servlet>
+
+    <mappingFiles>
         EmrMonitorServer.hbm.xml
         EmrMonitorReport.hbm.xml
         EmrMonitorReportMetric.hbm.xml
