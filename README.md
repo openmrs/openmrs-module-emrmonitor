@@ -1,185 +1,84 @@
 ## OpenMRS EMR Monitor Module
 
 ### Description
-OpenMRS module that allows OpenMRS servers that are part of the same implementation to register with a parent server and to send on a scheduled interval updated system metrics to the central server.
+OpenMRS module that can be used to monitor various metrics over time, and to share these metrics with a central server
 
 ### OpenMRS Wiki
 [EMR Monitor Module](https://wiki.openmrs.org/display/projects/EMR+Monitor+Module)
 
-### Technical overview
-The module provides a REST web services API that allows the child servers to register with a parent server and to transmit system metrics data:
+### Overview
 
-- [http://localhost:8080/openmrs/ws/rest/v1/emrmonitor/server](http://localhost:8080/openmrs/ws/rest/v1/emrmonitor/server)
-    * GET: retrieve the list of servers already registered in the system
-    * POST: creates a new EMRMonitorServer record in the system
-        - e.g. posting an json like below adds a new server node to the list of servers to be monitored
+#### Server
+An __EmrMonitorServer__ represents a particular OpenMRS instance that is available for monitoring.  There are two types of servers:
+* LOCAL:  The OpenMRS instance that this module is installed into
+* CHILD:  A remote OpenMRS instance that has registered itself into this server and submits reports of it's metrics on a regular basis
 
-```json
-{
-    "name": "Kamarando",
-    "serverType": "CHILD",
-    "serverUrl": "butaro.pih-emr.org",
-    "serverUserName": "test4",
-    "serverUserPassword": "password4",
-    "uuid": "114F2A6E-A736-4473-B777-A08F76E818D9",
-    "systemInformation": {
-        "SystemInfo.title.openmrsInformation": {
-            "SystemInfo.OpenMRSInstallation.openmrsVersion": "1.9.8 SNAPSHOT Build c3f109",
-            "SystemInfo.hostname": "192.168.3.242"
-        },
-        "SystemInfo.title.javaRuntimeEnvironmentInformation": {
-            "SystemInfo.JavaRuntimeEnv.operatingSystem": "Mac OS X",
-            "SystemInfo.JavaRuntimeEnv.operatingSystemArch": "x86_64"
-        },
-        "SystemInfo.title.memoryInformation": {
-            "SystemInfo.Memory.totalMemory": "509 MB"
-        },
-        "SystemInfo.title.dataBaseInformation": {
-            "SystemInfo.Database.name": "butaronov6",
-            "SystemInfo.Database.connectionURL": "jdbc:mysql://localhost:3306/butaronov6?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8",
-        },
-        "SystemInfo.title.moduleInformation": {
-            "SystemInfo.Module.repositoryPath": "/Users/cosmin/pih/server-config/openmrs-rwanda-rwink/modules",
-            "Rwanda Primary Care Module": "2.0.7-SNAPSHOT ",
-            "Metadata Sharing": "1.1.8 ",
-            "Reporting": "0.7.8 ",
-            "OpenMRS EmrMonitor Module": "1.0-SNAPSHOT "
-        }
-    }
-```
+The expected usage is that, within a network of servers, one server would be designated as the "parent", and the rest would be designated as "child".
+Each of the child servers would report their metrics up to the parent.
 
-#### Data Model
-Each server produces a list of reports similar to the systemInformation node above. Each report contains a list of system metrics.
+#### Report
+An __EmrMonitorReport__ encapsulates a particular collection of metrics that are generated at a particular time for a particular server.
+All metrics are associated with a Report and a Report is also the unit of transmission between a child and a parent server.
 
-Data is stored/represented in/by the following OpenMRS tables/objects:
-* EmrMonitorServer: contains entries for all registered servers
-```java
-EmrMonitorServer extends BaseOpenmrsData implements Serializable{
-    Integer id;
-    String name;
-    EmrMonitorServerType serverType; //LOCAL, PARENT, CHILD
-    String serverUrl;
-    String serverUserName;
-    String serverUserPassword;
-    Set<EmrMonitorReport> emrMonitorReports;
+#### Report Metric
+An __EmrMonitorReportMetric__ is a particular data element that is obtained on a particular server at a particular point in time.  Metrics are generated
+by a particular instance of a __MetricProducer__.  Although these can be invoked on demand, they are typically run in the context of producing a periodic
+__EmrMonitorReport__ for a particular server.
+
+#### Metric Producer
+A __MetricProducer__ is a component registered with Spring that implements the MetricProducer interface and returns a Map<String, String> of metrics for a
+given server as of that particular execution time.  Implementations can extend the emrmonitor module to capture their own custom metrics by adding their own
+__MetricProducer__ implementations in a module.  There are several built-in metric producers that run by default.
+
+### Workflow
+
+1. A "LOCAL" __EmrMonitorServer__ server is automatically created on a given OpenMRS instance.
+2. A scheduled task executes once per day, and generates a daily __EmrMonitorReport__ for the LOCAL server.  This process iterates across all __MetricProducer__ components and
+   adds an __EmrMonitorReportMetric__ to the report for all generated metrics.
+3. A history of these reports is available for viewing on the local server
+4. If this server has a "parent" configured (via OpenMRS runtime properties), another scheduled task executes every few minutes to check for any __EmrMonitorReport__ that has
+   been generated but not transmitted to the parent.  An __EmrMonitorReport__ can have one of the following statuses:
+   * LOCAL_ONLY:  No parent is configured, do not transmit
+   * WAITING_TO_SEND:  A parent is configured, but the Report has not yet been sent successfully to the parent (only found on a child server)
+   * SENT:  A parent is configured and the report has successfully been sent and recieved by the parent (only found on a child server)
+   * RECEIVED:  A report was successfully received on this server after it was submitted by a child (only found on a parent server)
+
+### Rest Interface
+
+The module provides a REST API for managing servers and reports.
+
+- http://localhost:8080/openmrs/ws/rest/v1/emrmonitor/server
+- http://localhost:8080/openmrs/ws/rest/v1/emrmonitor/report
+
+### TODO
+
+* Handle all TODOs in code
+* Configurable report frequency?  eg. other than daily?
+* Do not sync these tables
+
+* ConfigurableMetricProducer: would load xml/other files from somewhere in the .OpenMRS directory, parse these, and allow for executing things like:
+- SQL queries
+- Runtime commands on the underlying O/S
+- Groovy scripts
 }
-```
-* EmrMonitorReport: contains a list of reports generated for each server.
-```java
-EmrMonitorReport implements Comparable<EmrMonitorReport>{
-    public enum SubmissionStatus {
-        WAITING_TO_SEND, SENT, LOCAL_ONLY
-    }
-    Integer id;
-    EmrMonitorServer server;
-    Set<EmrMonitorReportMetric> metrics;
-    private SubmissionStatus status;
-}
-```
-#### Service Layer
 
-* EmrMonitorService: Methods to manipulate data stored in database. These should follow standard OpenMRS conventions:
-  * EMR Monitor Server
-    ```java
-    EmrMonitorServer getEmrMonitorServer(Integer);
-    EmrMonitorServer getEmrMonitorServerByUuid(String);
-    List<EmrMonitorServer> getAllEmrMonitorServers();
-    EmrMonitorServer saveEmrMonitorServer(EmrMonitorServer);
-    EmrMonitorServer retireEmrMonitorServer(EmrMonitorServer);
-    void purgeEmrMonitorServer(EmrMonitorServer);
+* Task to clean up history of log files or reports (if desired, to save space)
 
-    EmrMonitorServer getLocalServer();
-    EmrMonitorServer getParentServer();
-    List<EmrMonitorServer> getChildServers();
-    ```
-  * EMR Monitor Report
-    ```java
-    EmrMonitorReport getEmrMonitorReport(Integer);
-    EmrMonitorReport getEmrMonitorReportByUuid(String);
-    EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport);
-    void purgeEmrMonitorReport(EmrMonitorReport);
+* Add last connection time to the server table, and a task with web service for hitting it from child more frequently than daily
 
-    EmrMonitorReport generateEmrMonitorReport();
-    List<EmrMonitorReport> getEmrMonitorReports(EmrMonitorReportQuery);
-    Map<EmrMonitorServer, EmrMonitorReport> getLatestEmrMonitorReports();
-    EmrMonitorReport getLatestEmrMonitorReport(EmrMonitorServer);
-    ```java
+* ReportConfig:
+- trigger_type (cron, startup, context_refresh, event)
+- trigger_config (used by the type)
+- template (simple template that allows for text replacement of metrics by key)
+- transmission_url
+- transmission_username
+- transmission_password
+(can we use key-based authentication here instead?)
 
-    ** Emr Monitor Report Metric
-        ```java
-        EmrMonitorReportMetric getEmrMonitorReportMetrics(EmrMonitorReportMetricQuery);
-        ```
-    ** Methods to communicate between servers (might want these to go in a different class)
-        ```java
-        ConnectionStatus testConnectionToParent();
-        ConnectionStatus sendReportToParent();
-        ```
+* Document REST interface above
 
-
-#### Metric Generation Strategy:
-```java
-interface MetricProducer {
- boolean canProduceMetricsForCurrentSystem();
- List<EmrMonitorReportMetric> produceMetrics();
-}
-```
-* Implementations of this class should be registered with Spring using @Component
-* The service will iterate over all of these beans, call their produceMetrics method, and combine into a Report
-
-#### Implementations:
-
-* We should logically organize the different information we are currently collecting from
-the methods available in the admnistrationService, and what we have already written in ExtraSystemInformation,
-and group them together into implementations of MetricProducer
-
-* For things like Sync Information, this should be in it's own class, and the "canProduceMetricsForCurrentSystem"
-method will check whether or not sync is started
-
-* For things that are O/S-specific, this should be similarly encapsulated, with a means for either automatically (or via GP),
-determining which are appropriate given the running O/S.  This _should_ be possible to determine automatically.
-
-* Ideally we would have one or more implementations that allow for more to be added in.  Eg.
-```java
-ConfigurableMetricProducer implements MetricProducer {
- // This would load xml files from somewhere in the .OpenMRS directory, parse these, and allow for executing things like:
- *  SQL queries
- *  Runtime commands on the underlying O/S
- *  Groovy scripts
-}
-```
-#####Processing:
-* We will need several scheduled tasks:
-(I prefer Spring-managed tasks like we do in reporting, over use of the SchedulerService)
-
-    * Task 1. Generate report for the Local Server on a periodic basis and save it
-    * Task 2. If parent configured, check whether any reports have been generated but not transmitted, and send them
-    * Task 3. Clean up history of reports (if desired, to save space)
-
-##### Report Config
-trigger_type
-trigger_config
-or
-run_on_startup
-run_on_context_refresh
-run_on_event
-run_on_cron
-
-report_template (null indicates default)
-destination_url
-destination_username/password (can we use key-based authentication here instead?)
-
-
-#####
-EmrMonitorReport generateEmrMonitorReport();
-List<EmrMonitorReport> getEmrMonitorReports(EmrMonitorReportQuery);
-Map<EmrMonitorServer, EmrMonitorReport> getLatestEmrMonitorReports();
-EmrMonitorReport getLatestEmrMonitorReport(EmrMonitorServer);
-
-// Emr Monitor Report Metric
-
-EmrMonitorReportMetric getEmrMonitorReportMetrics(EmrMonitorReportMetricQuery);
-
-// Methods to communicate between servers (might want these to go in a different class)
-
-ConnectionStatus testConnectionToParent();
-ConnectionStatus sendReportToParent();
+* Service Methods:
+- List<EmrMonitorReport> getEmrMonitorReports(EmrMonitorReportQuery);
+- Map<EmrMonitorServer, EmrMonitorReport> getLatestEmrMonitorReports();
+- EmrMonitorReport getLatestEmrMonitorReport(EmrMonitorServer);
+- EmrMonitorReportMetric getEmrMonitorReportMetrics(EmrMonitorReportMetricQuery);
