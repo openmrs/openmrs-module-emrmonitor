@@ -16,8 +16,8 @@
         width: 99%;
         max-width: none;
     }
-    #metric-table {
-        th { background-color: lightgray;}
+    #metric-table th {
+        background-color: lightgray;
     }
 </style>
 
