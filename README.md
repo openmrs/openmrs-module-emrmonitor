@@ -30,6 +30,8 @@ A __MetricProducer__ is a component registered with Spring that implements the M
 given server as of that particular execution time.  Implementations can extend the emrmonitor module to capture their own custom metrics by adding their own
 __MetricProducer__ implementations in a module.  There are several built-in metric producers that run by default.
 
+An implementation can disable any of these metric producers explicitly by adding their namespace (comma-separated) to the global property named __emrmonitor.disabledMetricProducers__
+
 ### Workflow
 
 1. A "LOCAL" __EmrMonitorServer__ server is automatically created on a given OpenMRS instance.
