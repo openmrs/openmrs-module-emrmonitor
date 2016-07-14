@@ -55,7 +55,7 @@ public class EmrMonitorReportResource extends DelegatingCrudResource<EmrMonitorR
             if (server == null) {
                 throw new ObjectNotFoundException();
             }
-            List<EmrMonitorReport> reports = getEmrMonitorService().getEmrMonitorReports(server); // TODO: Support for status and date ranges
+            List<EmrMonitorReport> reports = getEmrMonitorService().getEmrMonitorReports(server);
             return new NeedsPaging<EmrMonitorReport>(reports, context);
         }
         //currently this is not supported since the superclass throws an exception

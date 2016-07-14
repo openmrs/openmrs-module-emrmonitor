@@ -137,7 +137,6 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
 
     @Override
     public EmrMonitorReport saveEmrMonitorReport(EmrMonitorReport report) {
-        // TODO: Not sure this is right or what we want.  Maybe move this submission status to a separate queue table?
         if (report.getStatus() == null) {
             if (report.getServer().getServerType() == EmrMonitorServerType.LOCAL) {
                 if (EmrMonitorConfig.isParentServerConfigured()) {

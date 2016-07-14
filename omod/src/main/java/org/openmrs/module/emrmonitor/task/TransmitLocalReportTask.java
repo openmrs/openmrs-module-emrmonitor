@@ -77,8 +77,6 @@ public class TransmitLocalReportTask extends EmrMonitorTask {
                         List<EmrMonitorReport> reports = getEmrMonitorService().getEmrMonitorReports(localServer, EmrMonitorReport.SubmissionStatus.WAITING_TO_SEND);
                         log.info("Attempting to transmit " + reports.size() + " reports that are waiting to send.");
 
-                        // TODO: Do we want to batch these?
-
                         for (EmrMonitorReport report : reports) {
                             try {
                                 log.debug("Sending report to parent: " + report.toString());

@@ -55,7 +55,6 @@ The module provides a REST API for managing servers and reports.
 ### TODO
 
 * Handle all TODOs in code
-* Configurable report frequency?  eg. other than daily?
 * Do not sync these tables
 
 * ConfigurableMetricProducer: would load xml/other files from somewhere in the .OpenMRS directory, parse these, and allow for executing things like:
