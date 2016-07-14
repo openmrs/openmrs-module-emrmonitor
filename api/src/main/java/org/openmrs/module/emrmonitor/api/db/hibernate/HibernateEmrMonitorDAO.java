@@ -16,23 +16,22 @@ package org.openmrs.module.emrmonitor.api.db.hibernate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.SQLQuery;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.jdbc.Work;
-import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
 import org.openmrs.module.emrmonitor.api.db.EmrMonitorDAO;
 
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,68 +147,56 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
     }
 
     @Override
-	public Map<String, String> getOpenmrsData() {
-		Map openmrsData	=new HashMap<String, Integer>();
-		Session session=sessionFactory.getCurrentSession();
-		
-		String sql="SELECT count(*) FROM orders where voided=0";
-	    SQLQuery query=session.createSQLQuery(sql);
-	    BigInteger numOrders = (BigInteger) query.list().get(0);
-	    openmrsData.put("orders", ""+numOrders);
-	    
-	    String sql2="select count(*) from patient where voided=0";
-	    SQLQuery query2=session.createSQLQuery(sql2);
-        BigInteger numPatients= (BigInteger) query2.list().get(0);
-	    openmrsData.put("patients", ""+numPatients);
-	    
-	    String sql3="select count(*) from encounter where voided=0";
-	    SQLQuery query3=session.createSQLQuery(sql3);
-        BigInteger numEncounters= (BigInteger) query3.list().get(0);
-        openmrsData.put("encounters", ""+numEncounters);
-	    
-	    String sql4="select count(*) from obs where voided=0";
-	    SQLQuery query4=session.createSQLQuery(sql4);
-        BigInteger numObs = (BigInteger) query4.list().get(0);
-	    openmrsData.put("observations", ""+numObs);
+    public List<Object[]> executeQuery(final String query) {
+        final List<Object[]> ret = new ArrayList<Object[]>();
+        sessionFactory.getCurrentSession().doWork(new Work() {
 
-        String sql6="SELECT VERSION()";
-        SQLQuery query6=session.createSQLQuery(sql6);
-        String mysqlVersion=query6.list().get(0).toString();
-        openmrsData.put("mysqlVersion", ""+mysqlVersion);
-
-        if (ModuleFactory.isModuleStarted("sync")) {
-
-            String sql5 = "select count(*) from sync_record where state!='COMMITTED' and state!='NOT_SUPPOSED_TO_SYNC' and uuid=original_uuid";
-            SQLQuery query5 = session.createSQLQuery(sql5);
-            BigInteger numPendingRecords = (BigInteger) query5.list().get(0);
-            openmrsData.put("pendingRecords", "" + numPendingRecords);
-
-            String sql7 = "select count(*) from sync_record where state in ('FAILED','FAILED_AND_STOPPED') and uuid=original_uuid";
-            SQLQuery query7 = session.createSQLQuery(sql7);
-            BigInteger numFailedRecords = (BigInteger) query7.list().get(0);
-            if (numFailedRecords.intValue() > 0) {
-                openmrsData.put("failedRecord", "YES");
+            @Override
+            public void execute(Connection connection) throws SQLException {
+                PreparedStatement statement =  null;
+                try {
+                    statement = connection.prepareStatement(query);
+                    ResultSet resultSet = statement.executeQuery();
+                    if (resultSet != null) {
+                        ResultSetMetaData metaData = resultSet.getMetaData();
+                        while (resultSet.next()) {
+                            Object[] row = new Object[metaData.getColumnCount()];
+                            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                                row[i - 1] = resultSet.getObject(i);
+                            }
+                            ret.add(row);
+                        }
+                    }
+                }
+                catch (Exception e) {
+                    throw new IllegalArgumentException("Unable to execute query: " + query, e);
+                }
+                finally {
+                    try {
+                        if (statement != null) {
+                            statement.close();
+                        }
+                    }
+                    catch (Exception e) {}
+                }
             }
-            else {
-                openmrsData.put("failedRecord", "NO");
-            }
+        });
+        return ret;
+    }
 
-            String sql8 = "select contained_classes from sync_record where state='FAILED' and uuid=original_uuid";
-            SQLQuery query8 = session.createSQLQuery(sql8);
-            String objectFailedFull = "";
-            if (query8.list().size() != 0) {
-                objectFailedFull = query8.list().get(0).toString();
-            }
-            openmrsData.put("failedObject", objectFailedFull);
-
-            String sql9 = "select contained_classes from sync_record where state='REJECTED' and uuid=original_uuid";
-            SQLQuery query9 = session.createSQLQuery(sql9);
-            int rejectedObject = query9.list().size();
-            openmrsData.put("rejectedObject", "" + rejectedObject);
-
+    @Override
+    public <T> T executeSingleValueQuery(String query, Class<T> type) {
+        List<Object[]> results = executeQuery(query);
+        if (results.isEmpty()) {
+            return null;
         }
-
-		return openmrsData;	
-		
-	}
+        if (results.size() > 1) {
+            throw new IllegalStateException("Expected single value for query [" + query + "] but got " + results.size() + " rows");
+        }
+        Object[] row = results.get(0);
+        if (row.length != 1) {
+            throw new IllegalStateException("Expected single value for query [" + query + "] but got " + row.length + " columns");
+        }
+        return (T)row[0];
+    }
 }

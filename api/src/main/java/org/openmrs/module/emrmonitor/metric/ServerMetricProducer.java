@@ -86,7 +86,6 @@ public class ServerMetricProducer implements MetricProducer {
         metrics.put("cpu.family", processor.getFamily());
         metrics.put("cpu.physicalCount", Integer.toString(processor.getPhysicalProcessorCount()));
         metrics.put("cpu.logicalCount", Integer.toString(processor.getLogicalProcessorCount()));
-        // TODO: Use process information to get information on Tomcat, MySQL usage
 
         // Networks
         List<String> networks = new ArrayList<String>();
@@ -94,7 +93,7 @@ public class ServerMetricProducer implements MetricProducer {
             String networkName = networkIF.getName();
             networks.add(networkName);
             metrics.put("network." + networkName + ".name", networkIF.getName());
-            metrics.put("network." + networkName + ".ipAddress", networkIF.getIPv4addr()[0]);
+            metrics.put("network." + networkName + ".ipAddress", join(networkIF.getIPv4addr(), ","));
         }
         metrics.put("network.list", OpenmrsUtil.join(networks, ","));
         try {
@@ -122,5 +121,15 @@ public class ServerMetricProducer implements MetricProducer {
         }
 
         return metrics;
+    }
+
+    private String join(String[] arr, String separator) {
+        StringBuilder sb = new StringBuilder();
+        if (arr != null) {
+            for (String s : arr) {
+                sb.append(sb.length() == 0 ? "" : separator).append(s);
+            }
+        }
+        return sb.toString();
     }
 }

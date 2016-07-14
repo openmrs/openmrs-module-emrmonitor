@@ -171,7 +171,12 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     }
 
     @Override
-    public Map<String, String> getOpenmrsData() {
-        return dao.getOpenmrsData();
+    public List<Object[]> executeQuery(String query) {
+        return dao.executeQuery(query);
+    }
+
+    @Override
+    public <T> T executeSingleValueQuery(String query, Class<T> type) {
+        return dao.executeSingleValueQuery(query, type);
     }
 }

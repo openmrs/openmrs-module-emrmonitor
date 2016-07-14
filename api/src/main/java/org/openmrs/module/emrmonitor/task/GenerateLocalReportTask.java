@@ -41,9 +41,5 @@ public class GenerateLocalReportTask extends EmrMonitorTask {
                 log.warn("No local emrmonitor server defined.  Not generating a report.");
             }
         }
-
-        private EmrMonitorService getEmrMonitorService() {
-            return Context.getService(EmrMonitorService.class);
-        }
     }
 }

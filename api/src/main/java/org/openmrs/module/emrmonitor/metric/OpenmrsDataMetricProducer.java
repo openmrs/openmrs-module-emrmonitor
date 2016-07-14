@@ -13,28 +13,23 @@ package org.openmrs.module.emrmonitor.metric;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.Module;
-import org.openmrs.module.ModuleFactory;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Produces core metrics around server information that is not specific to OpenMRS usage
  */
 @Component
-public class OpenmrsInstallMetricProducer implements MetricProducer {
+public class OpenmrsDataMetricProducer implements MetricProducer {
 
     protected final Log log = LogFactory.getLog(this.getClass());
 
     @Override
     public String getNamespace() {
-        return "openmrs.install";
+        return "openmrs.data";
     }
 
     /**
@@ -53,27 +48,27 @@ public class OpenmrsInstallMetricProducer implements MetricProducer {
 
         Map<String, String> metrics = new LinkedHashMap<String, String>();
 
-        // Versions
-        metrics.put("core.version", String.valueOf(OpenmrsConstants.OPENMRS_VERSION));
+        // TODO: Check if this is overridden by an implementation-configured file of queries?
 
-        Set<String> modules = new TreeSet<String>();
-        for (Module module : ModuleFactory.getLoadedModules()) {
-            modules.add(module.getModuleId());
-        }
-        metrics.put("modules.list", OpenmrsUtil.join(modules, ","));
-        for (String moduleId : modules) {
-            Module module = ModuleFactory.getModuleById(moduleId);
-            metrics.put("module."+moduleId+".started", Boolean.toString(module.isStarted()));
-            metrics.put("module."+moduleId+".version", module.getVersion());
-        }
+        Map<String, String> queries = new LinkedHashMap<String, String>();
+        queries.put("patients.total", "select count(*) from patient where voided = 0");
+        queries.put("visits.total", "select count(*) from visit where voided = 0");
+        queries.put("encounters.total", "select count(*) from encounter where voided = 0");
+        queries.put("obs.total", "select count(*) from obs where voided = 0");
+        queries.put("orders.total", "select count(*) from orders where voided = 0");
+        queries.put("users.total", "select count(*) from users where retired = 0");
 
-        // Settings
-        metrics.put("implementationId", getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID));
+        // TODO: Consider adding other data - broken down with more granularity (active patients, obs by concept (eg. lab results), encounters by type, visits by type)
+
+        for (Map.Entry<String, String> e : queries.entrySet()) {
+            Number num = executeQuery(e.getValue(), Number.class);
+            metrics.put(e.getKey(), num.toString());
+        }
 
         return metrics;
     }
 
-    private String getGlobalProperty(String property) {
-        return Context.getAdministrationService().getGlobalProperty(property, "");
+    private <T> T executeQuery(String query, Class<T> type) {
+        return Context.getService(EmrMonitorService.class).executeSingleValueQuery(query, type);
     }
 }

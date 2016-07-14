@@ -11,12 +11,10 @@ package org.openmrs.module.emrmonitor.task;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.emrmonitor.EmrMonitorConstants;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
-import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.openmrs.module.emrmonitor.rest.RestUtil;
 import org.openmrs.module.webservices.rest.web.representation.Representation;
 
@@ -40,7 +38,7 @@ public class TransmitLocalReportTask extends EmrMonitorTask {
             if (EmrMonitorConstants.isParentServerConfigured()) {
 
                 // Get the local server here
-                EmrMonitorServer localServer = getService().ensureLocalServer();
+                EmrMonitorServer localServer = getEmrMonitorService().ensureLocalServer();
 
                 // Next, query the parent server to see if this local server is already registered there
                 WebResource checkServerResource = RestUtil.getParentServerResource("server/" + localServer.getUuid());
@@ -76,7 +74,7 @@ public class TransmitLocalReportTask extends EmrMonitorTask {
                     if (isRegistered) {
                         // If server is registered, then transmit reports
                         WebResource resource = RestUtil.getParentServerResource("report");
-                        List<EmrMonitorReport> reports = getService().getEmrMonitorReports(localServer, EmrMonitorReport.SubmissionStatus.WAITING_TO_SEND);
+                        List<EmrMonitorReport> reports = getEmrMonitorService().getEmrMonitorReports(localServer, EmrMonitorReport.SubmissionStatus.WAITING_TO_SEND);
                         log.info("Attempting to transmit " + reports.size() + " reports that are waiting to send.");
 
                         // TODO: Do we want to batch these?
@@ -90,7 +88,7 @@ public class TransmitLocalReportTask extends EmrMonitorTask {
                                 log.debug("Report transmission response = " + response.toString());
                                 if (response.getStatus() == 201) {
                                     report.setStatus(EmrMonitorReport.SubmissionStatus.SENT);
-                                    getService().saveEmrMonitorReport(report);
+                                    getEmrMonitorService().saveEmrMonitorReport(report);
                                 }
                                 else {
                                     log.warn("Non-success reponse code of " + response.getStatus() + " when sending report");
@@ -110,10 +108,6 @@ public class TransmitLocalReportTask extends EmrMonitorTask {
                 log.debug("No parent server is configured.");
             }
             log.debug("Finished transmit reports task");
-        }
-
-        private EmrMonitorService getService() {
-            return Context.getService(EmrMonitorService.class);
         }
     }
 }

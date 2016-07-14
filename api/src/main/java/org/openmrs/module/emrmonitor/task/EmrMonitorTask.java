@@ -11,8 +11,10 @@ package org.openmrs.module.emrmonitor.task;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.module.DaemonToken;
+import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 
 import java.util.TimerTask;
 
@@ -58,5 +60,9 @@ public abstract class EmrMonitorTask extends TimerTask {
         } catch (Exception e) {
             log.error("An error occured while running scheduled emrMonitor task", e);
         }
+    }
+
+    protected EmrMonitorService getEmrMonitorService() {
+        return Context.getService(EmrMonitorService.class);
     }
 }

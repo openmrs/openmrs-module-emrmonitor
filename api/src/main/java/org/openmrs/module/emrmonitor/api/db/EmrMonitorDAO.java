@@ -45,6 +45,6 @@ public interface EmrMonitorDAO {
 
     // Metric Queries
     Map<String, String> getDatabaseMetadata();
-    Map<String, String> getOpenmrsData();
-
+    List<Object[]> executeQuery(String query);
+    <T> T executeSingleValueQuery(String query, Class<T> type);
 }

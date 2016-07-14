@@ -167,3 +167,19 @@ run_on_cron
 report_template (null indicates default)
 destination_url
 destination_username/password (can we use key-based authentication here instead?)
+
+
+#####
+EmrMonitorReport generateEmrMonitorReport();
+List<EmrMonitorReport> getEmrMonitorReports(EmrMonitorReportQuery);
+Map<EmrMonitorServer, EmrMonitorReport> getLatestEmrMonitorReports();
+EmrMonitorReport getLatestEmrMonitorReport(EmrMonitorServer);
+
+// Emr Monitor Report Metric
+
+EmrMonitorReportMetric getEmrMonitorReportMetrics(EmrMonitorReportMetricQuery);
+
+// Methods to communicate between servers (might want these to go in a different class)
+
+ConnectionStatus testConnectionToParent();
+ConnectionStatus sendReportToParent();

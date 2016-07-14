@@ -1,11 +1,9 @@
 package org.openmrs.module.emrmonitor.metric;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -14,8 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.InetAddress;
@@ -49,39 +45,10 @@ public class ExtraSystemInformation implements MetricProducer {
 
         Map<String, String> metrics = new LinkedHashMap<String, String>();
 
-        metrics.put("SystemInfo.hardDriverInformation.totalMemory", getTotalPhyisycalMemory());
-        metrics.put("SystemInfo.hardDriverInformation.freeMemory", getFreePhyisycalMemory());
-        metrics.put("SystemInfo.hardDriverInformation.availableMemory", getAvailablePhyisycalMemory());
-        metrics.put("SystemInfo.hardDriverInformation.usedMemory", getUsedPhyisycalMemory());
-
-        Map<String, String> openmrsData = Context.getService(EmrMonitorService.class).getOpenmrsData();
-
-        metrics.put("SystemInfo.emrDataInformation.numberOfOrders", openmrsData.get("orders"));
-        metrics.put("SystemInfo.emrDataInformation.numberOfPatients", openmrsData.get("patients"));
-        metrics.put("SystemInfo.emrDataInformation.numberOfEncounters", openmrsData.get("encounters"));
-        metrics.put("SystemInfo.emrDataInformation.numberOfObservations", openmrsData.get("observations"));
-
-        metrics.put("SystemInfo.emrSyncDataInformation.pendingRecords", openmrsData.get("pendingRecords"));
-        metrics.put("SystemInfo.emrSyncDataInformation.rejectedObject", openmrsData.get("rejectedObject"));
-        metrics.put("SystemInfo.emrSyncDataInformation.failedRecord", openmrsData.get("failedRecord"));
-        metrics.put("SystemInfo.emrSyncDataInformation.failedObject", openmrsData.get("failedObject"));
-
-        metrics.put("SystemInfo.softwareVersionInformation.ubuntu", ""+getVersion("lsb_release --release").split(":")[1].trim());
-        metrics.put("SystemInfo.softwareVersionInformation.mysql", ""+Context.getService(EmrMonitorService.class).getOpenmrsData().get("mysqlVersion").split("-")[0]);
-
-        // TODO: Figure out how to support this, maybe looking at process information, maybe something available in a loaded Jar file
-        // metrics.put("SystemInfo.softwareVersionInformation.tomcat", "" + getVersion("java -cp "+ tomcatPath +"/lib/catalina.jar org.apache.catalina.util.ServerInfo").split(":")[1].trim());
-
         metrics.put("SystemInfo.softwareVersionInformation.Firefox", ""+getVersion("firefox -version"));
         metrics.put("SystemInfo.softwareVersionInformation.Chrome", ""+getVersion("google-chrome -version"));
 
         metrics.put("SystemInfo.connectionInformation.connectedToTheServer", ""+checkConnection());
-
-        metrics.put("SystemInfo.cpuInformation.cpuLoadAverage", ""+getCPULoadAverage());
-        metrics.put("SystemInfo.cpuInformation.architecture", ""+getCPUInfo("Architecture:"));
-        metrics.put("SystemInfo.cpuInformation.cpuopmodes", ""+getCPUInfo("CPU op-mode(s):"));
-        metrics.put("SystemInfo.cpuInformation.numberOfCPU", ""+getCPUInfo("CPU(s):"));
-        metrics.put("SystemInfo.cpuInformation.cpusize", ""+getCPUInfo("CPU MHz"));
 
         metrics.put("SystemInfo.uptimeInformation.ThisWeekUptimePercentage", getWeeklyUpTimeActivity());
         metrics.put("SystemInfo.uptimeInformation.LastWeekUptimePercentage", getLastWeekUpTimeActivity());
@@ -125,36 +92,6 @@ public class ExtraSystemInformation implements MetricProducer {
 
 	File[] roots = File.listRoots();
 
-	public String getTotalPhyisycalMemory() {
-		for (File root : roots) {
-			totalPhyisycalMemory=root.getTotalSpace()/(1024*1024*1024)+" GiB";
-		}
-		return totalPhyisycalMemory;
-	}
-
-	public String getFreePhyisycalMemory() {
-		
-		for (File root : roots) {
-			freePhyisycalMemory=root.getFreeSpace()/(1024*1024*1024)+" GiB";
-		}
-		
-		return freePhyisycalMemory;
-	}
-
-	public String getAvailablePhyisycalMemory() {
-		for (File root : roots) {
-			availablePhyisycalMemory=root.getUsableSpace()/(1024*1024*1024)+" GiB";
-		}
-		return availablePhyisycalMemory;
-	}
-
-	public String getUsedPhyisycalMemory() {
-		for (File root : roots) {
-			usedPhyisycalMemory=(root.getTotalSpace()-root.getFreeSpace())/(1024*1024*1024)+" GiB";
-		}
-		return usedPhyisycalMemory;
-	}
-
 
 public String getVersion(String command) {
 	String s=null;
@@ -189,28 +126,6 @@ public String checkConnection() {
     }		
 		return "Not Connected";
 }
-
-public double getCPULoadAverage() {
-
-    OperatingSystemMXBean osBean=(OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-	return osBean.getSystemLoadAverage();
-}
-public String getCPUInfo(String startsWith) {
-
-	String s;
-	Process p;
-	try {
-	    p = Runtime.getRuntime().exec("lscpu");
-	    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	    while ((s = br.readLine()) != null) {
-	    	if (s.startsWith(startsWith)) {
-                return s.split(":")[1].trim();
-            }
-		}
-	        
-	} catch (Exception e) {}
-	return "";
-	}
 
 //UPTIME FUNCTIONNALITY
 	 // logging all PC activities in the emr.log file

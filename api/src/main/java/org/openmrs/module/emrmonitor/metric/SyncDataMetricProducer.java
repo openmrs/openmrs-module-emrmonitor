@@ -13,28 +13,24 @@ package org.openmrs.module.emrmonitor.metric;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Produces core metrics around server information that is not specific to OpenMRS usage
  */
 @Component
-public class OpenmrsInstallMetricProducer implements MetricProducer {
+public class SyncDataMetricProducer implements MetricProducer {
 
     protected final Log log = LogFactory.getLog(this.getClass());
 
     @Override
     public String getNamespace() {
-        return "openmrs.install";
+        return "openmrs.sync";
     }
 
     /**
@@ -42,7 +38,7 @@ public class OpenmrsInstallMetricProducer implements MetricProducer {
      */
     @Override
     public boolean isEnabled() {
-        return true;
+        return ModuleFactory.isModuleStarted("sync");
     }
 
     /**
@@ -53,27 +49,21 @@ public class OpenmrsInstallMetricProducer implements MetricProducer {
 
         Map<String, String> metrics = new LinkedHashMap<String, String>();
 
-        // Versions
-        metrics.put("core.version", String.valueOf(OpenmrsConstants.OPENMRS_VERSION));
+        Map<String, String> queries = new LinkedHashMap<String, String>();
+        queries.put("pendingRecords", "select count(*) from sync_record where state!= 'COMMITTED' and state!= 'NOT_SUPPOSED_TO_SYNC' and uuid = original_uuid");
+        queries.put("failedRecords", "select count(*) from sync_record where state in ('FAILED', 'FAILED_AND_STOPPED') and uuid = original_uuid");
+        queries.put("failedObjects", "select contained_classes from sync_record where state = 'FAILED' and uuid = original_uuid limit 1");
+        queries.put("rejectedObjects", "select contained_classes from sync_record where state = 'REJECTED' and uuid = original_uuid limit 1");
 
-        Set<String> modules = new TreeSet<String>();
-        for (Module module : ModuleFactory.getLoadedModules()) {
-            modules.add(module.getModuleId());
+        for (Map.Entry<String, String> e : queries.entrySet()) {
+            Object val = executeQuery(e.getValue(), Object.class);
+            metrics.put(e.getKey(), val == null ? "" : val.toString());
         }
-        metrics.put("modules.list", OpenmrsUtil.join(modules, ","));
-        for (String moduleId : modules) {
-            Module module = ModuleFactory.getModuleById(moduleId);
-            metrics.put("module."+moduleId+".started", Boolean.toString(module.isStarted()));
-            metrics.put("module."+moduleId+".version", module.getVersion());
-        }
-
-        // Settings
-        metrics.put("implementationId", getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID));
 
         return metrics;
     }
 
-    private String getGlobalProperty(String property) {
-        return Context.getAdministrationService().getGlobalProperty(property, "");
+    private <T> T executeQuery(String query, Class<T> type) {
+        return Context.getService(EmrMonitorService.class).executeSingleValueQuery(query, type);
     }
 }
