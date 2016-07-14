@@ -48,8 +48,6 @@ public class OpenmrsDataMetricProducer implements MetricProducer {
 
         Map<String, String> metrics = new LinkedHashMap<String, String>();
 
-        // TODO: Check if this is overridden by an implementation-configured file of queries?
-
         Map<String, String> queries = new LinkedHashMap<String, String>();
         queries.put("patients.total", "select count(*) from patient where voided = 0");
         queries.put("visits.total", "select count(*) from visit where voided = 0");
@@ -57,8 +55,6 @@ public class OpenmrsDataMetricProducer implements MetricProducer {
         queries.put("obs.total", "select count(*) from obs where voided = 0");
         queries.put("orders.total", "select count(*) from orders where voided = 0");
         queries.put("users.total", "select count(*) from users where retired = 0");
-
-        // TODO: Consider adding other data - broken down with more granularity (active patients, obs by concept (eg. lab results), encounters by type, visits by type)
 
         for (Map.Entry<String, String> e : queries.entrySet()) {
             Number num = executeQuery(e.getValue(), Number.class);
