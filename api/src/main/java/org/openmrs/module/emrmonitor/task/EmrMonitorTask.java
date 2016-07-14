@@ -46,7 +46,7 @@ public abstract class EmrMonitorTask extends TimerTask {
         if (daemonToken != null && enabled) {
             createAndRunTask();
         } else {
-            log.warn("Not running scheduled task. DaemonToken = " + daemonToken + "; enabled = " + enabled);
+            log.debug("Not running scheduled task. DaemonToken = " + daemonToken + "; enabled = " + enabled);
         }
     }
 
@@ -55,7 +55,7 @@ public abstract class EmrMonitorTask extends TimerTask {
      */
     private synchronized void createAndRunTask() {
         try {
-            log.warn("Running emrMonitor task: " + getClass().getSimpleName());
+            log.debug("Running emrMonitor task: " + getClass().getSimpleName());
             Daemon.runInDaemonThread(getRunnableTask(), daemonToken);
         } catch (Exception e) {
             log.error("An error occured while running scheduled emrMonitor task", e);

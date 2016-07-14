@@ -11,9 +11,8 @@ package org.openmrs.module.emrmonitor.task;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
+import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
-import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 
 /**
  * Generate system metrics report for the Local Server on a periodic basis
@@ -33,16 +32,23 @@ public class GenerateLocalReportTask extends EmrMonitorTask {
         public void run() {
             log.debug("Running the Generate Local Report task");
 
-            // TODO: We have this scheduled to run every minute, but we want to run it daily.  Yet we need to account for server restarts and downtime
-
             EmrMonitorServer localServer = getEmrMonitorService().ensureLocalServer();
-            if (localServer != null) {
-                getEmrMonitorService().generateEmrMonitorReport();
-                log.debug("Report Generation successful.");
+            if (localServer == null) {
+                log.debug("No local emrmonitor server defined.  Not generating a report.");
+                return;
             }
-            else {
-                log.warn("No local emrmonitor server defined.  Not generating a report.");
+
+            EmrMonitorReport latestReport = getEmrMonitorService().getLatestEmrMonitorReport(localServer);
+            if (latestReport != null) {
+                if (System.currentTimeMillis() - latestReport.getDateCreated().getTime() <= 1000*60*60*24) {
+                    log.debug("Last report was generated less than 24 hours ago.  Not generating a report");
+                    return;
+                }
             }
+
+            log.info("Generating the daily emrmonitor report");
+            getEmrMonitorService().generateEmrMonitorReport();
+            log.debug("Successfully generated the daily emrmonitor report");
         }
     }
 }
