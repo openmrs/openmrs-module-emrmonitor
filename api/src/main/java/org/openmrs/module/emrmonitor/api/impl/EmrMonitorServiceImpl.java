@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
-import org.openmrs.module.emrmonitor.EmrMonitorConstants;
+import org.openmrs.module.emrmonitor.EmrMonitorConfig;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
@@ -103,23 +103,27 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
         report.setDateCreated(new Date());
         report.setStatus(EmrMonitorReport.SubmissionStatus.WAITING_TO_SEND);
 
+        List<String> disabledProducers = EmrMonitorConfig.getDisabledMetricProducers();
+
         StopWatch sw = new StopWatch();
         for (MetricProducer metricProducer : Context.getRegisteredComponents(MetricProducer.class)) {
             if (metricProducer.isEnabled()) {
                 String namespace = metricProducer.getNamespace();
-                log.debug("Generating metrics for " + namespace + " (" + metricProducer.getClass().getSimpleName() + ")");
-                sw.start();
-                Map<String, String> metrics = metricProducer.produceMetrics();
-                if (metrics != null) {
-                    for (String metricName : metrics.keySet()) {
-                        String metricValue = metrics.get(metricName);
-                        report.setMetric(namespace + "." + metricName, metricValue);
-                        log.debug(metricName + ": " + metricValue);
+                if (!disabledProducers.contains(namespace)) {
+                    log.debug("Generating metrics for " + namespace + " (" + metricProducer.getClass().getSimpleName() + ")");
+                    sw.start();
+                    Map<String, String> metrics = metricProducer.produceMetrics();
+                    if (metrics != null) {
+                        for (String metricName : metrics.keySet()) {
+                            String metricValue = metrics.get(metricName);
+                            report.setMetric(namespace + "." + metricName, metricValue);
+                            log.debug(metricName + ": " + metricValue);
+                        }
                     }
+                    sw.stop();
+                    log.debug(namespace + " metrics generated in: " + sw.toString());
+                    sw.reset();
                 }
-                sw.stop();
-                log.debug(namespace + " metrics generated in: " + sw.toString());
-                sw.reset();
             }
         }
 
@@ -136,7 +140,7 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
         // TODO: Not sure this is right or what we want.  Maybe move this submission status to a separate queue table?
         if (report.getStatus() == null) {
             if (report.getServer().getServerType() == EmrMonitorServerType.LOCAL) {
-                if (EmrMonitorConstants.isParentServerConfigured()) {
+                if (EmrMonitorConfig.isParentServerConfigured()) {
                     report.setStatus(EmrMonitorReport.SubmissionStatus.LOCAL_ONLY);
                 }
                 else {

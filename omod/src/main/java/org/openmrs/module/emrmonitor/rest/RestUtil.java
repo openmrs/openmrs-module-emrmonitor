@@ -7,7 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
-import org.openmrs.module.emrmonitor.EmrMonitorConstants;
+import org.openmrs.module.emrmonitor.EmrMonitorConfig;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.webservices.rest.SimpleObject;
 import org.openmrs.module.webservices.rest.web.ConversionUtil;
@@ -15,7 +15,7 @@ import org.openmrs.module.webservices.rest.web.representation.Representation;
 
 import java.io.IOException;
 
-import static org.openmrs.module.emrmonitor.EmrMonitorConstants.PARENT_URL_PROPERTY;
+import static org.openmrs.module.emrmonitor.EmrMonitorConfig.PARENT_URL_PROPERTY;
 
 /**
  * Restful utilities
@@ -45,21 +45,21 @@ public class RestUtil {
      */
     public static WebResource getParentServerResource(String resourcePath, String... queryParams) {
 
-        if (!EmrMonitorConstants.isParentServerConfigured()) {
+        if (!EmrMonitorConfig.isParentServerConfigured()) {
             log.debug("No " + PARENT_URL_PROPERTY + " defined in runtime properties. Not able to connect to emrmonitor parent server");
             return null;
         }
 
-        String url = EmrMonitorConstants.getRuntimeProperty(EmrMonitorConstants.PARENT_URL_PROPERTY);
-        String username = EmrMonitorConstants.getRuntimeProperty(EmrMonitorConstants.PARENT_USERNAME_PROPERTY);
-        String password = EmrMonitorConstants.getRuntimeProperty(EmrMonitorConstants.PARENT_PASSWORD_PROPERTY);
+        String url = EmrMonitorConfig.getRuntimeProperty(EmrMonitorConfig.PARENT_URL_PROPERTY);
+        String username = EmrMonitorConfig.getRuntimeProperty(EmrMonitorConfig.PARENT_USERNAME_PROPERTY);
+        String password = EmrMonitorConfig.getRuntimeProperty(EmrMonitorConfig.PARENT_PASSWORD_PROPERTY);
 
         if (!url.startsWith("https://")) {
             log.info("non-HTTPS connection to " + url);
         }
 
         Client restClient = Client.create();
-        restClient.setReadTimeout(EmrMonitorConstants.REMOTE_SERVER_TIMEOUT);
+        restClient.setReadTimeout(EmrMonitorConfig.REMOTE_SERVER_TIMEOUT);
 
         WebResource resource = restClient.resource(url).path("ws/rest/v1/emrmonitor/" + resourcePath);
         if (queryParams != null) {

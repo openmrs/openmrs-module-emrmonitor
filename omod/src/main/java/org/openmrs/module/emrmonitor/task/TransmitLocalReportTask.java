@@ -11,7 +11,7 @@ package org.openmrs.module.emrmonitor.task;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import org.openmrs.module.emrmonitor.EmrMonitorConstants;
+import org.openmrs.module.emrmonitor.EmrMonitorConfig;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.EmrMonitorServerType;
@@ -35,7 +35,7 @@ public class TransmitLocalReportTask extends EmrMonitorTask {
         @Override
         public void run() {
             log.debug("Running transmit reports task.");
-            if (EmrMonitorConstants.isParentServerConfigured()) {
+            if (EmrMonitorConfig.isParentServerConfigured()) {
 
                 // Get the local server here
                 EmrMonitorServer localServer = getEmrMonitorService().ensureLocalServer();

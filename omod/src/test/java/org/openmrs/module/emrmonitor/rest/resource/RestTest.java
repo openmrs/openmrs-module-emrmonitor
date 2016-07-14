@@ -17,9 +17,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openmrs.module.emrmonitor.EmrMonitorConstants;
+import org.openmrs.module.emrmonitor.EmrMonitorConfig;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
 
 import javax.ws.rs.core.MediaType;
@@ -38,7 +37,7 @@ public class RestTest extends BaseModuleWebContextSensitiveTest {
     public void setup() throws Exception {
 
         Client restClient = Client.create();
-        restClient.setReadTimeout(EmrMonitorConstants.REMOTE_SERVER_TIMEOUT);
+        restClient.setReadTimeout(EmrMonitorConfig.REMOTE_SERVER_TIMEOUT);
 
         WebResource resource = restClient.resource("http://localhost:8081/openmrs-standalone").path("ws/rest/v1/emrmonitor/server/1f30fc47-c650-4b5d-9037-eb4c0c2132ba");
         resource.addFilter(new HTTPBasicAuthFilter("admin", "test"));

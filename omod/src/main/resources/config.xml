@@ -50,5 +50,11 @@
         <description>Able to manage and configure EmrMonitor servers</description>
     </privilege>
 
+    <globalProperty>
+        <property>emrmonitor.disabledMetricProducers</property>
+        <defaultValue></defaultValue>
+        <description>To disable any of the built-in MetricProducer components, add the namespace of that metric producer here.  Multiple entries should be comma-separated</description>
+    </globalProperty>
+
 </module>
 

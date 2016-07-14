@@ -13,10 +13,13 @@ package org.openmrs.module.emrmonitor;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Constants used by the Emr Monitor module
+ * Configuration methods used by the Emr Monitor module
  */
-public class EmrMonitorConstants {
+public class EmrMonitorConfig {
 
     // Privileges
     public static final String PRIV_MANAGE_EMR_MONITOR = "Manage EmrMonitor";
@@ -24,6 +27,7 @@ public class EmrMonitorConstants {
     // Constants
     public static final Integer REMOTE_SERVER_TIMEOUT = 10000;
 
+    // Runtime Properties
     public static final String PARENT_URL_PROPERTY = "emrmonitor.parentUrl";
     public static final String PARENT_USERNAME_PROPERTY = "emrmonitor.parentUsername";
     public static final String PARENT_PASSWORD_PROPERTY = "emrmonitor.parentPassword";
@@ -32,10 +36,24 @@ public class EmrMonitorConstants {
      * @return true if a parent server is configured
      */
     public static boolean isParentServerConfigured() {
-        return StringUtils.isNotBlank(getRuntimeProperty(EmrMonitorConstants.PARENT_URL_PROPERTY));
+        return StringUtils.isNotBlank(getRuntimeProperty(EmrMonitorConfig.PARENT_URL_PROPERTY));
     }
 
     public static String getRuntimeProperty(String name) {
         return Context.getRuntimeProperties().getProperty(name);
+    }
+
+    // Global Properties
+    public static final String GP_DISABLED_METRIC_PRODUCERS = "emrmonitor.disabledMetricProducers";
+
+    public static List<String> getDisabledMetricProducers() {
+        List<String> ret = new ArrayList<String>();
+        String val = Context.getAdministrationService().getGlobalProperty(GP_DISABLED_METRIC_PRODUCERS);
+        if (StringUtils.isNotBlank(val)) {
+            for (String s : StringUtils.splitByWholeSeparator(val, ",")) {
+                ret.add(s.trim());
+            }
+        }
+        return ret;
     }
 }

@@ -98,7 +98,9 @@ public class EmrMonitorReportMetricResource extends DelegatingSubResource<EmrMon
     @Override
     public EmrMonitorReportMetric save(EmrMonitorReportMetric metric) {
         EmrMonitorReport report = metric.getReport();
-        report.getMetrics().add(metric); // TODO: Do we need to ensuure this updates existing rather than add new
+        if (!report.getMetrics().contains(metric)) {
+            report.getMetrics().add(metric);
+        }
         getEmrMonitorService().saveEmrMonitorReport(report);
         return metric;
     }

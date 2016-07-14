@@ -1,6 +1,6 @@
 package org.openmrs.module.emrmonitor.extension.html;
 
-import org.openmrs.module.emrmonitor.EmrMonitorConstants;
+import org.openmrs.module.emrmonitor.EmrMonitorConfig;
 import org.openmrs.module.web.extension.AdministrationSectionExt;
 
 import java.util.HashMap;
@@ -25,7 +25,7 @@ public class AdminPageMaintenanceLinksExt extends AdministrationSectionExt {
 
     @Override
     public String getRequiredPrivilege() {
-        return EmrMonitorConstants.PRIV_MANAGE_EMR_MONITOR;
+        return EmrMonitorConfig.PRIV_MANAGE_EMR_MONITOR;
     }
 
 }

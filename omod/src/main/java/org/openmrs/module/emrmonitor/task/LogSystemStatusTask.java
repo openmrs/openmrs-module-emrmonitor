@@ -13,7 +13,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.module.emrmonitor.EmrMonitorConstants;
+import org.openmrs.module.emrmonitor.EmrMonitorConfig;
 import org.openmrs.module.emrmonitor.UptimeLog;
 import org.openmrs.module.emrmonitor.rest.RestUtil;
 
@@ -39,7 +39,7 @@ public class LogSystemStatusTask extends EmrMonitorTask {
             log.debug("Running the Log System Status task");
             Date date = new Date();
             int connectionStatus = -1;
-            if (EmrMonitorConstants.isParentServerConfigured()) {
+            if (EmrMonitorConfig.isParentServerConfigured()) {
                 try {
                     WebResource checkServerResource = RestUtil.getParentServerResource("server");
                     ClientResponse checkServerResponse = checkServerResource.accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
