@@ -32,6 +32,9 @@ public class GenerateLocalReportTask extends EmrMonitorTask {
         @Override
         public void run() {
             log.debug("Running the Generate Local Report task");
+
+            // TODO: We have this scheduled to run every minute, but we want to run it daily.  Yet we need to account for server restarts and downtime
+
             EmrMonitorServer localServer = getEmrMonitorService().ensureLocalServer();
             if (localServer != null) {
                 getEmrMonitorService().generateEmrMonitorReport();

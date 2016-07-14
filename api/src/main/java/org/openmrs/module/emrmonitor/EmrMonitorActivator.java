@@ -17,6 +17,8 @@ import org.openmrs.module.DaemonTokenAware;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.emrmonitor.task.EmrMonitorTask;
 
+import java.util.Date;
+
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
  */
@@ -28,6 +30,7 @@ public class EmrMonitorActivator extends BaseModuleActivator implements DaemonTo
 	 * @see ModuleActivator#started()
 	 */
 	public void started() {
+	    UptimeLog.initializeLogFile(new Date());
         EmrMonitorTask.setEnabled(true);
 		log.info("EmrMonitor Module started");
 	}

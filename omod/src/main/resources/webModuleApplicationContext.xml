@@ -53,6 +53,15 @@
                         <bean class="org.openmrs.module.emrmonitor.task.TransmitLocalReportTask"/>
                     </property>
                 </bean>
+                <bean id="logSystemStatus" class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
+                    <property name="delay" value="0" />
+                    <property name="period" value="60" /> <!-- run every 1 minute -->
+                    <property name="fixedRate" value="true" /> <!-- Set whether to schedule as fixed-rate execution, rather than fixed-delay execution. Default is "false", that is, fixed delay. -->
+                    <property name="timeUnit" value="SECONDS"/> <!-- Specify the time unit for the delay and period values. Default is milliseconds  -->
+                    <property name="runnable">
+                        <bean class="org.openmrs.module.emrmonitor.task.LogSystemStatusTask"/>
+                    </property>
+                </bean>
             </list>
         </property>
     </bean>

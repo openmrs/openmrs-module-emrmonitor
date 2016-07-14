@@ -16,7 +16,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
@@ -60,7 +59,7 @@ public class OpenmrsInstallMetricProducer implements MetricProducer {
         for (Module module : ModuleFactory.getLoadedModules()) {
             modules.add(module.getModuleId());
         }
-        metrics.put("modules.list", OpenmrsUtil.join(modules, ","));
+
         for (String moduleId : modules) {
             Module module = ModuleFactory.getModuleById(moduleId);
             metrics.put("module."+moduleId+".started", Boolean.toString(module.isStarted()));
