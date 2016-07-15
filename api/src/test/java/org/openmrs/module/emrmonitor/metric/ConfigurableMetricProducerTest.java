@@ -10,27 +10,28 @@
 package org.openmrs.module.emrmonitor.metric;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
+import oshi.SystemInfo;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Tests ServerInfoMetricProducer
  */
-public class ConfigurableMetricProducerTest extends BaseModuleContextSensitiveTest {
-
-    protected final Log log = LogFactory.getLog(this.getClass());
+public class ConfigurableMetricProducerTest extends BaseModuleContextSensitiveTest {protected final Log log = LogFactory.getLog(this.getClass());
 	
 	@Test
 	public void shouldProduceSingleMetricFromSql() throws Exception {
@@ -105,17 +106,65 @@ public class ConfigurableMetricProducerTest extends BaseModuleContextSensitiveTe
         Assert.assertEquals("1", values.get(2));
     }
 
+    @Test
+    public void shouldProduceSingleMetricFromShellScript() throws Exception {
+        if (isLinux()) {
+            copyResourceToConfigurationFile("system.lscpu.sh");
+
+            ConfigurableMetricProducer producer = new ConfigurableMetricProducer();
+
+            Map<String, String> metrics = producer.produceMetrics();
+
+            Assert.assertEquals(1, metrics.size());
+
+            List<String> keys = new ArrayList<String>(metrics.keySet());
+            List<String> values = new ArrayList<String>(metrics.values());
+
+            Assert.assertEquals("system.lscpu", keys.get(0));
+            Assert.assertTrue(values.get(0).contains("Architecture:"));
+        }
+    }
+
+    @Test
+    public void shouldProduceMultipleMetricsFromShellScript() throws Exception {
+        if (isLinux()) {
+            copyResourceToConfigurationFile("system.info.sh");
+
+            ConfigurableMetricProducer producer = new ConfigurableMetricProducer();
+
+            Map<String, String> metrics = producer.produceMetrics();
+
+            Assert.assertEquals(2, metrics.size());
+
+            List<String> keys = new ArrayList<String>(metrics.keySet());
+            List<String> values = new ArrayList<String>(metrics.values());
+
+            Assert.assertEquals("system.info.currentDate", keys.get(0));
+            Assert.assertEquals(DateFormatUtils.format(new Date(), "yyyy-MM-dd"), values.get(0));
+
+            Assert.assertEquals("system.info.myVar", keys.get(1));
+            Assert.assertEquals("myVal", values.get(1));
+        }
+    }
+
+    protected boolean isLinux() {
+        SystemInfo si = new SystemInfo();
+        return "GNU/Linux".equals(si.getOperatingSystem().getManufacturer());
+    }
+
     protected void copyResourceToConfigurationFile(String filename) throws Exception {
         InputStream in = null;
         OutputStream out = null;
+        File outFile = new File(ConfigurableMetricProducer.getConfigurationDirectory(), filename);
         try {
             in = OpenmrsClassLoader.getInstance().getResourceAsStream("org/openmrs/module/emrmonitor/" + filename);
-            out = new FileOutputStream(new File(ConfigurableMetricProducer.getConfigurationDirectory(), filename));
+            out = new FileOutputStream(outFile);
             IOUtils.copy(in, out);
         }
         finally {
             IOUtils.closeQuietly(out);
             IOUtils.closeQuietly(in);
         }
+        outFile.setExecutable(true);
     }
 }

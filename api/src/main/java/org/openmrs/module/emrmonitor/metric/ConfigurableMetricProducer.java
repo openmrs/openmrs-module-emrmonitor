@@ -124,9 +124,9 @@ public class ConfigurableMetricProducer implements MetricProducer {
             successIterator = IOUtils.lineIterator(process.getInputStream(), "UTF-8");
             while (successIterator.hasNext()) {
                 String line = successIterator.nextLine();
-                String[] split = StringUtils.split(line, "=", 1);
+                String[] split = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, "=", 2);
                 if (split.length == 2) {
-                    keyValueMetrics.put(split[0], split[1]);
+                    keyValueMetrics.put(namespace + "." + split[0], split[1]);
                 }
                 else {
                     singleValueMetric.append(line).append(System.getProperty("line.separator"));
