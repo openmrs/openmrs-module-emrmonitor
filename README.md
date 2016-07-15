@@ -54,7 +54,12 @@ The module provides a REST API for managing servers and reports.
 
 ### TODO
 
-* Handle all TODOs in code
+* UI
+- Get compare page working
+- Show history by date for a given server and bring up any date
+- Visualize metrics in a tree hierarchy, based on dot notation
+- Clean up javascript and CSS as needed
+
 * Do not sync these tables
 
 * ConfigurableMetricProducer: would load xml/other files from somewhere in the .OpenMRS directory, parse these, and allow for executing things like:
