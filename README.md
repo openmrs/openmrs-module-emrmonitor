@@ -28,9 +28,23 @@ __EmrMonitorReport__ for a particular server.
 #### Metric Producer
 A __MetricProducer__ is a component registered with Spring that implements the MetricProducer interface and returns a Map<String, String> of metrics for a
 given server as of that particular execution time.  Implementations can extend the emrmonitor module to capture their own custom metrics by adding their own
-__MetricProducer__ implementations in a module.  There are several built-in metric producers that run by default.
+__MetricProducer__ implementations in a module.
 
-An implementation can disable any of these metric producers explicitly by adding their namespace (comma-separated) to the global property named __emrmonitor.disabledMetricProducers__
+There are several built-in metric producers that run by default.  An implementation can disable any of these metric producers explicitly by adding their
+namespace (comma-separated) to the global property named __emrmonitor.disabledMetricProducers__
+
+There is also a special metric producer __ConfigurableMetricProducer__ that support implementation-defined metrics added at runtime.  This works by iterating over
+and executing any files located in the **{application_data_dir}/configuration/emrmonitor** directory.
+The name of any file in this directory will represent the "namespace" of the metrics that it produces.  The following files are supported:
+
+1. SQL files:  Any file with a ".sql" extension will be executed.
+ * If a single value is returned by the query, then the metric is the filename and the value is the result
+ * If multiple rows with a single column is returned, then the value is a comma separated list
+ * If multiple columns are returned, then all but the last column are appended to the metric name, and the last column is the value
+
+2. Shell Scripts:  Any file with a ".sh" extension will be executed.
+ * If multiple lines of output are returned and each is in the format of key=value, then the key will be considered part of the metric, and the value the value
+ * Otherwise, the full contents of output will be the value of a single metric
 
 ### Workflow
 
@@ -60,13 +74,9 @@ The module provides a REST API for managing servers and reports.
 - Visualize metrics in a tree hierarchy, based on dot notation
 - Clean up javascript and CSS as needed
 
-* Do not sync these tables
+* Groovy support in ConfigurableMetricProducer
 
-* ConfigurableMetricProducer: would load xml/other files from somewhere in the .OpenMRS directory, parse these, and allow for executing things like:
-- SQL queries
-- Runtime commands on the underlying O/S
-- Groovy scripts
-}
+* Do not sync these tables
 
 * Task to clean up history of log files or reports (if desired, to save space)
 
