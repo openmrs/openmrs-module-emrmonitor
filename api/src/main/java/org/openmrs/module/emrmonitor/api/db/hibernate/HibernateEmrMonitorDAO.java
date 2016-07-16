@@ -127,6 +127,7 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
         if (status != null && status.length > 0) {
             criteria.add(Restrictions.in("status", status));
         }
+        criteria.addOrder(Order.desc("dateCreated"));
         return criteria.list();
     }
 

@@ -5,10 +5,13 @@
     ui.includeJavascript("uicommons", "angular-resource.min.js")
     ui.includeJavascript("uicommons", "angular-common.js")
     ui.includeJavascript("uicommons", "angular-ui/ui-bootstrap-tpls-0.13.0.js")
+    ui.includeJavascript("uicommons", "angular-ui/ng-grid-2.0.7.min.js")
     ui.includeJavascript("uicommons", "angular-app.js")
 
     ui.includeJavascript("uicommons", "filters/serverDate.js")
     ui.includeJavascript("emrmonitor", "configEmrMonitorServer.js")
+
+    ui.includeCss("uicommons", "angular-ui/ng-grid.min.css")
 %>
 
 <style>
@@ -18,6 +21,37 @@
     }
     #metric-table th {
         background-color: lightgray;
+    }
+    .gridStyle {
+        border: 1px solid rgb(212,212,212);
+        width: 200px;
+        height: 600px;
+    }
+    #report-history-table {
+        width: 100%;
+    }
+    #report-history-table td {
+        vertical-align: top;
+    }
+    .selected {
+        background-color: darkslategray;
+        color: white;
+    }
+    .ngRowCountPicker {
+        display: none;
+    }
+    .ngFooterTotalItems {
+        display:none;
+    }
+    .ngPagerButton {
+        width: 15px;
+        padding: 2px 2px 2px 6px;
+        text-align: center;
+        vertical-align: middle;
+    }
+    .ngPagerCurrent {
+        width:20px;
+        padding: 2px;
     }
 </style>
 
@@ -61,7 +95,7 @@ ${ ui.includeFragment("emrmonitor", "menu") }
                 </th>
                 <th>
                     <a href="#" ng-click="sortType = 'latestReport.dateCreated'; sortReverse = !sortReverse">
-                        Latest Report Date
+                        Latest Report
                     </a>
                 </th>
                 <th>
@@ -70,13 +104,13 @@ ${ ui.includeFragment("emrmonitor", "menu") }
             </tr>
             </thead>
             <tr ng-repeat="server in serversFound | orderBy:sortType:sortReverse | filter:searchServer">
-                <td><a href="#" ng-click="displayServerMetrics(server)">{{ server.name }}</a></td>
+                <td>{{ server.name }}</td>
                 <td>{{ server.uuid }} </td>
                 <td>{{ server.serverType }}</td>
-                <td>{{ server.latestReport.dateCreated | serverDate: 'dd-MMM-yyyy h:mm a' }}</td>
+                <td><a href="#" ng-click="displayServerMetrics(server)">{{ server.latestReport.dateCreated | serverDate: 'dd-MMM-yyyy h:mm a' }}</a></td>
                 <td>
                     <a href="#" ng-click="editServer(server)">Edit</a> |
-                    <a href="#" ng-click="displayServerMetrics(server)">View</a>
+                    <a href="#" ng-click="displayServerMetrics(server)">History</a>
                 </td>
             </tr>
             </tbody>
@@ -101,31 +135,46 @@ ${ ui.includeFragment("emrmonitor", "menu") }
 
     </div>
 
-    <div ng-show="showServerMetrics">
-
-        <h3>Latest Server metrics for {{ selectedServer.name }}</h3>
+    <div id="report-history-section" ng-show="showServerMetrics">
 
         <div>
-            <b style="vertical-align: middle;">Report Date:</b>  {{ selectedServer.latestReport.dateCreated | serverDate: 'dd-MMM-yyyy h:mm a' }}
-            <span style="float:right; padding-bottom:10px;">
-                <button class="button" ng-click="listServers()">Return to server list</button>
-            </span>
-        </span>
+            <h3>Server metrics for {{ selectedServer.name }}</h3>
         </div>
 
-        <table class="table table-bordered table-striped">
-            <tbody>
-                <thead>
-                <tr>
-                    <td>Metric</td>
-                    <td>Value</td>
-                </tr>
-                </thead>
-                <tr ng-repeat="metric in selectedServer.latestReport.metrics">
-                    <td>{{ metric.metric }}</td>
-                    <td>{{ metric.value }}</td>
-                </tr>
-            </tbody>
+        <table id="report-history-table">
+            <tr>
+                <td>
+                    <div class="gridStyle" ng-grid="reportHistoryGrid" id="reportHistoryGrid"></div>
+                    <div>
+                        {{ pagingInformation }}
+                    </div>
+                </td>
+                <td>
+                    <div id="report-details">
+
+                        <div style="padding-bottom:5px;">
+                            <b>Report Date:</b>  {{ selectedReport.dateCreated | serverDate: 'dd-MMM-yyyy h:mm a' }}
+                        </div>
+
+                        <table class="table table-bordered table-striped">
+                            <tbody>
+                                <thead>
+                                    <tr style="background-color: lightgray;">
+                                        <td>Metric</td>
+                                        <td>Value</td>
+                                    </tr>
+                                </thead>
+                                <tr ng-repeat="metric in selectedReport.metrics">
+                                    <td>{{ metric.metric }}</td>
+                                    <td>{{ metric.value }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </td>
+            </tr>
+
         </table>
 
     </div>

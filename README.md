@@ -70,9 +70,8 @@ The module provides a REST API for managing servers and reports.
 
 * UI
 - Get compare page working
-- Show history by date for a given server and bring up any date
-- Visualize metrics in a tree hierarchy, based on dot notation
 - Clean up javascript and CSS as needed
+- Test page for displaying available metric producers and enabling generating metrics for viewing on demand
 
 * Groovy support in ConfigurableMetricProducer
 

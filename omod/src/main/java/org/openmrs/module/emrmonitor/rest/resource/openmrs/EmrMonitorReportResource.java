@@ -92,16 +92,15 @@ public class EmrMonitorReportResource extends DelegatingCrudResource<EmrMonitorR
             d = new DelegatingResourceDescription();
             d.addProperty("uuid");
             d.addProperty("display");
+            d.addProperty("dateCreated");
             d.addSelfLink();
             if (rep instanceof DefaultRepresentation) {
                 d.addProperty("server", Representation.REF);
-                d.addProperty("dateCreated");
                 d.addProperty("metrics", Representation.DEFAULT);
                 d.addLink("full", ".?v=" + RestConstants.REPRESENTATION_FULL);
             }
             else if (rep instanceof FullRepresentation) {
                 d.addProperty("server");
-                d.addProperty("dateCreated");
                 d.addProperty("metrics");
                 d.addProperty("status");
                 d.addSelfLink();
