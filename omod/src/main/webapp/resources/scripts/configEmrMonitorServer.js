@@ -84,7 +84,7 @@ angular.module('configEmrMonitorServer', [ "uicommons.filters", "ui.bootstrap", 
             };
 
             $scope.pagingOptions = {
-                pageSize: 4,
+                pageSize: 15,
                 currentPage: 1
             };
 
