@@ -11,6 +11,7 @@ package org.openmrs.module.emrmonitor.task;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.module.emrmonitor.EmrMonitorConfig;
 import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 
@@ -34,21 +35,23 @@ public class GenerateLocalReportTask extends EmrMonitorTask {
 
             EmrMonitorServer localServer = getEmrMonitorService().ensureLocalServer();
             if (localServer == null) {
-                log.debug("No local emrmonitor server defined.  Not generating a report.");
+                log.warn("No local emrmonitor server defined.  Not generating a report.");
                 return;
             }
 
             EmrMonitorReport latestReport = getEmrMonitorService().getLatestEmrMonitorReport(localServer);
             if (latestReport != null) {
-                if (System.currentTimeMillis() - latestReport.getDateCreated().getTime() <= 1000*60*5) { // 1000*60*60*24
-                    log.debug("Last report was generated less than 24 hours ago.  Not generating a report");
+                long msSinceLastReport = System.currentTimeMillis() - latestReport.getDateCreated().getTime();
+                long msMinimum = EmrMonitorConfig.getMinutesBetweenReports() * 1000 * 60;
+                if (msSinceLastReport <=  msMinimum) {
+                    log.debug("Not generating report: " + msSinceLastReport + " <= " + msMinimum);
                     return;
                 }
             }
 
             log.info("Generating the daily emrmonitor report");
             getEmrMonitorService().generateEmrMonitorReport();
-            log.debug("Successfully generated the daily emrmonitor report");
+            log.info("Successfully generated the daily emrmonitor report");
         }
     }
 }

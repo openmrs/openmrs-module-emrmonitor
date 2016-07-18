@@ -11,6 +11,8 @@
 package org.openmrs.module.emrmonitor;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 
 import java.util.ArrayList;
@@ -20,6 +22,8 @@ import java.util.List;
  * Configuration methods used by the Emr Monitor module
  */
 public class EmrMonitorConfig {
+
+    protected static Log log = LogFactory.getLog(EmrMonitorConfig.class);
 
     // Privileges
     public static final String PRIV_MANAGE_EMR_MONITOR = "Manage EmrMonitor";
@@ -45,6 +49,7 @@ public class EmrMonitorConfig {
 
     // Global Properties
     public static final String GP_DISABLED_METRIC_PRODUCERS = "emrmonitor.disabledMetricProducers";
+    public static final String GP_MINUTES_BETWEEN_REPORTS = "emrmonitor.minutesBetweenReports";
 
     public static List<String> getDisabledMetricProducers() {
         List<String> ret = new ArrayList<String>();
@@ -53,6 +58,20 @@ public class EmrMonitorConfig {
             for (String s : StringUtils.splitByWholeSeparator(val, ",")) {
                 ret.add(s.trim());
             }
+        }
+        return ret;
+    }
+
+    public static int getMinutesBetweenReports() {
+        int ret = 60*24; // By default, run reports daily
+        try {
+            String val = Context.getAdministrationService().getGlobalProperty(GP_MINUTES_BETWEEN_REPORTS);
+            if (StringUtils.isNotBlank(val)) {
+                ret = Integer.parseInt(val);
+            }
+        }
+        catch (Exception e) {
+            log.warn("Invalid configuration for global property: " + GP_MINUTES_BETWEEN_REPORTS + ", using default");
         }
         return ret;
     }

@@ -56,7 +56,7 @@
             <list>
                 <bean id="generateLocalReports" class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
                     <property name="delay" value="30" /> <!-- delay 30 seconds -->
-                    <property name="period" value="600" /> <!-- run every 10 minutes -->
+                    <property name="period" value="60" /> <!-- run every minute. this checks a global property to determine whether it should execute each minute -->
                     <property name="fixedRate" value="false" /> <!-- Set whether to schedule as fixed-rate execution, rather than fixed-delay execution. Default is "false", that is, fixed delay. -->
                     <property name="timeUnit" value="SECONDS"/> <!-- Specify the time unit for the delay and period values. Default is milliseconds  -->
                     <property name="runnable">

@@ -56,5 +56,11 @@
         <description>To disable any of the built-in MetricProducer components, add the namespace of that metric producer here.  Multiple entries should be comma-separated</description>
     </globalProperty>
 
+    <globalProperty>
+        <property>emrmonitor.minutesBetweenReports</property>
+        <defaultValue></defaultValue>
+        <description>By default, reports will run once per day if the server is online.  To override this, specify the minutes between each generated report here.</description>
+    </globalProperty>
+
 </module>
 
