@@ -58,7 +58,7 @@ public class OpenmrsUptimeMetricProducer implements MetricProducer {
                         startMinute = entryMinute;
                     }
                     else if (entryType.equals(UptimeLog.LOG_COMPLETED_TOKEN)) {
-                        metrics.put("periodStart", DateFormatUtils.format(entryTime, "yyyy-MM-dd HH:mm")); // Report on the date that this uptime report ends
+                        metrics.put("periodEnd", DateFormatUtils.format(entryTime, "yyyy-MM-dd HH:mm")); // Report on the date that this uptime report ends
                         endMinute = entryMinute;
                     }
                     else {

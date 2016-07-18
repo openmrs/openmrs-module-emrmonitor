@@ -103,6 +103,6 @@ public class EmrMonitorReport extends BaseOpenmrsObject implements Comparable<Em
 
     @Override
     public String toString() {
-        return "Monitor report of " + getServer().getName() + " on " + getDateCreated();
+        return "Monitor report of " + getServer() + " on " + getDateCreated();
     }
 }

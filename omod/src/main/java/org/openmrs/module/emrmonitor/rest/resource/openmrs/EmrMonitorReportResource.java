@@ -100,7 +100,7 @@ public class EmrMonitorReportResource extends DelegatingCrudResource<EmrMonitorR
                 d.addLink("full", ".?v=" + RestConstants.REPRESENTATION_FULL);
             }
             else if (rep instanceof FullRepresentation) {
-                d.addProperty("server");
+                d.addProperty("server", Representation.REF);
                 d.addProperty("metrics");
                 d.addProperty("status");
                 d.addSelfLink();

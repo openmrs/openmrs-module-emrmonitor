@@ -38,6 +38,11 @@ import java.util.List;
         supportedClass = EmrMonitorServer.class, supportedOpenmrsVersions = {"1.9.*", "1.10.*", "1.11.*", "1.12.*"})
 public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorServer> {
 
+    public EmrMonitorServerResource() {
+        super();
+        propertiesIgnoredWhenUpdating.add("latestReport");  // TODO: Figure out why this is necessary
+    }
+
     @Override
     protected PageableResult doGetAll(RequestContext context) throws ResponseException {
         List<EmrMonitorServer> servers = getEmrMonitorService().getAllEmrMonitorServers();
@@ -85,7 +90,9 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
 
     @Override
     public DelegatingResourceDescription getUpdatableProperties() throws ResourceDoesNotSupportOperationException {
-        return getCreatableProperties();
+        DelegatingResourceDescription description = new DelegatingResourceDescription();
+        description.addProperty("name");
+        return description;
     }
 
     @Override

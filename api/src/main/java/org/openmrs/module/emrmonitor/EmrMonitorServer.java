@@ -47,4 +47,9 @@ public class EmrMonitorServer extends BaseOpenmrsObject implements Serializable 
     public void setServerType(EmrMonitorServerType serverType) {
         this.serverType = serverType;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

@@ -40,7 +40,7 @@ public class GenerateLocalReportTask extends EmrMonitorTask {
 
             EmrMonitorReport latestReport = getEmrMonitorService().getLatestEmrMonitorReport(localServer);
             if (latestReport != null) {
-                if (System.currentTimeMillis() - latestReport.getDateCreated().getTime() <= 1000*60*60*24) {
+                if (System.currentTimeMillis() - latestReport.getDateCreated().getTime() <= 1000*60*5) { // 1000*60*60*24
                     log.debug("Last report was generated less than 24 hours ago.  Not generating a report");
                     return;
                 }

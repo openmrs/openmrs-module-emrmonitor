@@ -55,7 +55,7 @@ public class RestUtil {
         String password = EmrMonitorConfig.getRuntimeProperty(EmrMonitorConfig.PARENT_PASSWORD_PROPERTY);
 
         if (!url.startsWith("https://")) {
-            log.info("non-HTTPS connection to " + url);
+            log.debug("non-HTTPS connection to " + url);
         }
 
         Client restClient = Client.create();
