@@ -46,7 +46,7 @@ public class LogSystemStatusTask extends EmrMonitorTask {
                     connectionStatus = checkServerResponse.getStatus();
                 }
                 catch (Exception e) {
-                    log.warn("An error occurred trying to connect to parent resource", e);
+                    log.debug("An error occurred trying to connect to parent resource", e);
                     connectionStatus = 500;
                 }
             }
