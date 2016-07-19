@@ -54,8 +54,10 @@ The name of any file in this directory will represent the "namespace" of the met
 ### Workflow
 
 1. A "LOCAL" __EmrMonitorServer__ server is automatically created on a given OpenMRS instance.
-2. A scheduled task executes once per day, and generates a daily __EmrMonitorReport__ for the LOCAL server.  This process iterates across all __MetricProducer__ components and
-   adds an __EmrMonitorReportMetric__ to the report for all generated metrics.
+2. A scheduled task is configured to execute every minute, check to see if it is due to run, and automatically executes if so, 
+   generating a new __EmrMonitorReport__ for the LOCAL server.  This process iterates across all __MetricProducer__ components and
+   adds an __EmrMonitorReportMetric__ to the report for all generated metrics.  By default this will run once per day.  
+   This can be overridden by configuring the global property:  __emrmonitor.minutesBetweenReports__.  
 3. A history of these reports is available for viewing on the local server
 4. If this server has a "parent" configured (via OpenMRS runtime properties), another scheduled task executes every few minutes to check for any __EmrMonitorReport__ that has
    been generated but not transmitted to the parent.  An __EmrMonitorReport__ can have one of the following statuses:
