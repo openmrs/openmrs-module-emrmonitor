@@ -76,30 +76,16 @@ The module provides a REST API for managing servers and reports.
 ### TODO
 
 * Test page for displaying available metric producers and enabling generating metrics for viewing on demand
-
-* Groovy support in ConfigurableMetricProducer
-
-* Do not sync these tables
-
-* Add indexes where we need to speed up particular queries
-
-* Task to clean up history of log files or reports (if desired, to save space)
-
-* Add last connection time to the server table, and a task with web service for hitting it from child more frequently than daily
-
-* ReportConfig:
-- trigger_type (cron, startup, context_refresh, event)
-- trigger_config (used by the type)
-- template (simple template that allows for text replacement of metrics by key)
-- transmission_url
-- transmission_username
-- transmission_password
-(can we use key-based authentication here instead?)
-
 * Document REST interface above
-
-* Service Methods:
-- List<EmrMonitorReport> getEmrMonitorReports(EmrMonitorReportQuery);
-- Map<EmrMonitorServer, EmrMonitorReport> getLatestEmrMonitorReports();
-- EmrMonitorReport getLatestEmrMonitorReport(EmrMonitorServer);
-- EmrMonitorReportMetric getEmrMonitorReportMetrics(EmrMonitorReportMetricQuery);
+* Groovy support in ConfigurableMetricProducer
+* Add indexes where we need to speed up particular queries
+* Task to clean up history of log files or reports (if desired, to save space)
+* Add last connection time to the server table, and a task with web service for hitting it from child more frequently than daily
+* ReportConfig:
+  * trigger_type (cron, startup, context_refresh, event)
+  * trigger_config (used by the type)
+  * template (simple template that allows for text replacement of metrics by key)
+  * transmission_url
+  * transmission_username
+  * transmission_password
+* Investigate whether we can use key-based authentication +/- a request/approval system rather than username/password authentication
