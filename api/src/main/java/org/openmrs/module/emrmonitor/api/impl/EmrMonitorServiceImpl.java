@@ -182,4 +182,9 @@ public class EmrMonitorServiceImpl extends BaseOpenmrsService implements EmrMoni
     public <T> T executeSingleValueQuery(String query, Class<T> type) {
         return dao.executeSingleValueQuery(query, type);
     }
+
+    @Override
+    public <T> T saveObject(T obj) {
+        return dao.saveObject(obj);
+    }
 }

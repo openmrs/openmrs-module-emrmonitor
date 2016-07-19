@@ -200,4 +200,10 @@ public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
         }
         return (T)row[0];
     }
+
+    @Override
+    public <T> T saveObject(T obj) {
+        sessionFactory.getCurrentSession().saveOrUpdate(obj);
+        return obj;
+    }
 }

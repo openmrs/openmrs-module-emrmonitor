@@ -50,4 +50,7 @@ public interface EmrMonitorService extends OpenmrsService {
     Map<String, String> getDatabaseMetadata();
     List<Object[]> executeQuery(String query);
     <T> T executeSingleValueQuery(String query, Class<T> type);
+
+    // Utilities
+    <T> T saveObject(T obj);
 }

@@ -40,6 +40,7 @@
         <oshiVersion>2.6-m-java7</oshiVersion>
         <appframeworkVersion>2.4</appframeworkVersion>
         <appuiVersion>1.3</appuiVersion>
+        <syncVersion>1.2</syncVersion>
         <uicommonsVersion>1.8</uicommonsVersion>
         <uiframeworkVersion>3.4</uiframeworkVersion>
         <webservicesRestVersion>2.12</webservicesRestVersion>
@@ -76,6 +77,14 @@
             <version>${openMRSVersion}</version>
             <type>pom</type>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>sync-api</artifactId>
+            <version>${syncVersion}</version>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

@@ -15,7 +15,9 @@ import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.module.DaemonToken;
 import org.openmrs.module.DaemonTokenAware;
 import org.openmrs.module.ModuleActivator;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.emrmonitor.task.EmrMonitorTask;
+import org.openmrs.module.emrmonitor.util.SyncUtil;
 
 import java.util.Date;
 
@@ -31,6 +33,11 @@ public class EmrMonitorActivator extends BaseModuleActivator implements DaemonTo
 	 */
 	public void started() {
 	    UptimeLog.initializeLogFile(new Date());
+
+        if (ModuleFactory.isModuleStarted("sync")) {
+            SyncUtil.disableSyncForEmrMonitor();
+        }
+
         EmrMonitorTask.setEnabled(true);
 		log.info("EmrMonitor Module started");
 	}

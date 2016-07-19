@@ -40,10 +40,17 @@ public class TransmitLocalReportTask extends EmrMonitorTask {
                 // Get the local server here
                 EmrMonitorServer localServer = getEmrMonitorService().ensureLocalServer();
 
-                // Next, query the parent server to see if this local server is already registered there
+                int serverStatus = 504; // By default, set this to 504 which means "Gateway Timeout"
                 WebResource checkServerResource = RestUtil.getParentServerResource("server/" + localServer.getUuid());
-                ClientResponse checkServerResponse = checkServerResource.accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
-                int serverStatus = checkServerResponse.getStatus();
+
+                // Next, query the parent server to see if this local server is already registered there
+                try {
+                    ClientResponse checkServerResponse = checkServerResource.accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
+                    checkServerResponse.getStatus();
+                }
+                catch (Exception e) {
+                    log.debug("An error occurred while trying to get the parent server resource", e);
+                }
 
                 boolean isRegistered = (serverStatus == 200);
 

@@ -21,6 +21,10 @@
         <require_module version="${webservicesRestVersion}">org.openmrs.module.webservices.rest</require_module>
     </require_modules>
 
+    <aware_of_modules>
+        <aware_of_module>org.openmrs.module.sync</aware_of_module>
+    </aware_of_modules>
+
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.EmrMonitorActivator</activator>
 	
 	<!-- Adds link to maintenance section of admin page -->
