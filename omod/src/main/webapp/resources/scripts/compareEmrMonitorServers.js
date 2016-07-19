@@ -1,165 +1,111 @@
 angular.module('compareEmrMonitorServers', ['ngAnimate', 'ngTouch', 'ui.grid', 'ui.grid.selection', 'ui.grid.pinning', 'ui.grid.exporter', 'ui.grid.moveColumns', 'ui.grid.resizeColumns', 'ui.bootstrap'])
 
-.controller('CompareEmrMonitorServersCtrl', ['$scope', '$http', 'uiGridConstants',
-  function($scope, $http, uiGridConstants) {
+    .controller('CompareEmrMonitorServersCtrl', ['$scope', '$http', 'uiGridConstants',
+        function ($scope, $http, uiGridConstants) {
 
-    $scope.gridOptions = {
+            $scope.servers = [];
+            $scope.metricNames = [];
+            $scope.selectedMetrics = [];
 
-      enableGridMenu: true,
-      enableSelectAll: true,
-      exporterCsvFilename: 'servers.csv',
-      exporterPdfDefaultStyle: {
-        fontSize: 9
-      },
-      exporterPdfTableStyle: {
-        margin: [30, 30, 30, 30]
-      },
-      exporterPdfTableHeaderStyle: {
-        fontSize: 10,
-        bold: true,
-        italics: true,
-        color: 'red'
-      },
-      exporterPdfHeader: {
-        text: "Servers",
-        style: 'headerStyle'
-      },
-      exporterPdfFooter: function(currentPage, pageCount) {
-        return {
-          text: currentPage.toString() + ' of ' + pageCount.toString(),
-          style: 'footerStyle'
-        };
-      },
-      exporterPdfCustomFormatter: function(docDefinition) {
-        docDefinition.styles.headerStyle = {
-          fontSize: 22,
-          bold: true
-        };
-        docDefinition.styles.footerStyle = {
-          fontSize: 10,
-          bold: true
-        };
-        return docDefinition;
-      },
-      exporterPdfOrientation: 'landscape',
-      exporterPdfPageSize: 'LETTER',
-      exporterPdfMaxGridWidth: 500,
-      exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
-      onRegisterApi: function(gridApi) {
-        $scope.gridApi = gridApi;
-      }
-    };
-
-    /*
-     * Reads all the keys in the "systemInformation" node of the Json file and returns them in an array.
-     * They will be used as checkboxes where a user can select which data point to display.
-     */
-    $scope.getSelections = function() {
-      var selections = [];
-      angular.forEach($scope.servers, function(server, value) {
-        angular.forEach(server.systemInformation, function(key, value) {
-          if (selections.indexOf(value) < 0) {
-            selections.push(value);
-          }
-        });
-
-
-      });
-      return selections;
-    };
-
-    /*
-     * Reads all the keys in the "systemInformation" node of the Json file and returns them in an array.
-     */
-    $scope.getKeys = function(event) {
-      var str = event;
-      var keys = [];
-      angular.forEach($scope.servers, function(server, event) {
-        angular.forEach(server.systemInformation, function(key, value) {
-          if (value === str) {
-            angular.forEach(key, function(key, value) {
-              if (keys.indexOf(value) < 0) {
-                keys.push(value);
-              }
-            });
-          }
-        });
-
-
-      });
-      return keys;
-    };
-
-    $scope.getServers = function() {
-      $http.get("/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/server?v=default")
-        .success(function(data) {
-          $scope.servers = data.servers;
-        });
-    }
-
-    $scope.getServers();
-
-
-    /**
-     * Creates a new Json object from 
-     * the selected key
-     */
-    $scope.click = function(clicked) {
-
-      $scope.getSelections();
-      var columnDefs = [];
-      var keys = $scope.getKeys(clicked);
-      var newJson = [];
-      angular.forEach($scope.servers, function(server, event) {
-
-        var jsonObject = {};
-        jsonObject['serverName'] = server.serverName;
-
-        for (var i in keys) {
-
-          var nestedKey = keys[i];
-          var newKey = nestedKey.substring(nestedKey.lastIndexOf(".") + 1);
-          var nestedValue = $scope.getNestedValue(server.serverName, clicked, nestedKey);
-
-          jsonObject[newKey] = nestedValue;
-        }
-
-        newJson.push(jsonObject);
-
-      });
-
-
-      $scope.gridOptions.columnDefs.length = 0;
-      $scope.gridOptions.data = newJson;
-
-      $scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.ALL);
-    };
-
-    /**
-     * Uses the server name and the selected key to retrieve the 
-     * value of corresponding to the nestedKey parameter.
-     */
-
-    $scope.getNestedValue = function(name, clicked, nestedKey) {
-
-      var value = null;
-      angular.forEach($scope.servers, function(server, event) {
-
-        if (server.serverName == name) {
-
-          angular.forEach(server.systemInformation, function(obj, event) {
-
-            if (event == clicked) {
-
-              value = obj[nestedKey];
+            $scope.load = function () {
+                $http.get("/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/server?v=default")
+                    .success(function (data) {
+                        angular.forEach(data.results, function (server) {
+                            $scope.servers.push(server);
+                            angular.forEach(server.latestReport.metrics, function (metric) {
+                                if ($scope.metricNames.indexOf(metric.metric) < 0) {
+                                    $scope.metricNames.push(metric.metric);
+                                }
+                            });
+                        });
+                    });
             }
+            $scope.load();
 
-          });
+            $scope.gridOptions = {
 
+                enableGridMenu: true,
+                enableSelectAll: true,
+                exporterCsvFilename: 'servers.csv',
+                exporterPdfDefaultStyle: {
+                    fontSize: 9
+                },
+                exporterPdfTableStyle: {
+                    margin: [30, 30, 30, 30]
+                },
+                exporterPdfTableHeaderStyle: {
+                    fontSize: 10,
+                    bold: true,
+                    italics: true,
+                    color: 'red'
+                },
+                exporterPdfHeader: {
+                    text: "Servers",
+                    style: 'headerStyle'
+                },
+                exporterPdfFooter: function (currentPage, pageCount) {
+                    return {
+                        text: currentPage.toString() + ' of ' + pageCount.toString(),
+                        style: 'footerStyle'
+                    };
+                },
+                exporterPdfCustomFormatter: function (docDefinition) {
+                    docDefinition.styles.headerStyle = {
+                        fontSize: 22,
+                        bold: true
+                    };
+                    docDefinition.styles.footerStyle = {
+                        fontSize: 10,
+                        bold: true
+                    };
+                    return docDefinition;
+                },
+                exporterPdfOrientation: 'landscape',
+                exporterPdfPageSize: 'LETTER',
+                exporterPdfMaxGridWidth: 500,
+                exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+                onRegisterApi: function (gridApi) {
+                    $scope.gridApi = gridApi;
+                }
+            };
+
+            $scope.changeMetric = function(m) {
+
+                $scope.selectedMetrics.push(m);
+
+                var metricTableColumns = [];
+                metricTableColumns.push({ field: 'serverName', displayName: 'Server' });
+                metricTableColumns.push({ field: 'reportDate', displayName: 'Report Date' });
+                for (var idx in $scope.selectedMetrics) {
+                    metricTableColumns.push({ field: 'col'+idx, displayName: $scope.selectedMetrics[idx] })
+                }
+
+                var metricTableData = [];
+                angular.forEach($scope.servers, function (server) {
+                    var serverRow = {};
+                    serverRow['serverName'] = server.name;
+                    serverRow['reportDate'] = moment(server.latestReport.dateCreated).format("YYYY-MM-DD HH:m:s");
+                    for (var idx in $scope.selectedMetrics) {
+                        var metric = $scope.selectedMetrics[idx];
+                        var metricVal = $scope.getMetricValue(server, metric);
+                        serverRow['col'+idx] = metricVal;
+                    }
+                    metricTableData.push(serverRow);
+                });
+
+                $scope.gridOptions.columnDefs = metricTableColumns;
+                $scope.gridOptions.data = metricTableData;
+                $scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.ALL);
+            };
+
+            $scope.getMetricValue = function (server, metric) {
+                var ret = '';
+                angular.forEach(server.latestReport.metrics, function (m) {
+                    if (metric == m.metric) {
+                        ret = m.value;
+                    }
+                });
+                return ret;
+            };
         }
-
-      });
-      return value;
-    };
-  }
-])
+    ])

@@ -68,14 +68,13 @@ The module provides a REST API for managing servers and reports.
 
 ### TODO
 
-* UI
-- Get compare page working
-- Clean up javascript and CSS as needed
-- Test page for displaying available metric producers and enabling generating metrics for viewing on demand
+* Test page for displaying available metric producers and enabling generating metrics for viewing on demand
 
 * Groovy support in ConfigurableMetricProducer
 
 * Do not sync these tables
+
+* Add indexes where we need to speed up particular queries
 
 * Task to clean up history of log files or reports (if desired, to save space)
 
