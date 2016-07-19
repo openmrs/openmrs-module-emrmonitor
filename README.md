@@ -14,7 +14,12 @@ An __EmrMonitorServer__ represents a particular OpenMRS instance that is availab
 * CHILD:  A remote OpenMRS instance that has registered itself into this server and submits reports of it's metrics on a regular basis
 
 The expected usage is that, within a network of servers, one server would be designated as the "parent", and the rest would be designated as "child".
-Each of the child servers would report their metrics up to the parent.
+Each of the child servers would report their metrics up to the parent.  In order to configure a server to report it's metrics up to a parent, the following
+runtime properties should be added to the child:
+
+* emrmonitor.parentUrl=http://localhost:8081/openmrs-standalone
+* emrmonitor.parentUsername=admin
+* emrmonitor.parentPassword=test
 
 #### Report
 An __EmrMonitorReport__ encapsulates a particular collection of metrics that are generated at a particular time for a particular server.
