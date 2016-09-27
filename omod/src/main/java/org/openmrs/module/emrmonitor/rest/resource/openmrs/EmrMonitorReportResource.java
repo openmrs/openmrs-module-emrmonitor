@@ -14,6 +14,7 @@ import org.openmrs.module.emrmonitor.EmrMonitorReport;
 import org.openmrs.module.emrmonitor.EmrMonitorReportMetric;
 import org.openmrs.module.emrmonitor.EmrMonitorServer;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
+import org.openmrs.module.emrmonitor.rest.NeedsPagingWithTotal;
 import org.openmrs.module.emrmonitor.rest.controller.EmrMonitorRestController;
 import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.openmrs.module.webservices.rest.web.RestConstants;
@@ -27,7 +28,6 @@ import org.openmrs.module.webservices.rest.web.representation.Representation;
 import org.openmrs.module.webservices.rest.web.resource.api.PageableResult;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
-import org.openmrs.module.webservices.rest.web.resource.impl.NeedsPaging;
 import org.openmrs.module.webservices.rest.web.response.ObjectNotFoundException;
 import org.openmrs.module.webservices.rest.web.response.ResourceDoesNotSupportOperationException;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
@@ -56,7 +56,7 @@ public class EmrMonitorReportResource extends DelegatingCrudResource<EmrMonitorR
                 throw new ObjectNotFoundException();
             }
             List<EmrMonitorReport> reports = getEmrMonitorService().getEmrMonitorReports(server);
-            return new NeedsPaging<EmrMonitorReport>(reports, context);
+            return new NeedsPagingWithTotal<EmrMonitorReport>(reports, context);
         }
         //currently this is not supported since the superclass throws an exception
         return super.doSearch(context);

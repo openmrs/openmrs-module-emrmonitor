@@ -18,7 +18,7 @@
 
         <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
 
-        <set name="metrics" table="emrmonitor_report_metric" lazy="false" inverse="true" cascade="all-delete-orphan" order-by="metric">
+        <set name="metrics" table="emrmonitor_report_metric" lazy="true" inverse="true" cascade="all-delete-orphan" order-by="metric">
             <key column="report_id" not-null="true" />
             <one-to-many class="EmrMonitorReportMetric" />
         </set>

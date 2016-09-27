@@ -22,9 +22,9 @@ import org.openmrs.module.webservices.rest.web.representation.DefaultRepresentat
 import org.openmrs.module.webservices.rest.web.representation.FullRepresentation;
 import org.openmrs.module.webservices.rest.web.representation.Representation;
 import org.openmrs.module.webservices.rest.web.resource.api.PageableResult;
+import org.openmrs.module.webservices.rest.web.resource.impl.AlreadyPaged;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingSubResource;
-import org.openmrs.module.webservices.rest.web.resource.impl.NeedsPaging;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class EmrMonitorReportMetricResource extends DelegatingSubResource<EmrMon
 
     @Override
     public PageableResult doGetAll(EmrMonitorReport report, RequestContext context) throws ResponseException {
-        return new NeedsPaging<EmrMonitorReportMetric>(new ArrayList<EmrMonitorReportMetric>(report.getMetrics()), context);
+        return new AlreadyPaged<EmrMonitorReportMetric>(context, new ArrayList<EmrMonitorReportMetric>(report.getMetrics()), false);
     }
 
     @Override

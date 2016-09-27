@@ -3,8 +3,8 @@ angular.module('configEmrMonitorServer', [ "uicommons.filters", "ui.bootstrap", 
     .controller('ConfigEmrMonitorServerCtrl', [ '$scope', '$http',
         function($scope, $http) {
 
-            $scope.sortType     = 'serverType'; // set the default sort type
-            $scope.sortReverse  = true;  // set the default sort order
+            $scope.sortType     = 'name'; // set the default sort type
+            $scope.sortReverse  = false;  // set the default sort order
             $scope.searchServer   = '';     // set the default search/filter term
             $scope.showServerList = false;
             $scope.showEditServer = false;
@@ -13,6 +13,7 @@ angular.module('configEmrMonitorServer', [ "uicommons.filters", "ui.bootstrap", 
             $scope.selectedServer = null;
             $scope.selectedReport = null;
             $scope.pagingInformation = '';
+            $scope.showResultsSpinner = true;
             
             $scope.listServers =  function(){
                 $http.get("/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/server?v=default")
@@ -36,12 +37,14 @@ angular.module('configEmrMonitorServer', [ "uicommons.filters", "ui.bootstrap", 
             }
 
             $scope.displayServerMetrics = function(server, report) {
+                if ($scope.selectedServer != server) {
+                    $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+                }
                 $scope.showServerList = false;
                 $scope.showEditServer = false;
                 $scope.showServerMetrics = true;;
                 $scope.selectedServer = server;
                 $scope.selectedReport = report || server.latestReport;
-                $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
             }
 
             $scope.updateServerInfo = function() {
@@ -100,10 +103,10 @@ angular.module('configEmrMonitorServer', [ "uicommons.filters", "ui.bootstrap", 
                 $scope.pagingInformation = firstOnPage + " to " + lastOnPage + " of " + tot;
             }
 
-            $scope.setPagingData = function(data, page, pageSize){
-                var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
-                $scope.reportHistoryData = pagedData;
-                $scope.totalReportHistoryItems = data.length;
+            $scope.setPagingData = function(data, totalItems, page, pageSize){
+                $scope.showResultsSpinner = false;
+                $scope.reportHistoryData = data;
+                $scope.totalReportHistoryItems = totalItems;
                 if (!$scope.$$phase) {
                     $scope.$apply();
                 }
@@ -111,21 +114,22 @@ angular.module('configEmrMonitorServer', [ "uicommons.filters", "ui.bootstrap", 
             };
 
             $scope.getPagedDataAsync = function (pageSize, page, searchText) {
+                $scope.showResultsSpinner = true;
                 setTimeout(function () {
                     var data;
                     if ($scope.selectedServer) {
-                        var getAllUrl = "/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/report?server=" + $scope.selectedServer.uuid;
+                        var getAllUrl = "/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/emrmonitor/report?server=" + $scope.selectedServer.uuid + "&limit="+pageSize + "&startIndex=" + ((page - 1) * pageSize);
                         if (searchText) {
                             var ft = searchText.toLowerCase();
                             $http.get(getAllUrl).success(function (fullData) {
                                 data = fullData.results.filter(function (item) {
                                     return JSON.stringify(item).toLowerCase().indexOf(ft) != -1;
                                 });
-                                $scope.setPagingData(data, page, pageSize);
+                                $scope.setPagingData(data, fullData.totalResultNum, page, pageSize);
                             });
                         } else {
                             $http.get(getAllUrl).success(function (fullData) {
-                                $scope.setPagingData(fullData.results, page, pageSize);
+                                $scope.setPagingData(fullData.results, fullData.totalResultNum, page, pageSize);
                             });
                         }
                     }

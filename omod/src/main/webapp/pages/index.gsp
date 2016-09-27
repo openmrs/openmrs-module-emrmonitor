@@ -144,7 +144,10 @@ ${ ui.includeFragment("emrmonitor", "menu") }
         <table id="report-history-table">
             <tr>
                 <td>
-                    <div class="gridStyle" ng-grid="reportHistoryGrid" id="reportHistoryGrid"></div>
+                    <div class="gridStyle" id="report-history-spinner" style="text-align:center; font-weight:bold; padding-top:50px;" ng-show="showResultsSpinner">
+                        <img src="${ui.resourceLink("uicommons", "images/spinner.gif")}">
+                    </div>
+                    <div class="gridStyle" ng-grid="reportHistoryGrid" id="reportHistoryGrid" ng-hide="showResultsSpinner"></div>
                     <div>
                         {{ pagingInformation }}
                     </div>

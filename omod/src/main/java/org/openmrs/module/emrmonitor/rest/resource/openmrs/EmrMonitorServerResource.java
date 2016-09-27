@@ -23,9 +23,9 @@ import org.openmrs.module.webservices.rest.web.representation.FullRepresentation
 import org.openmrs.module.webservices.rest.web.representation.RefRepresentation;
 import org.openmrs.module.webservices.rest.web.representation.Representation;
 import org.openmrs.module.webservices.rest.web.resource.api.PageableResult;
+import org.openmrs.module.webservices.rest.web.resource.impl.AlreadyPaged;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
-import org.openmrs.module.webservices.rest.web.resource.impl.NeedsPaging;
 import org.openmrs.module.webservices.rest.web.response.ResourceDoesNotSupportOperationException;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
@@ -46,7 +46,7 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
     @Override
     protected PageableResult doGetAll(RequestContext context) throws ResponseException {
         List<EmrMonitorServer> servers = getEmrMonitorService().getAllEmrMonitorServers();
-        return new NeedsPaging<EmrMonitorServer>(servers, context);
+        return new AlreadyPaged<EmrMonitorServer>(context, servers, false);
     }
 
     @Override
