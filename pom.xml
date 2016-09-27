@@ -4,7 +4,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>emrmonitor</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS EmrMonitor Module</name>
 	<description>A tool for monitoring a network of OpenMRS servers</description>
@@ -27,6 +27,19 @@
         <url>https://github.com/pih/openmrs-module-emrmonitor</url>
         <tag>HEAD</tag>
     </scm>
+
+	<distributionManagement>
+		<repository>
+			<id>openmrs-repo-modules</id>
+			<name>OpenMRS Modules</name>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules</url>
+		</repository>
+		<snapshotRepository>
+			<id>openmrs-repo-snapshots</id>
+			<name>OpenMRS Snapshots</name>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<modules>
 		<module>api</module>
