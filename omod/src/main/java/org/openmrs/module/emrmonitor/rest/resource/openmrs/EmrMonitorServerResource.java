@@ -115,7 +115,8 @@ public class EmrMonitorServerResource extends DelegatingCrudResource<EmrMonitorS
 
     @PropertyGetter("latestReport")
     public EmrMonitorReport getLatestReport(EmrMonitorServer server) {
-        return getEmrMonitorService().getLatestEmrMonitorReport(server);
+        EmrMonitorServer savedServer = getEmrMonitorService().getEmrMonitorServerByUuid(server.getUuid()); // This is needed in case we are dealing with sending a server to the parent for the first time
+        return getEmrMonitorService().getLatestEmrMonitorReport(savedServer);
     }
 
     private EmrMonitorService getEmrMonitorService() {

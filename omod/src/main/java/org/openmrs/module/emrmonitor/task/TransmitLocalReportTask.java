@@ -19,6 +19,7 @@ import org.openmrs.module.emrmonitor.rest.RestUtil;
 import org.openmrs.module.webservices.rest.web.representation.Representation;
 
 import javax.ws.rs.core.MediaType;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 /**
@@ -46,7 +47,7 @@ public class TransmitLocalReportTask extends EmrMonitorTask {
                 // Next, query the parent server to see if this local server is already registered there
                 try {
                     ClientResponse checkServerResponse = checkServerResource.accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
-                    checkServerResponse.getStatus();
+                    serverStatus = checkServerResponse.getStatus();
                 }
                 catch (Exception e) {
                     log.debug("An error occurred while trying to get the parent server resource", e);
@@ -94,10 +95,14 @@ public class TransmitLocalReportTask extends EmrMonitorTask {
                                 if (response.getStatus() == 201) {
                                     report.setStatus(EmrMonitorReport.SubmissionStatus.SENT);
                                     getEmrMonitorService().saveEmrMonitorReport(report);
+                                    log.warn("Successfully sent emr monitor report from " + report.getDateCreated());
                                 }
                                 else {
                                     log.warn("Non-success reponse code of " + response.getStatus() + " when sending report");
                                 }
+                            }
+                            catch (SocketTimeoutException ste) {
+                                log.warn("Socket timed out while attempting to submit emrmonitor report from " + report.getDateCreated());
                             }
                             catch (Exception e) {
                                 log.warn("An error occurred while submitting emrmonitor report", e);
