@@ -36,6 +36,7 @@ public class EmrMonitorActivator extends BaseModuleActivator implements DaemonTo
 
         if (ModuleFactory.isModuleStarted("sync")) {
             SyncUtil.disableSyncForEmrMonitor();
+            SyncUtil.configureEmrMonitorFromSyncTablesIfNeeded();
         }
 
         EmrMonitorTask.setEnabled(true);

@@ -13,6 +13,7 @@ package org.openmrs.module.emrmonitor.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.emrmonitor.EmrMonitorConfig;
 import org.openmrs.module.emrmonitor.api.EmrMonitorService;
 import org.openmrs.module.sync.SyncClass;
 import org.openmrs.module.sync.SyncServerClass;
@@ -64,5 +65,21 @@ public class SyncUtil {
         }
 
         syncService.saveSyncClass(sc); // We do this again here because in 1.3 this refreshes a static cache that we need to refresh
+    }
+
+    public static void configureEmrMonitorFromSyncTablesIfNeeded() {
+        SyncService syncService = Context.getService(SyncService.class);
+        RemoteServer parent = syncService.getParentServer();
+        if (parent != null) {
+            if (EmrMonitorConfig.getEmrMonitorParentUrl() == null) {
+                EmrMonitorConfig.setEmrMonitorParentUrl(parent.getAddress());
+            }
+            if (EmrMonitorConfig.getEmrMonitorParentUsername() == null) {
+                EmrMonitorConfig.setEmrMonitorParentUsername(parent.getUsername());
+            }
+            if (EmrMonitorConfig.getEmrMonitorParentPassword() == null) {
+                EmrMonitorConfig.setEmrMonitorParentPassword(parent.getPassword());
+            }
+        }
     }
 }

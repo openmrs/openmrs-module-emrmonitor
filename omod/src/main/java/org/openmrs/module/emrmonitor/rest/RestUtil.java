@@ -50,9 +50,9 @@ public class RestUtil {
             return null;
         }
 
-        String url = EmrMonitorConfig.getRuntimeProperty(EmrMonitorConfig.PARENT_URL_PROPERTY);
-        String username = EmrMonitorConfig.getRuntimeProperty(EmrMonitorConfig.PARENT_USERNAME_PROPERTY);
-        String password = EmrMonitorConfig.getRuntimeProperty(EmrMonitorConfig.PARENT_PASSWORD_PROPERTY);
+        String url = EmrMonitorConfig.getEmrMonitorParentUrl();
+        String username = EmrMonitorConfig.getEmrMonitorParentUsername();
+        String password = EmrMonitorConfig.getEmrMonitorParentPassword();
 
         if (!url.startsWith("https://")) {
             log.debug("non-HTTPS connection to " + url);

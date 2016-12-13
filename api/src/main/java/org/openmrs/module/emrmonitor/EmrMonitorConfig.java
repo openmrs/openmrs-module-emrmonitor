@@ -36,15 +36,46 @@ public class EmrMonitorConfig {
     public static final String PARENT_USERNAME_PROPERTY = "emrmonitor.parentUsername";
     public static final String PARENT_PASSWORD_PROPERTY = "emrmonitor.parentPassword";
 
+    // Static variables for holding the runtime configuration
+
+    private static String parentUrl = getRuntimeProperty(PARENT_URL_PROPERTY, null);
+    private static String parentUsername = getRuntimeProperty(PARENT_USERNAME_PROPERTY, null);
+    private static String parentPassword = getRuntimeProperty(PARENT_PASSWORD_PROPERTY, null);
+
     /**
      * @return true if a parent server is configured
      */
     public static boolean isParentServerConfigured() {
-        return StringUtils.isNotBlank(getRuntimeProperty(EmrMonitorConfig.PARENT_URL_PROPERTY));
+        return parentUrl != null && parentUsername != null && parentPassword != null;
     }
 
-    public static String getRuntimeProperty(String name) {
-        return Context.getRuntimeProperties().getProperty(name);
+    public static String getEmrMonitorParentUrl() {
+        return parentUrl;
+    }
+
+    public static String getEmrMonitorParentUsername() {
+        return parentUsername;
+    }
+
+    public static String getEmrMonitorParentPassword() {
+        return parentPassword;
+    }
+
+    public static void setEmrMonitorParentUrl(String url) {
+        parentUrl = url;
+    }
+
+    public static void setEmrMonitorParentUsername(String username) {
+        parentUsername = username;
+    }
+
+    public static void setEmrMonitorParentPassword(String password) {
+        parentPassword = password;
+    }
+
+    public static String getRuntimeProperty(String name, String defaultValue) {
+        String value = Context.getRuntimeProperties().getProperty(name);
+        return StringUtils.isNotBlank(value) ? value : defaultValue;
     }
 
     // Global Properties
