@@ -4,7 +4,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>emrmonitor</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS EmrMonitor Module</name>
 	<description>A tool for monitoring a network of OpenMRS servers</description>
@@ -25,7 +25,7 @@
         <connection>scm:git:git@github.com:pih/openmrs-module-emrmonitor.git</connection>
         <developerConnection>scm:git:git@github.com:pih/openmrs-module-emrmonitor.git</developerConnection>
         <url>https://github.com/pih/openmrs-module-emrmonitor</url>
-        <tag>1.0.4</tag>
+        <tag>HEAD</tag>
     </scm>
 
 	<distributionManagement>
