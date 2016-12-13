@@ -87,7 +87,7 @@ public class TransmitLocalReportTask extends EmrMonitorTask {
 
                         for (EmrMonitorReport report : reports) {
                             try {
-                                log.debug("Sending report to parent: " + report.toString());
+                                log.warn("Sending report to parent: " + report.toString());
                                 String jsonToSend = RestUtil.convertToJson(report, Representation.FULL, true);
                                 ClientResponse response = resource.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON_TYPE).post(ClientResponse.class, jsonToSend);
                                 log.debug("Report transmission response.getStatus = " + response.getStatus());
@@ -98,14 +98,15 @@ public class TransmitLocalReportTask extends EmrMonitorTask {
                                     log.warn("Successfully sent emr monitor report from " + report.getDateCreated());
                                 }
                                 else {
-                                    log.warn("Non-success reponse code of " + response.getStatus() + " when sending report");
+                                    log.warn("Non-success reponse code of " + response.getStatus() + " when sending report: " + report.toString());
                                 }
                             }
                             catch (SocketTimeoutException ste) {
-                                log.warn("Socket timed out while attempting to submit emrmonitor report from " + report.getDateCreated());
+                                log.warn("Socket timed out while attempting to submit emrmonitor report from " + report.toString());
                             }
                             catch (Exception e) {
-                                log.warn("An error occurred while submitting emrmonitor report", e);
+                                log.warn("An error occurred while submitting emrmonitor report (" + report.toString() + "): " + e.getMessage());
+                                log.debug("Error details", e);
                             }
                         }
                     }
