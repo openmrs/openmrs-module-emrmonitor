@@ -23,9 +23,10 @@
             <one-to-many class="EmrMonitorReportMetric" />
         </set>
 
-        <property name="status" column="status" length="45" not-null="true">
-            <type name="org.openmrs.util.HibernateEnumType">
-                <param name="enumClassName">org.openmrs.module.emrmonitor.EmrMonitorReport$SubmissionStatus</param>
+        <property name="status" column="status" length="50" not-null="true">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">org.openmrs.module.emrmonitor.EmrMonitorReport$SubmissionStatus</param>
+                <param name="useNamed">true</param>
             </type>
         </property>
 

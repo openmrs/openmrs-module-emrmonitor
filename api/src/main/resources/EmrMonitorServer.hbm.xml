@@ -13,9 +13,10 @@
         <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
         <property name="name" type="java.lang.String" column="name" length="255" not-null="true" unique="true" />
 
-        <property name="serverType" column="server_type" length="45" not-null="true">
-            <type name="org.openmrs.util.HibernateEnumType">
-                <param name="enumClassName">org.openmrs.module.emrmonitor.EmrMonitorServerType</param>
+        <property name="serverType" column="server_type" length="50" not-null="true">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">org.openmrs.module.emrmonitor.EmrMonitorServerType</param>
+                <param name="useNamed">true</param>
             </type>
         </property>
 
