@@ -16,7 +16,7 @@ package org.openmrs.module.emrmonitor.api.db.hibernate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
+import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.jdbc.Work;
@@ -42,12 +42,12 @@ import java.util.Map;
 public class HibernateEmrMonitorDAO implements EmrMonitorDAO {
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
-	private SessionFactory sessionFactory;
+	private DbSessionFactory sessionFactory;
 	
 	/**
      * @param sessionFactory the sessionFactory to set
      */
-    public void setSessionFactory(SessionFactory sessionFactory) {
+    public void setSessionFactory(DbSessionFactory sessionFactory) {
 	    this.sessionFactory = sessionFactory;
     }
 
